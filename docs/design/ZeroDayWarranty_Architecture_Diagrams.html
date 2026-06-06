@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Day Warranty Agentic Scenario · Architecture &amp; Process Diagrams</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --navy: #1A2339;
+    --navy-soft: #2A3349;
+    --ms-blue: #0078D4;
+    --ms-blue-dark: #005A9E;
+    --nv-green: #76B900;
+    --nv-green-dark: #5C9300;
+    --slate: #64748B;
+    --slate-light: #94A3B8;
+    --amber: #D97706;
+    --green: #047857;
+    --rust: #B85450;
+    --bg: #ffffff;
+    --bg-soft: #FAFAF7;
+    --border: #E5E7EB;
+    --text: #1F2937;
+    --code-bg: #F5F5F7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Source Serif 4", Charter, Georgia, "Times New Roman", serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.62; font-size: 16px;
+  }
+
+  .classification {
+    background: var(--amber); color: #fff;
+    padding: 6px 24px; text-align: center;
+    font-family: Aptos, sans-serif; font-size: 10.5px;
+    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+  }
+
+  header.cover {
+    padding: 44px 56px 28px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+    color: #fff;
+    border-bottom: 6px solid var(--ms-blue);
+  }
+  header.cover .eyebrow {
+    font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.28em;
+    text-transform: uppercase; color: var(--ms-blue); font-weight: 700;
+  }
+  header.cover h1 {
+    font-family: Aptos, sans-serif; font-size: 36px; font-weight: 700;
+    line-height: 1.12; margin: 12px 0 6px; color: #fff;
+  }
+  header.cover .subtitle {
+    font-family: Aptos, sans-serif; font-size: 18px; color: #cbd5e1;
+    font-weight: 400; margin: 0 0 20px;
+  }
+  header.cover .meta {
+    display: flex; gap: 22px; flex-wrap: wrap;
+    font-family: Aptos, sans-serif; font-size: 12.5px; color: #94A3B8;
+    padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.16);
+  }
+  header.cover .meta strong { color: #cbd5e1; font-weight: 600; }
+
+  main {
+    max-width: 1180px; margin: 0 auto; padding: 36px 32px 64px;
+  }
+
+  section { margin: 0 0 40px; }
+  section.summary {
+    margin-top: -28px; background: var(--bg-soft);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  h2 {
+    font-family: Aptos, sans-serif; color: var(--navy);
+    font-size: 23px; margin: 0 0 6px;
+    border-bottom: 1px solid var(--border); padding-bottom: 8px;
+  }
+  h2 .num {
+    display: inline-block; background: var(--ms-blue); color: #fff;
+    font-size: 11px; letter-spacing: 0.16em;
+    padding: 2px 9px; border-radius: 3px; vertical-align: 5px;
+    margin-right: 12px; font-weight: 700;
+  }
+  h3 {
+    font-family: Aptos, sans-serif; color: var(--navy);
+    font-size: 17px; margin: 24px 0 8px;
+  }
+  h4 {
+    font-family: Aptos, sans-serif; color: var(--ms-blue-dark);
+    font-size: 13px; margin: 18px 0 6px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .lead { font-size: 16px; color: var(--slate); margin: 0 0 14px; max-width: 920px; }
+
+  code {
+    font-family: "Cascadia Mono", "Consolas", monospace;
+    font-size: 13.5px;
+    background: var(--code-bg); padding: 1px 5px; border-radius: 3px;
+    color: var(--navy);
+  }
+
+  /* Tables (matching calculations HTML) */
+  .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th {
+    background: var(--navy); color: #fff;
+    padding: 9px 12px; text-align: left;
+    font-family: Aptos, sans-serif; font-weight: 600; font-size: 12.5px;
+    letter-spacing: 0.02em;
+  }
+  td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg-soft); }
+  td.num { text-align: right; font-family: "Cascadia Mono", monospace; font-size: 13.5px; }
+  td.formula { font-family: "Cascadia Mono", monospace; font-size: 13px; color: var(--navy); }
+  td.total { background: #E0F2FE !important; font-weight: 700; color: var(--navy); }
+
+  /* Figure (for SVG diagrams) — matches the calc-card stylistic family */
+  figure {
+    border: 1px solid var(--border); border-left: 4px solid var(--ms-blue);
+    padding: 18px 22px; background: #fff; border-radius: 0 6px 6px 0;
+    margin: 18px 0;
+    overflow: hidden;
+  }
+  figure .fig-label {
+    font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--ms-blue-dark); font-weight: 700;
+    margin-bottom: 10px;
+  }
+  figure svg { display: block; width: 100%; height: auto; }
+  figcaption {
+    margin-top: 12px; padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-size: 13px; color: var(--slate); line-height: 1.55;
+  }
+
+  /* Step list for agent chain (matches calculations HTML) */
+  .steps {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin: 14px 0;
+    font-size: 13.5px;
+  }
+  .step {
+    background: var(--bg-soft); border: 1px solid var(--border);
+    padding: 8px 12px; border-radius: 4px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .step .step-num {
+    font-family: "Cascadia Mono", monospace; font-size: 12px;
+    color: var(--ms-blue); font-weight: 700; min-width: 28px;
+  }
+  .step.nv .step-num { color: var(--nv-green-dark); }
+
+  /* Callouts (matching calculations HTML) */
+  .callout {
+    margin: 18px 0; padding: 14px 20px; border-left: 4px solid;
+    border-radius: 0 4px 4px 0; font-size: 14.5px;
+  }
+  .callout.method { border-color: var(--amber); background: #FEF3C7; }
+  .callout.method .label { color: var(--amber); }
+  .callout.note { border-color: var(--ms-blue); background: #DBEAFE; }
+  .callout.note .label { color: var(--ms-blue-dark); }
+  .callout.nv { border-color: var(--nv-green-dark); background: #ECFCCB; }
+  .callout.nv .label { color: var(--nv-green-dark); }
+  .callout .label {
+    font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; font-weight: 700;
+    margin-bottom: 6px; display: block;
+  }
+  .callout p:last-child { margin: 0; }
+
+  /* Source badges (matching calculations HTML, with NVIDIA addition) */
+  .src {
+    display: inline-block; font-family: Aptos, sans-serif;
+    font-size: 10px; letter-spacing: 0.1em; font-weight: 700;
+    padding: 2px 8px; border-radius: 3px; margin-right: 6px;
+    background: var(--slate); color: #fff; text-transform: uppercase;
+  }
+  .src.ms { background: var(--ms-blue); }
+  .src.nv { background: var(--nv-green-dark); }
+  .src.toyota { background: var(--navy); }
+  .src.demo { background: var(--ms-blue-dark); }
+  .src.bench { background: var(--green); }
+  .src.industry { background: var(--slate); }
+
+  /* Component cards (mirroring .domain pattern in calculations HTML) */
+  .cmps {
+    display: grid; grid-template-columns: 1fr; gap: 12px;
+    margin: 16px 0;
+  }
+  @media (min-width: 800px) {
+    .cmps { grid-template-columns: 1fr 1fr; }
+  }
+  .cmp {
+    border: 1px solid var(--border); border-top: 3px solid var(--ms-blue);
+    padding: 14px 18px; background: var(--bg-soft); border-radius: 0 0 6px 6px;
+  }
+  .cmp.nv { border-top-color: var(--nv-green); }
+  .cmp h4 { color: var(--navy); margin: 0 0 6px; text-transform: none; letter-spacing: 0; font-size: 15px; }
+  .cmp ul { margin: 4px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--text); }
+  .cmp li { padding: 2px 0; }
+  .cmp .opt { font-size: 11.5px; color: var(--slate); font-style: italic; margin-left: 6px; }
+
+  /* References list (matching calculations HTML) */
+  .refs {
+    background: var(--bg-soft); padding: 18px 22px;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-size: 14px;
+  }
+  .refs ol { margin: 0; padding-left: 22px; }
+  .refs li { margin: 8px 0; }
+  .refs li .ref-source {
+    font-family: Aptos, sans-serif; font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ms-blue-dark); font-weight: 700;
+    margin-right: 8px;
+  }
+
+  /* Footer (matching calculations HTML) */
+  footer {
+    margin-top: 56px; padding: 22px 32px;
+    background: var(--bg-soft); border-top: 2px solid var(--border);
+    font-family: Aptos, sans-serif; font-size: 12px; color: var(--slate);
+    text-align: center;
+  }
+  footer strong { color: var(--text); }
+
+  /* Tab navigation */
+  .tab-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: #fff;
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex; gap: 4px; flex-wrap: wrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .tab-btn {
+    border: none; background: transparent;
+    padding: 14px 18px; cursor: pointer;
+    font-family: Aptos, sans-serif; font-size: 13px;
+    font-weight: 600; letter-spacing: 0.02em;
+    color: var(--slate);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .tab-btn:hover {
+    color: var(--navy);
+    background: var(--bg-soft);
+  }
+  .tab-btn.active {
+    color: var(--navy);
+    border-bottom-color: var(--ms-blue);
+  }
+  .tab-btn[data-vendor="nv"].active {
+    border-bottom-color: var(--nv-green-dark);
+  }
+  .tab-btn .vmark {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+  .tab-btn .vmark.ms { background: var(--ms-blue); }
+  .tab-btn .vmark.nv { background: var(--nv-green-dark); }
+  .tab-btn .vmark.nx { background: var(--slate); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Product cards (vendor detail tabs) */
+  .product-grid {
+    display: grid; grid-template-columns: 1fr; gap: 18px;
+    margin: 20px 0;
+  }
+  @media (min-width: 900px) {
+    .product-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .product-card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px 22px;
+    display: flex; flex-direction: column;
+    transition: box-shadow 0.15s;
+  }
+  .product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+  .product-card.ms { border-top: 4px solid var(--ms-blue); }
+  .product-card.nv { border-top: 4px solid var(--nv-green); }
+  .product-card header { margin-bottom: 4px; padding: 0; background: transparent; border: none; }
+  .product-card .vendor-badge {
+    display: inline-block; font-family: Aptos, sans-serif;
+    font-size: 9.5px; letter-spacing: 0.14em; font-weight: 700;
+    padding: 2px 8px; border-radius: 3px;
+    color: #fff; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .product-card .vendor-badge.ms { background: var(--ms-blue); }
+  .product-card .vendor-badge.nv { background: var(--nv-green-dark); }
+  .product-card h3 {
+    margin: 0 0 4px; font-family: Aptos, sans-serif;
+    color: var(--navy); font-size: 19px; font-weight: 700;
+  }
+  .product-card .tagline {
+    font-size: 13.5px; color: var(--slate); margin: 0 0 14px;
+    font-style: italic; line-height: 1.45;
+  }
+  .product-card .field {
+    margin: 10px 0; padding: 10px 12px;
+    background: var(--bg-soft); border-radius: 4px;
+  }
+  .product-card .field-label {
+    font-family: Aptos, sans-serif; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ms-blue-dark); font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .product-card.nv .field-label { color: var(--nv-green-dark); }
+  .product-card .field-content {
+    font-size: 13.5px; color: var(--text); margin: 0;
+    line-height: 1.55;
+  }
+  .product-card .field-content ul {
+    margin: 4px 0 0; padding-left: 18px;
+  }
+  .product-card .field-content li { padding: 2px 0; font-size: 13px; }
+  .product-card .field-content code {
+    font-size: 12px;
+  }
+  .product-card .card-footer {
+    margin-top: auto; padding: 12px 0 0;
+    border-top: 1px dashed var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12.5px;
+    background: transparent;
+  }
+  .product-card .ref-link {
+    color: var(--ms-blue-dark); text-decoration: none;
+    font-weight: 600;
+  }
+  .product-card .ref-link:hover { text-decoration: underline; }
+  .product-card.nv .ref-link { color: var(--nv-green-dark); }
+  .product-card .license {
+    font-family: 'Cascadia Mono', monospace;
+    color: var(--slate); font-size: 11px;
+    background: var(--code-bg); padding: 2px 6px; border-radius: 3px;
+  }
+
+  /* AI Enterprise context strip (NVIDIA tab opener) */
+  .ai-ent-strip {
+    background: linear-gradient(90deg, rgba(118,185,0,0.08), rgba(118,185,0,0.02));
+    border: 1px solid var(--nv-green); border-left: 4px solid var(--nv-green-dark);
+    border-radius: 6px; padding: 16px 20px; margin: 14px 0 24px;
+  }
+  .ai-ent-strip .ae-eyebrow {
+    font-family: Aptos, sans-serif; font-size: 10.5px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--nv-green-dark); font-weight: 700;
+  }
+  .ai-ent-strip h3 {
+    margin: 6px 0 8px; color: var(--navy); font-size: 18px;
+  }
+  .ai-ent-strip p { margin: 0; font-size: 14.5px; color: var(--text); }
+
+  @media print {
+    .classification { background: #fff; color: #000; border-bottom: 1px solid #000; }
+    header.cover { background: #fff; color: #000; border-bottom: 2px solid #000; }
+    header.cover h1, header.cover .subtitle, header.cover .meta strong { color: #000; }
+    header.cover .eyebrow { color: #000; }
+    .tab-nav { display: none; }
+    .tab-panel { display: block !important; }
+    section, figure, .cmp, .step, .product-card { page-break-inside: avoid; }
+  }
+  </style>
+</head>
+<body>
+
+<div class="classification">Reference document · Pre-conversation pack · Discovery-stage · Companion to Calculations &amp; References</div>
+
+<header class="cover">
+  <div class="eyebrow">Pre-Conversation Reference · Architecture &amp; Process Pack</div>
+  <h1>Zero Day Warranty Agentic Scenario</h1>
+  <div class="subtitle">Component architecture (end-to-end) &amp; process flow — agent vs. current state</div>
+  <div class="meta">
+    <span><strong>Audience:</strong> Chris Crotts</span>
+    <span><strong>From:</strong> Keven Markham · Deloitte's Microsoft Technology &amp; Services Practice</span>
+    <span><strong>Date:</strong> May 2026</span>
+    <span><strong>Status:</strong> Discovery · pre-engagement</span>
+    <span><strong>Companion to:</strong> Calculations &amp; References document</span>
+  </div>
+</header>
+
+<nav class="tab-nav" role="tablist" aria-label="Document sections">
+  <button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview &amp; Diagrams</button>
+  <button class="tab-btn" data-tab="microsoft" data-vendor="ms" role="tab" aria-selected="false"><span class="vmark ms"></span>Microsoft Stack</button>
+  <button class="tab-btn" data-tab="nvidia" data-vendor="nv" role="tab" aria-selected="false"><span class="vmark nv"></span>NVIDIA Stack</button>
+  <button class="tab-btn" data-tab="references" role="tab" aria-selected="false">References &amp; Notes</button>
+</nav>
+
+<main>
+
+<div class="tab-panel active" data-panel="overview" role="tabpanel">
+
+<section class="summary">
+  <div style="font-family:Aptos,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ms-blue-dark);font-weight:700;margin-bottom:8px;">Executive summary · the one paragraph</div>
+  <p style="font-size:16.5px;margin:0;">Four diagrams. <strong>Figure 1</strong> shows the end-to-end component architecture — six layers running inside the customer's Azure tenant, with Microsoft platform components as the spine and NVIDIA components plugging in as accelerative additions. <strong>Figure 2</strong> shows the Day-0 prevention layer — NVIDIA Metropolis + DeepStream + Jetson at the build station, catching defects at the source so they never become warranty claims. <strong>Figure 3</strong> shows the current-state RCA process — 6 teams, 8–12 weeks, ~440 person-hours, sequential handoffs dominated by queue time. <strong>Figure 4</strong> shows the agentic-state process — one orchestrator agent, 7 functional clusters, ~12 minutes wall-clock, fewer than 5 person-hours including the single human-approval step.</p>
+</section>
+
+<section>
+  <h2><span class="num">01</span>What this document does</h2>
+  <p class="lead">The companion Calculations &amp; References document explains <em>how the numbers are derived and where they come from</em>. This document explains <em>how the components fit together and what the process looks like end-to-end</em>. Both documents are reference-only — discovery-stage pre-conversation material, not a proposal.</p>
+
+  <div class="callout method">
+    <span class="label">Reading order</span>
+    <p>Read this document for the architecture and the process. Read the <em>Calculations &amp; References</em> companion for the cost / hours / recovery-rate math and the source citations. The two documents are designed to be read in either order — the diagrams here are self-explanatory, and the calculations there are independent of the diagrams.</p>
+  </div>
+
+  <div class="callout nv">
+    <span class="label">A note on NVIDIA components</span>
+    <p>NVIDIA components appear in the diagrams as <em>optional / accelerative</em>. The architecture is viable end-to-end on Microsoft components alone. NVIDIA additions accelerate three specific places — inline vision at the build station, GPU statistics on the data layer, and specialist inference for root-cause reasoning — through <strong>NVIDIA AI Enterprise on Azure</strong>, the Microsoft + NVIDIA co-sell bundle. All components run inside the customer's Azure tenant.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">02</span>Component Architecture · End-to-End</h2>
+  <p class="lead">Six layers, deployed end-to-end inside the Toyota Azure tenant. Microsoft Fabric is the unified data layer. Microsoft Agent Framework on Azure AI Foundry is the agent reasoning plane. Microsoft Entra ID and Purview are the always-on identity and audit foundation. NVIDIA components — RAPIDS, Triton, NIM, NeMo Retriever, Omniverse, Metropolis/DeepStream — plug in alongside, accelerating specific clusters of the chain.</p>
+
+  <figure>
+    <div class="fig-label">Figure 1 · End-to-end component architecture</div>
+    <svg viewBox="0 0 1140 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="End-to-end component architecture for the Zero Day Warranty agent">
+      <defs>
+        <linearGradient id="lay-ms" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#0078D4"/><stop offset="1" stop-color="#005A9E"/>
+        </linearGradient>
+        <linearGradient id="lay-nv" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#76B900"/><stop offset="1" stop-color="#5C9300"/>
+        </linearGradient>
+        <linearGradient id="lay-navy" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#1A2339"/><stop offset="1" stop-color="#2A3349"/>
+        </linearGradient>
+        <linearGradient id="lay-slate" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#64748B"/><stop offset="1" stop-color="#475569"/>
+        </linearGradient>
+        <marker id="arr-up" viewBox="0 0 10 10" refX="5" refY="0" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 10 L 5 0 L 10 10" fill="none" stroke="#0078D4" stroke-width="1.4"/></marker>
+        <marker id="arr-down" viewBox="0 0 10 10" refX="5" refY="10" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 5 10 L 10 0" fill="none" stroke="#B85450" stroke-width="1.4"/></marker>
+      </defs>
+      <style>
+        .lyr-cap { font-family: Aptos, sans-serif; font-size: 10.5px; fill: #64748B; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; }
+        .lyr-name-light { font-family: Aptos, sans-serif; font-size: 13px; fill: #fff; font-weight: 700; }
+        .lyr-sub-light { font-family: Aptos, sans-serif; font-size: 10.5px; fill: #fff; opacity: 0.9; }
+        .lyr-name-dark { font-family: Aptos, sans-serif; font-size: 13px; fill: #1A2339; font-weight: 700; }
+        .lyr-sub-dark { font-family: Aptos, sans-serif; font-size: 10.5px; fill: #1A2339; opacity: 0.8; }
+        .lane-cap { font-family: 'Cascadia Mono', monospace; font-size: 9.5px; fill: #64748B; letter-spacing: 0.18em; text-transform: uppercase; }
+      </style>
+
+      <text x="20" y="16" class="lane-cap">DATA FLOW UP</text>
+      <text x="1120" y="16" text-anchor="end" class="lane-cap">GOVERNANCE FLOW DOWN</text>
+      <line x1="13" y1="640" x2="13" y2="40" stroke="#0078D4" stroke-width="1" stroke-dasharray="2 3" marker-end="url(#arr-up)"/>
+      <line x1="1127" y1="40" x2="1127" y2="640" stroke="#B85450" stroke-width="1" stroke-dasharray="2 3" marker-end="url(#arr-down)"/>
+
+      <!-- L1 · Consumption -->
+      <text x="30" y="40" class="lyr-cap">Consumption · who sees the answer</text>
+      <rect x="30" y="48" width="270" height="58" rx="6" fill="url(#lay-ms)"/>
+      <text x="44" y="68" class="lyr-name-light">Microsoft Teams</text>
+      <text x="44" y="85" class="lyr-sub-light">Adaptive Card · Quality Director HITL approval</text>
+      <text x="44" y="99" class="lyr-sub-light">In-line approve / amend / deny</text>
+
+      <rect x="310" y="48" width="270" height="58" rx="6" fill="url(#lay-ms)"/>
+      <text x="324" y="68" class="lyr-name-light">Power BI</text>
+      <text x="324" y="85" class="lyr-sub-light">Warranty heatmaps · build-week cost</text>
+      <text x="324" y="99" class="lyr-sub-light">Chargeback recovery dashboards</text>
+
+      <rect x="590" y="48" width="520" height="58" rx="6" fill="url(#lay-nv)"/>
+      <text x="604" y="68" class="lyr-name-light">NVIDIA Omniverse · Investigation Cockpit</text>
+      <text x="604" y="85" class="lyr-sub-light">Visual replay of the build cell at the moment of the defective build —</text>
+      <text x="604" y="99" class="lyr-sub-light">tool calibration trace · operator position · ambient conditions · supplier lot</text>
+
+      <!-- L2 · Agent Reasoning -->
+      <text x="30" y="128" class="lyr-cap">Agent reasoning · the 24-step chain</text>
+      <rect x="30" y="136" width="660" height="64" rx="6" fill="url(#lay-ms)"/>
+      <text x="44" y="156" class="lyr-name-light">Microsoft Agent Framework · on Azure AI Foundry</text>
+      <text x="44" y="174" class="lyr-sub-light">Hosts the orchestrator agent. Calls all downstream tools through typed contracts.</text>
+      <text x="44" y="190" class="lyr-sub-light">Identity passthrough (on-behalf-of) · HITL gate via Tool Approval flow</text>
+
+      <rect x="700" y="136" width="410" height="64" rx="6" fill="url(#lay-nv)"/>
+      <text x="714" y="156" class="lyr-name-light">NVIDIA NIM · NeMo Retriever (optional)</text>
+      <text x="714" y="174" class="lyr-sub-light">Specialist inference for root-cause hypothesis (step 17)</text>
+      <text x="714" y="190" class="lyr-sub-light">RAG over technical service bulletins, supplier specs, prior RCA reports</text>
+
+      <!-- L3 · Inference acceleration -->
+      <text x="30" y="222" class="lyr-cap">Inference &amp; analytics acceleration · runs on Azure GPU SKUs</text>
+      <rect x="30" y="230" width="350" height="64" rx="6" fill="url(#lay-nv)"/>
+      <text x="44" y="250" class="lyr-name-light">NVIDIA RAPIDS · cuML / cuDF / cuGraph</text>
+      <text x="44" y="268" class="lyr-sub-light">Steps 8 · 14 · 15 · cohort × station × tool stats</text>
+      <text x="44" y="284" class="lyr-sub-light">10–50× faster than CPU pandas / sklearn</text>
+
+      <rect x="390" y="230" width="350" height="64" rx="6" fill="url(#lay-nv)"/>
+      <text x="404" y="250" class="lyr-name-light">NVIDIA Triton Inference Server</text>
+      <text x="404" y="268" class="lyr-sub-light">Steps 10–12 · SPC anomaly + tool drift</text>
+      <text x="404" y="284" class="lyr-sub-light">Sub-ms inference on streaming telemetry</text>
+
+      <rect x="750" y="230" width="360" height="64" rx="6" fill="url(#lay-ms)"/>
+      <text x="764" y="250" class="lyr-name-light">Azure ML · Azure Kubernetes Service</text>
+      <text x="764" y="268" class="lyr-sub-light">Hosts NIM microservices + RAPIDS pods</text>
+      <text x="764" y="284" class="lyr-sub-light">NC / ND-series VMs · NVIDIA AI Enterprise on Azure</text>
+
+      <!-- L4 · Data plane -->
+      <text x="30" y="316" class="lyr-cap">Unified data plane · Microsoft Fabric on Azure</text>
+      <rect x="30" y="324" width="345" height="64" rx="6" fill="url(#lay-navy)"/>
+      <text x="44" y="344" class="lyr-name-light">Bronze · raw landing</text>
+      <text x="44" y="362" class="lyr-sub-light">Source-native shapes · build records,</text>
+      <text x="44" y="378" class="lyr-sub-light">warranty claims, quality events, telemetry</text>
+
+      <rect x="385" y="324" width="345" height="64" rx="6" fill="url(#lay-navy)"/>
+      <text x="399" y="344" class="lyr-name-light">Silver · canonical + typed</text>
+      <text x="399" y="362" class="lyr-sub-light">VIN-conformed · PII tokenized · dual</text>
+      <text x="399" y="378" class="lyr-sub-light">calendar reconciliation (NRF + Gregorian)</text>
+
+      <rect x="740" y="324" width="370" height="64" rx="6" fill="url(#lay-navy)"/>
+      <text x="754" y="344" class="lyr-name-light">Gold · per-VIN joinable views</text>
+      <text x="754" y="362" class="lyr-sub-light">Build × Warranty × Quality × Telemetry,</text>
+      <text x="754" y="378" class="lyr-sub-light">classification-aware, identity-scoped</text>
+
+      <!-- L5 · Sources -->
+      <text x="30" y="410" class="lyr-cap">Source systems · Toyota existing footprint</text>
+      <rect x="30" y="418" width="170" height="100" rx="6" fill="url(#lay-slate)"/>
+      <text x="40" y="438" class="lyr-name-light">Build records</text>
+      <text x="40" y="455" class="lyr-sub-light">Per-VIN factory history:</text>
+      <text x="40" y="470" class="lyr-sub-light">station, tool, shift,</text>
+      <text x="40" y="485" class="lyr-sub-light">operator, supplier lot</text>
+      <text x="40" y="505" class="lyr-sub-light" style="font-style:italic">MES · ERP</text>
+
+      <rect x="210" y="418" width="170" height="100" rx="6" fill="url(#lay-slate)"/>
+      <text x="220" y="438" class="lyr-name-light">Connected vehicle</text>
+      <text x="220" y="453" class="lyr-name-light">warranty data</text>
+      <text x="220" y="473" class="lyr-sub-light">Claims, failure modes,</text>
+      <text x="220" y="488" class="lyr-sub-light">fault codes, telemetry</text>
+      <text x="220" y="505" class="lyr-sub-light" style="font-style:italic">Toyota Connected · Azure</text>
+
+      <rect x="390" y="418" width="170" height="100" rx="6" fill="url(#lay-slate)"/>
+      <text x="400" y="438" class="lyr-name-light">Quality events</text>
+      <text x="400" y="455" class="lyr-sub-light">Inspections,</text>
+      <text x="400" y="470" class="lyr-sub-light">measurements, defects,</text>
+      <text x="400" y="485" class="lyr-sub-light">holds, rework, SPC</text>
+      <text x="400" y="505" class="lyr-sub-light" style="font-style:italic">QMS · plant systems</text>
+
+      <rect x="570" y="418" width="170" height="100" rx="6" fill="url(#lay-slate)"/>
+      <text x="580" y="438" class="lyr-name-light">Assembly telemetry</text>
+      <text x="580" y="455" class="lyr-sub-light">Tool traces, robot cycles,</text>
+      <text x="580" y="470" class="lyr-sub-light">conveyor, fixtures,</text>
+      <text x="580" y="485" class="lyr-sub-light">environmental sensors</text>
+      <text x="580" y="505" class="lyr-sub-light" style="font-style:italic">SCADA · historian · IoT</text>
+
+      <rect x="760" y="418" width="350" height="100" rx="6" fill="url(#lay-nv)" stroke="#5C9300" stroke-width="1.5"/>
+      <text x="774" y="438" class="lyr-name-light">NVIDIA Edge · at the build station</text>
+      <text x="774" y="458" class="lyr-sub-light">Metropolis + DeepStream + Jetson</text>
+      <text x="774" y="475" class="lyr-sub-light">Inline vision inspection — generates the</text>
+      <text x="774" y="490" class="lyr-sub-light">quality event records (catches Day-0 defects</text>
+      <text x="774" y="505" class="lyr-sub-light">at the source before they ever ship)</text>
+
+      <!-- Foundation -->
+      <text x="30" y="540" class="lyr-cap">Always-on foundation · identity, governance, audit</text>
+      <rect x="30" y="548" width="1080" height="70" rx="6" fill="#334155"/>
+      <text x="50" y="572" class="lyr-name-light">Microsoft Entra ID</text>
+      <text x="50" y="589" class="lyr-sub-light">Per-agent managed identity</text>
+      <text x="50" y="604" class="lyr-sub-light">Conditional access · supplier scopes</text>
+
+      <text x="295" y="572" class="lyr-name-light">Microsoft Purview</text>
+      <text x="295" y="589" class="lyr-sub-light">DLP · DSPM for AI</text>
+      <text x="295" y="604" class="lyr-sub-light">Sensitivity labels · lineage</text>
+
+      <text x="540" y="572" class="lyr-name-light">Audit ledger</text>
+      <text x="540" y="589" class="lyr-sub-light">Hash chain · every agent decision row</text>
+      <text x="540" y="604" class="lyr-sub-light">Purview echo · regulator-answerable</text>
+
+      <text x="800" y="572" class="lyr-name-light">Microsoft Defender for IoT</text>
+      <text x="800" y="589" class="lyr-sub-light">OT security across plants</text>
+      <text x="800" y="604" class="lyr-sub-light">Threat detection for industrial signal</text>
+
+      <text x="570" y="660" text-anchor="middle" class="lyr-cap" style="font-family:'Source Serif 4',serif;font-style:italic;font-size:12px;fill:#64748B;text-transform:none;letter-spacing:0;">Edge inference → Source ingest → Medallion lift → Inference acceleration → Agent reasoning → Cockpit + HITL · all in one Azure tenant</text>
+
+      <rect x="1018" y="48" width="92" height="20" rx="4" fill="#fff" stroke="#5C9300" stroke-width="1"/>
+      <text x="1064" y="62" text-anchor="middle" font-family="Aptos, sans-serif" font-size="9.5" font-weight="700" fill="#5C9300">NVIDIA OPTIONAL</text>
+
+      <rect x="1018" y="138" width="92" height="20" rx="4" fill="#fff" stroke="#5C9300" stroke-width="1"/>
+      <text x="1064" y="152" text-anchor="middle" font-family="Aptos, sans-serif" font-size="9.5" font-weight="700" fill="#5C9300">NVIDIA OPTIONAL</text>
+
+      <rect x="288" y="232" width="92" height="20" rx="4" fill="#fff" stroke="#5C9300" stroke-width="1"/>
+      <text x="334" y="246" text-anchor="middle" font-family="Aptos, sans-serif" font-size="9.5" font-weight="700" fill="#5C9300">NVIDIA OPTIONAL</text>
+
+      <rect x="648" y="232" width="92" height="20" rx="4" fill="#fff" stroke="#5C9300" stroke-width="1"/>
+      <text x="694" y="246" text-anchor="middle" font-family="Aptos, sans-serif" font-size="9.5" font-weight="700" fill="#5C9300">NVIDIA OPTIONAL</text>
+
+      <rect x="1018" y="420" width="92" height="20" rx="4" fill="#fff" stroke="#5C9300" stroke-width="1"/>
+      <text x="1064" y="434" text-anchor="middle" font-family="Aptos, sans-serif" font-size="9.5" font-weight="700" fill="#5C9300">NVIDIA OPTIONAL</text>
+    </svg>
+    <figcaption>Six layers + foundation. Microsoft components (blue) form the spine. NVIDIA components (green) plug in as accelerative additions through NVIDIA AI Enterprise on Azure. Toyota source systems (slate) are the existing footprint. All components run inside the customer's Azure tenant; nothing leaves it.</figcaption>
+  </figure>
+
+  <p style="margin-top:14px;"><span class="src ms">Microsoft</span><span class="src nv">NVIDIA</span><span class="src toyota">Toyota</span>Three component classes appear in the diagram. The legend mapping each class to specific products is in §07 of this document.</p>
+</section>
+
+<section>
+  <h2><span class="num">03</span>The Day-0 layer · NVIDIA Metropolis at the build station</h2>
+  <p class="lead">"Zero Day Warranty" has two valid interpretations, and they require different parts of the architecture. The agent chain in §05 closes the loop on field failures with <em>zero-day investigation latency</em>. NVIDIA Metropolis at the build station closes the loop on the <em>literal Day-0 promise</em> — catching the defect at the source so it never becomes a warranty claim. Both are valid; together they are the full story.</p>
+
+  <div class="callout nv">
+    <span class="label">Two readings of "Zero Day Warranty"</span>
+    <p style="margin:0 0 6px;"><strong>(a) Day-0 detection</strong> — catch the defect at the build floor, before the vehicle ever ships. A defect that never becomes a warranty claim costs zero. <em>Served by NVIDIA Metropolis + DeepStream + Jetson at the station.</em></p>
+    <p style="margin:0;"><strong>(b) Zero-day investigation latency</strong> — when a warranty cluster does emerge, identify the root cause in minutes rather than weeks. <em>Served by the 24-step agent chain (§05, §06).</em></p>
+  </div>
+
+  <figure>
+    <div class="fig-label">Figure 2 · NVIDIA Metropolis at the build station · Day-0 inline vision</div>
+    <svg viewBox="0 0 1140 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NVIDIA Metropolis station-level inline vision architecture">
+      <defs>
+        <linearGradient id="m-station" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#64748B"/><stop offset="1" stop-color="#475569"/></linearGradient>
+        <linearGradient id="m-jetson" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#76B900"/><stop offset="1" stop-color="#5C9300"/></linearGradient>
+        <linearGradient id="m-cloud" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#0078D4"/><stop offset="1" stop-color="#005A9E"/></linearGradient>
+        <linearGradient id="m-action" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#B85450"/><stop offset="1" stop-color="#9C3F3C"/></linearGradient>
+        <marker id="m-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10" fill="#0078D4"/></marker>
+        <marker id="m-arr-stop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10" fill="#B85450"/></marker>
+      </defs>
+      <style>
+        .m-cap { font-family: Aptos, sans-serif; font-size: 10.5px; fill: #64748B; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; }
+        .m-name { font-family: Aptos, sans-serif; font-size: 13px; fill: #fff; font-weight: 700; }
+        .m-sub { font-family: Aptos, sans-serif; font-size: 10.5px; fill: #fff; opacity: 0.9; }
+        .m-name-dark { font-family: Aptos, sans-serif; font-size: 12.5px; fill: #1A2339; font-weight: 700; }
+        .m-sub-dark { font-family: Aptos, sans-serif; font-size: 10px; fill: #1A2339; opacity: 0.8; }
+        .m-lbl-flow { font-family: 'Cascadia Mono', monospace; font-size: 10px; fill: #0078D4; font-weight: 700; }
+        .m-lbl-stop { font-family: 'Cascadia Mono', monospace; font-size: 10px; fill: #B85450; font-weight: 700; }
+      </style>
+
+      <!-- Station-level box (production line) -->
+      <text x="20" y="22" class="m-cap">Build station · the production line</text>
+      <rect x="20" y="32" width="540" height="200" rx="6" fill="url(#m-station)"/>
+
+      <!-- Cameras -->
+      <circle cx="80" cy="78" r="14" fill="#1A2339" stroke="#fff" stroke-width="2"/>
+      <text x="80" y="82" text-anchor="middle" class="m-sub" font-size="11">📷</text>
+      <text x="80" y="108" text-anchor="middle" class="m-sub" font-size="9.5">Cam 1</text>
+
+      <circle cx="180" cy="78" r="14" fill="#1A2339" stroke="#fff" stroke-width="2"/>
+      <text x="180" y="82" text-anchor="middle" class="m-sub" font-size="11">📷</text>
+      <text x="180" y="108" text-anchor="middle" class="m-sub" font-size="9.5">Cam 2</text>
+
+      <circle cx="280" cy="78" r="14" fill="#1A2339" stroke="#fff" stroke-width="2"/>
+      <text x="280" y="82" text-anchor="middle" class="m-sub" font-size="11">📷</text>
+      <text x="280" y="108" text-anchor="middle" class="m-sub" font-size="9.5">Cam 3</text>
+
+      <circle cx="380" cy="78" r="14" fill="#1A2339" stroke="#fff" stroke-width="2"/>
+      <text x="380" y="82" text-anchor="middle" class="m-sub" font-size="11">📷</text>
+      <text x="380" y="108" text-anchor="middle" class="m-sub" font-size="9.5">Cam 4</text>
+
+      <circle cx="480" cy="78" r="14" fill="#1A2339" stroke="#fff" stroke-width="2"/>
+      <text x="480" y="82" text-anchor="middle" class="m-sub" font-size="11">📷</text>
+      <text x="480" y="108" text-anchor="middle" class="m-sub" font-size="9.5">Cam 4+n</text>
+
+      <!-- Conveyor / VIN -->
+      <rect x="60" y="135" width="460" height="32" rx="3" fill="#1A2339" stroke="#fff" stroke-width="1"/>
+      <text x="290" y="155" text-anchor="middle" class="m-sub">VIN 1XKAD49X0NJ123456 · station N · 14:32:17</text>
+      <text x="50" y="155" class="m-sub" font-size="20">→</text>
+      <text x="525" y="155" class="m-sub" font-size="20">→</text>
+
+      <!-- Station ID -->
+      <text x="40" y="200" class="m-name">Station N</text>
+      <text x="40" y="216" class="m-sub">Body-in-white · weld bead inspection</text>
+      <text x="120" y="200" class="m-name" style="font-size:11px;opacity:0.6;">~5 ms cycle · every unit · no sampling</text>
+
+      <!-- Jetson edge -->
+      <text x="580" y="22" class="m-cap">NVIDIA Jetson · edge compute at the station</text>
+      <rect x="580" y="32" width="270" height="200" rx="6" fill="url(#m-jetson)"/>
+      <text x="595" y="56" class="m-name">NVIDIA Jetson</text>
+      <text x="595" y="74" class="m-sub">Industrial PC · ruggedized · IP67</text>
+
+      <line x1="580" y1="90" x2="845" y2="90" stroke="#fff" stroke-width="0.6" opacity="0.4"/>
+
+      <text x="595" y="110" class="m-name">DeepStream pipeline</text>
+      <text x="595" y="126" class="m-sub">Real-time inference SDK</text>
+      <text x="595" y="140" class="m-sub">Camera-ingest → preprocess →</text>
+      <text x="595" y="154" class="m-sub">model → post-process → emit</text>
+
+      <text x="595" y="178" class="m-name">Metropolis models</text>
+      <text x="595" y="194" class="m-sub">Defect detection · classification ·</text>
+      <text x="595" y="208" class="m-sub">localization · severity scoring ·</text>
+      <text x="595" y="222" class="m-sub">~98% detection · &lt;5% FP</text>
+
+      <!-- Decision split -->
+      <text x="880" y="22" class="m-cap">Per-unit verdict</text>
+
+      <!-- Pass path -->
+      <rect x="880" y="32" width="240" height="92" rx="6" fill="#10B981"/>
+      <text x="895" y="56" class="m-name">PASS</text>
+      <text x="895" y="74" class="m-sub">Vehicle continues to next station</text>
+      <text x="895" y="92" class="m-sub">Quality event written to medallion</text>
+      <text x="895" y="108" class="m-sub" style="font-style:italic;">VIN · station · result · confidence</text>
+
+      <!-- Fail / Jidoka path -->
+      <rect x="880" y="140" width="240" height="92" rx="6" fill="url(#m-action)"/>
+      <text x="895" y="164" class="m-name">FAIL · Jidoka stop</text>
+      <text x="895" y="182" class="m-sub">Line halts · quality alert raised</text>
+      <text x="895" y="200" class="m-sub">Operator sees AI evidence inline</text>
+      <text x="895" y="216" class="m-sub" style="font-style:italic;">Rework or scrap before downstream</text>
+
+      <!-- Arrows from Jetson to verdict -->
+      <line x1="850" y1="78" x2="876" y2="78" stroke="#10B981" stroke-width="2" marker-end="url(#m-arr)"/>
+      <line x1="850" y1="186" x2="876" y2="186" stroke="#B85450" stroke-width="2" marker-end="url(#m-arr-stop)"/>
+
+      <!-- Camera-to-Jetson arrows -->
+      <line x1="80" y1="92" x2="80" y2="125" stroke="#fff" stroke-width="0.8" opacity="0.6"/>
+      <line x1="180" y1="92" x2="180" y2="125" stroke="#fff" stroke-width="0.8" opacity="0.6"/>
+      <line x1="280" y1="92" x2="280" y2="125" stroke="#fff" stroke-width="0.8" opacity="0.6"/>
+      <line x1="380" y1="92" x2="380" y2="125" stroke="#fff" stroke-width="0.8" opacity="0.6"/>
+      <line x1="480" y1="92" x2="480" y2="125" stroke="#fff" stroke-width="0.8" opacity="0.6"/>
+
+      <!-- Station → Jetson -->
+      <line x1="560" y1="132" x2="580" y2="132" stroke="#fff" stroke-width="1.6" opacity="0.8"/>
+      <text x="555" y="145" class="m-sub" font-size="9" fill="#fff">5G / wired</text>
+
+      <!-- Downstream to medallion -->
+      <text x="20" y="280" class="m-cap">Downstream · quality events feed the agent chain (§04)</text>
+      <rect x="20" y="290" width="320" height="80" rx="6" fill="url(#m-cloud)"/>
+      <text x="35" y="312" class="m-name">Microsoft Fabric · Real-Time Hub</text>
+      <text x="35" y="330" class="m-sub">Quality events stream from every station</text>
+      <text x="35" y="346" class="m-sub">Eventstream → Bronze → Silver → Gold</text>
+      <text x="35" y="362" class="m-sub" style="font-style:italic;">Per-VIN inspection record · classification-aware</text>
+
+      <line x1="340" y1="328" x2="378" y2="328" stroke="#0078D4" stroke-width="2" marker-end="url(#m-arr)"/>
+      <text x="345" y="320" class="m-lbl-flow">→</text>
+
+      <rect x="380" y="290" width="320" height="80" rx="6" fill="url(#m-cloud)"/>
+      <text x="395" y="312" class="m-name">Microsoft Agent Framework · agent</text>
+      <text x="395" y="330" class="m-sub">Step 9 of the 24-step chain reads</text>
+      <text x="395" y="346" class="m-sub">these quality events alongside</text>
+      <text x="395" y="362" class="m-sub" style="font-style:italic;">build records, telemetry, warranty data</text>
+
+      <line x1="700" y1="328" x2="738" y2="328" stroke="#0078D4" stroke-width="2" marker-end="url(#m-arr)"/>
+
+      <rect x="740" y="290" width="380" height="80" rx="6" fill="url(#m-cloud)"/>
+      <text x="755" y="312" class="m-name">Microsoft Purview · audit + lineage</text>
+      <text x="755" y="330" class="m-sub">Every inspection captured · regulator-replayable</text>
+      <text x="755" y="346" class="m-sub">Hash chain ties station → VIN → field outcome</text>
+      <text x="755" y="362" class="m-sub" style="font-style:italic;">Day-0 evidence becomes lifetime evidence</text>
+
+      <!-- Bottom note -->
+      <line x1="20" y1="400" x2="1120" y2="400" stroke="#1A2339" stroke-width="1.5"/>
+      <text x="20" y="424" font-family="Aptos, sans-serif" font-size="13" font-weight="700" fill="#1A2339">Two outcomes — both valuable</text>
+      <text x="20" y="444" font-family="Aptos, sans-serif" font-size="12" fill="#64748B">→ PASS: a clean inspection record per VIN is written to the medallion · later, if a warranty cluster emerges, the agent in step 9 reads <strong>proof</strong> the defect wasn't at the build floor — narrows root-cause faster</text>
+      <text x="20" y="462" font-family="Aptos, sans-serif" font-size="12" fill="#64748B">→ FAIL: the defect is contained at the station, never becomes a warranty claim · the defect never enters the warranty pool · the cluster never forms · the chargeback is never needed</text>
+    </svg>
+    <figcaption>Cameras at every build station feed a ruggedized NVIDIA Jetson industrial PC running DeepStream inference pipelines with Metropolis models. Each VIN is inspected against the station's quality model in roughly 5 milliseconds. Pass results stream into Microsoft Fabric as quality events; fail results trigger jidoka — the line stops, operator sees the AI evidence inline, the defect is contained at the source. Whether pass or fail, the per-VIN inspection record is preserved in the medallion and tied to that VIN's lifetime quality record.</figcaption>
+  </figure>
+
+  <h3>The five build-floor applications for Toyota</h3>
+  <p class="lead">Each application is a discrete deployment pattern — same Jetson + DeepStream + Metropolis stack, different cameras, different models, different station positions on the line.</p>
+
+  <div class="tbl-wrap"><table>
+    <tr><th>Build-floor station</th><th>What Metropolis catches</th><th>Typical defect rate</th></tr>
+    <tr><td><strong>Body-in-white · welding</strong></td><td>Weld bead porosity · misalignment · missing welds · spatter · burn-through</td><td class="num">5–15 / 1K welds</td></tr>
+    <tr><td><strong>Paint shop</strong></td><td>Orange-peel · runs · fish-eyes · contamination · color drift</td><td class="num">2–8 / 100 bodies</td></tr>
+    <tr><td><strong>Trim &amp; assembly</strong></td><td>Bolt presence + torque confirm · harness routing · panel-gap measurement · clip seating</td><td class="num">1–4 / 100 units</td></tr>
+    <tr><td><strong>Powertrain / battery assembly</strong></td><td>Fastener seating · gasket alignment · fluid-fill verification · connector engagement</td><td class="num">3–10 / 1K units</td></tr>
+    <tr><td><strong>End-of-line audit</strong></td><td>VIN-plate verification · light-function check · door-fit measurement · final cosmetic</td><td class="num">~1 / 100 units</td></tr>
+  </table></div>
+
+  <h3>Quantitative impact on the reference scenario</h3>
+
+  <div class="calc">
+    <div class="calc-label">Calculation D · Day-0 prevention layer impact</div>
+    <p style="margin:0 0 6px;">Decomposition of typical $4.2M attributable warranty (reference scenario, §05) by defect class:</p>
+    <p style="margin:0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>~30–40% surface/fastener/seating defects → catchable inline by Metropolis</code></p>
+    <p style="margin:6px 0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>~25–35% functional/electronic/firmware faults → not inline-catchable; agent chain only</code></p>
+    <p style="margin:6px 0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>~20–30% supplier-component reliability (visible-marker defects) → partially catchable inline</code></p>
+    <p style="margin:6px 0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>~10% edge cases / customer-induced / environmental → not catchable</code></p>
+    <p style="margin:12px 0 6px;font-family:'Cascadia Mono',monospace;color:var(--navy);"><strong>Per cluster outcome (with Metropolis + agent chain together):</strong></p>
+    <p style="margin:0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>~$1.2–1.7M never becomes a warranty claim (prevented at the station)</code></p>
+    <p style="margin:6px 0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>~$2.0M of remaining $2.5–3.0M recovered through agentic chargeback (67% rate)</code></p>
+    <p class="calc-result">≈ $3.2M total economic benefit per cluster (vs. $2.8M agent-chain-only)</p>
+  </div>
+
+  <h3>Why this lands at Toyota specifically</h3>
+
+  <div class="callout note">
+    <span class="label">Jidoka · the cultural alignment</span>
+    <p>The Toyota Production System has a foundational concept — <em>jidoka</em>, or "autonomation with a human touch" — empowering any worker or machine on the line to stop production immediately upon detecting a defect. Metropolis at the station is the digital embodiment of jidoka: every station equipped with AI vision becomes a jidoka point, capable of halting the line based on real-time evidence, with full audit-row provenance for the decision. This extends a deeply-Toyota concept rather than replacing it.</p>
+  </div>
+
+  <div class="callout nv">
+    <span class="label">NVIDIA continuity for Toyota</span>
+    <p>Toyota already runs NVIDIA chips in two adjacent workloads — <strong>NVIDIA Drive</strong> in AV development, and <strong>NVIDIA Omniverse</strong> in Woven City for smart-city simulation. Adding NVIDIA Metropolis to the manufacturing workload extends the same partner relationship into a third domain, with shared deployment tooling (NVIDIA AI Enterprise on Azure), shared identity (Entra Agent ID), and shared audit substrate (Purview). Three plants, three deployments — but one operating model.</p>
+  </div>
+
+  <h3>Multiplier effect across 14 NA plants</h3>
+  <p>Per the Toyota Account Snapshot, Toyota has 14 North American manufacturing plants. Metropolis deployments are standardized at the framework level (Jetson + DeepStream + Metropolis); per-station models adapt to local processes. A successful single-plant pilot produces:</p>
+  <ul style="font-size:14.5px;">
+    <li>A reference deployment pattern reusable across the remaining 13 plants</li>
+    <li>Per-station model library that transfers (welding model, paint model, etc.) with model-fine-tuning per plant variant</li>
+    <li>A standardized integration pattern with Toyota's existing Azure Connected Vehicle platform</li>
+    <li>An empirical benchmark for the prevention rate (~30% of inline-catchable defects) at Toyota-specific defect mix</li>
+  </ul>
+
+  <p style="margin-top:14px;"><span class="src nv">NVIDIA</span><span class="src toyota">Toyota</span>Source for Toyota's existing NVIDIA exposure: NVIDIA + Toyota AV partnership press releases · Toyota Woven City Omniverse coverage · Toyota corporate communications. The deployment cost / ROI math is reference-scenario; Toyota-specific quantification would be derived during a joint Business Value Assessment.</p>
+</section>
+
+<section>
+  <h2><span class="num">04</span>Current-state process · manual root-cause investigation</h2>
+  <p class="lead">When a warranty claim cluster surfaces today, six teams work sequentially across 8–12 weeks. The wall-clock is dominated by handoff queue times and cross-system data reconciliation — not the analytical work itself.</p>
+
+  <figure>
+    <div class="fig-label">Figure 3 · Current state swimlane · 8 to 12 weeks · 6 teams · ~440 person-hours</div>
+    <svg viewBox="0 0 1140 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Current state process — manual warranty RCA across six teams over 8 to 12 weeks">
+      <defs>
+        <marker id="arr-cur" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10" fill="#64748B"/></marker>
+      </defs>
+      <style>
+        .lane-name { font-family: Aptos, sans-serif; font-size: 12px; fill: #1A2339; font-weight: 700; }
+        .lane-sub { font-family: Aptos, sans-serif; font-size: 10px; fill: #64748B; }
+        .step-lbl { font-family: Aptos, sans-serif; font-size: 10.5px; fill: #fff; font-weight: 600; }
+        .week-lbl { font-family: 'Cascadia Mono', monospace; font-size: 10px; fill: #64748B; letter-spacing: 0.06em; }
+        .queue-lbl { font-family: Aptos, sans-serif; font-size: 9.5px; fill: #B85450; font-style: italic; }
+        .hours-lbl { font-family: 'Cascadia Mono', monospace; font-size: 10px; fill: #64748B; }
+      </style>
+
+      <line x1="280" y1="20" x2="1120" y2="20" stroke="#94A3B8" stroke-width="1"/>
+      <g>
+        <text x="280" y="14" class="week-lbl">Wk 1</text>
+        <text x="350" y="14" class="week-lbl">Wk 2</text>
+        <text x="420" y="14" class="week-lbl">Wk 3</text>
+        <text x="490" y="14" class="week-lbl">Wk 4</text>
+        <text x="560" y="14" class="week-lbl">Wk 5</text>
+        <text x="630" y="14" class="week-lbl">Wk 6</text>
+        <text x="700" y="14" class="week-lbl">Wk 7</text>
+        <text x="770" y="14" class="week-lbl">Wk 8</text>
+        <text x="840" y="14" class="week-lbl">Wk 9</text>
+        <text x="910" y="14" class="week-lbl">Wk 10</text>
+        <text x="980" y="14" class="week-lbl">Wk 11</text>
+        <text x="1050" y="14" class="week-lbl">Wk 12</text>
+      </g>
+      <g stroke="#E5E7EB" stroke-width="1" stroke-dasharray="2 4">
+        <line x1="350" y1="30" x2="350" y2="460"/>
+        <line x1="420" y1="30" x2="420" y2="460"/>
+        <line x1="490" y1="30" x2="490" y2="460"/>
+        <line x1="560" y1="30" x2="560" y2="460"/>
+        <line x1="630" y1="30" x2="630" y2="460"/>
+        <line x1="700" y1="30" x2="700" y2="460"/>
+        <line x1="770" y1="30" x2="770" y2="460"/>
+        <line x1="840" y1="30" x2="840" y2="460"/>
+        <line x1="910" y1="30" x2="910" y2="460"/>
+        <line x1="980" y1="30" x2="980" y2="460"/>
+        <line x1="1050" y1="30" x2="1050" y2="460"/>
+      </g>
+
+      <rect x="0" y="40" width="270" height="60" fill="#F1F5F9"/>
+      <text x="14" y="64" class="lane-name">Warranty / After-Sales</text>
+      <text x="14" y="80" class="lane-sub">Claim aggregation, cohort scoping</text>
+      <text x="14" y="94" class="lane-sub">— 60 hrs total</text>
+      <rect x="280" y="50" width="115" height="40" rx="4" fill="#64748B"/>
+      <text x="284" y="68" class="step-lbl">Scope cohort,</text>
+      <text x="284" y="82" class="step-lbl">flag cluster</text>
+      <rect x="935" y="50" width="115" height="40" rx="4" fill="#64748B"/>
+      <text x="939" y="68" class="step-lbl">Validate cost</text>
+      <text x="939" y="82" class="step-lbl">attribution</text>
+
+      <rect x="0" y="100" width="270" height="80" fill="#FFFFFF"/>
+      <text x="14" y="124" class="lane-name">IT / Data Engineering</text>
+      <text x="14" y="140" class="lane-sub">Cross-system data extraction</text>
+      <text x="14" y="154" class="lane-sub">Joining, normalization</text>
+      <text x="14" y="170" class="lane-sub">— 120 hrs total · largest sink</text>
+      <text x="397" y="125" class="queue-lbl">↳ 3-day handoff queue</text>
+      <rect x="395" y="130" width="220" height="40" rx="4" fill="#64748B"/>
+      <text x="399" y="148" class="step-lbl">Extract data across</text>
+      <text x="399" y="162" class="step-lbl">warranty + build + QMS + telemetry</text>
+
+      <rect x="0" y="180" width="270" height="60" fill="#F1F5F9"/>
+      <text x="14" y="204" class="lane-name">Plant Operations</text>
+      <text x="14" y="220" class="lane-sub">Build records, station/shift correlation</text>
+      <text x="14" y="234" class="lane-sub">— 40 hrs total</text>
+      <text x="617" y="205" class="queue-lbl">↳ 2-day handoff queue</text>
+      <rect x="615" y="210" width="200" height="40" rx="4" fill="#64748B"/>
+      <text x="619" y="228" class="step-lbl">Pull build records,</text>
+      <text x="619" y="242" class="step-lbl">station/shift/tool correlation</text>
+
+      <rect x="0" y="240" width="270" height="60" fill="#FFFFFF"/>
+      <text x="14" y="264" class="lane-name">Manufacturing Engineering</text>
+      <text x="14" y="280" class="lane-sub">Process &amp; station parameter analysis</text>
+      <text x="14" y="294" class="lane-sub">— 80 hrs total</text>
+      <rect x="630" y="265" width="200" height="40" rx="4" fill="#64748B"/>
+      <text x="634" y="283" class="step-lbl">Process analysis,</text>
+      <text x="634" y="297" class="step-lbl">parameter sensitivity review</text>
+
+      <rect x="0" y="300" width="270" height="60" fill="#F1F5F9"/>
+      <text x="14" y="324" class="lane-name">Supplier Quality</text>
+      <text x="14" y="340" class="lane-sub">Lot isolation, supplier coordination</text>
+      <text x="14" y="354" class="lane-sub">— 80 hrs total</text>
+      <text x="817" y="325" class="queue-lbl">↳ 5-day handoff queue · supplier engagement</text>
+      <rect x="815" y="330" width="190" height="40" rx="4" fill="#64748B"/>
+      <text x="819" y="348" class="step-lbl">Lot isolation,</text>
+      <text x="819" y="362" class="step-lbl">vendor SCAR coordination</text>
+
+      <rect x="0" y="360" width="270" height="60" fill="#FFFFFF"/>
+      <text x="14" y="384" class="lane-name">Quality Assurance</text>
+      <text x="14" y="400" class="lane-sub">RCA documentation, 5-Why, 8D, evidence pack</text>
+      <text x="14" y="414" class="lane-sub">— 60 hrs total</text>
+      <rect x="845" y="385" width="155" height="40" rx="4" fill="#64748B"/>
+      <text x="849" y="403" class="step-lbl">Build RCA 8D,</text>
+      <text x="849" y="417" class="step-lbl">evidence package</text>
+
+      <line x1="395" y1="70" x2="445" y2="70" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3"/>
+      <line x1="445" y1="70" x2="445" y2="130" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arr-cur)"/>
+      <line x1="615" y1="150" x2="665" y2="150" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3"/>
+      <line x1="665" y1="150" x2="665" y2="210" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arr-cur)"/>
+      <line x1="730" y1="230" x2="730" y2="265" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arr-cur)"/>
+      <line x1="830" y1="285" x2="880" y2="285" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3"/>
+      <line x1="880" y1="285" x2="880" y2="330" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arr-cur)"/>
+      <line x1="930" y1="350" x2="930" y2="385" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arr-cur)"/>
+      <line x1="1000" y1="405" x2="1000" y2="90" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3"/>
+      <line x1="1000" y1="90" x2="1050" y2="70" stroke="#64748B" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arr-cur)"/>
+
+      <line x1="280" y1="440" x2="1100" y2="440" stroke="#1A2339" stroke-width="1.5"/>
+      <text x="280" y="458" class="hours-lbl"><tspan font-weight="700" fill="#1A2339">TOTAL · 440 person-hours across 6 teams · 8–12 weeks wall-clock · ~$88K per investigation at $200/hr loaded</tspan></text>
+    </svg>
+    <figcaption>Each grey box is one team's effort. Dashed arrows are inter-team handoffs with queue time. The wall-clock is dominated by data-extraction handoffs (IT can't start until Warranty hands off; Plant Ops can't start until IT delivers the VIN list) and the supplier-engagement queue. This decomposes the 8–12 week baseline cited in the email and the Calculations document §3.</figcaption>
+  </figure>
+
+  <p><span class="src toyota">Source</span>The 8–12 week / 6-team current-state baseline is the same figure used in the Calculations &amp; References document §3. The team and hours decomposition is sourced from automotive industry RCA-staffing benchmarks (SAE J2562 + AIAG 8D standards).</p>
+</section>
+
+<section>
+  <h2><span class="num">05</span>Agentic-state process · the 24-step agent chain</h2>
+  <p class="lead">The same investigation, automated end-to-end. Wall-clock collapses from 8–12 weeks to under 20 minutes. Person-hours collapse from ~440 to fewer than 5 (mostly the single Quality Director review at step 22). The chain composes seven functional clusters, each running on a specific platform component.</p>
+
+  <figure>
+    <div class="fig-label">Figure 4 · Agentic state · 24 steps · ~12 minutes wall-clock · &lt;5 person-hours</div>
+    <svg viewBox="0 0 1140 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Agentic state process — 24-step agent chain across seven functional clusters">
+      <defs>
+        <marker id="arr-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10" fill="#0078D4"/></marker>
+        <linearGradient id="cl-ms" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#0078D4"/><stop offset="1" stop-color="#005A9E"/></linearGradient>
+        <linearGradient id="cl-nv" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#76B900"/><stop offset="1" stop-color="#5C9300"/></linearGradient>
+        <linearGradient id="cl-mixed" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#0078D4"/><stop offset="1" stop-color="#76B900"/></linearGradient>
+      </defs>
+      <style>
+        .cl-title { font-family: Aptos, sans-serif; font-size: 12px; fill: #fff; font-weight: 700; }
+        .cl-sub { font-family: Aptos, sans-serif; font-size: 9.5px; fill: #fff; opacity: 0.95; }
+        .cl-tech { font-family: 'Cascadia Mono', monospace; font-size: 9.5px; fill: #fff; opacity: 0.85; }
+        .cl-cap { font-family: Aptos, sans-serif; font-size: 10px; fill: #64748B; letter-spacing: 0.06em; font-weight: 700; }
+      </style>
+
+      <rect x="20" y="50" width="160" height="120" rx="6" fill="url(#cl-ms)"/>
+      <text x="100" y="74" text-anchor="middle" class="cl-title">1 · Detect &amp; Scope</text>
+      <text x="100" y="92" text-anchor="middle" class="cl-sub">Receive cluster signal,</text>
+      <text x="100" y="106" text-anchor="middle" class="cl-sub">scope cohort, pull VIN list</text>
+      <text x="100" y="130" text-anchor="middle" class="cl-tech">Steps 1 · 2 · 3</text>
+      <text x="100" y="148" text-anchor="middle" class="cl-tech">Microsoft Agent Framework</text>
+      <text x="100" y="162" text-anchor="middle" class="cl-tech">~45 sec</text>
+
+      <line x1="180" y1="110" x2="218" y2="110" stroke="#0078D4" stroke-width="1.6" marker-end="url(#arr-flow)"/>
+
+      <rect x="220" y="50" width="170" height="120" rx="6" fill="url(#cl-ms)"/>
+      <text x="305" y="74" text-anchor="middle" class="cl-title">2 · Build context</text>
+      <text x="305" y="92" text-anchor="middle" class="cl-sub">Join VIN to build records,</text>
+      <text x="305" y="106" text-anchor="middle" class="cl-sub">extract build-week distribution</text>
+      <text x="305" y="130" text-anchor="middle" class="cl-tech">Steps 4 · 5 · 6 · 7</text>
+      <text x="305" y="148" text-anchor="middle" class="cl-tech">Microsoft Fabric · Gold view</text>
+      <text x="305" y="162" text-anchor="middle" class="cl-tech">~60 sec</text>
+
+      <line x1="390" y1="110" x2="428" y2="110" stroke="#0078D4" stroke-width="1.6" marker-end="url(#arr-flow)"/>
+
+      <rect x="430" y="50" width="170" height="120" rx="6" fill="url(#cl-nv)"/>
+      <text x="515" y="74" text-anchor="middle" class="cl-title">3 · Statistical tests</text>
+      <text x="515" y="92" text-anchor="middle" class="cl-sub">Cohort × station × tool</text>
+      <text x="515" y="106" text-anchor="middle" class="cl-sub">× shift interactions</text>
+      <text x="515" y="130" text-anchor="middle" class="cl-tech">Step 8</text>
+      <text x="515" y="148" text-anchor="middle" class="cl-tech">NVIDIA RAPIDS cuML</text>
+      <text x="515" y="162" text-anchor="middle" class="cl-tech">~30 sec (CPU: 8–15 min)</text>
+
+      <line x1="600" y1="110" x2="638" y2="110" stroke="#0078D4" stroke-width="1.6" marker-end="url(#arr-flow)"/>
+
+      <rect x="640" y="50" width="180" height="120" rx="6" fill="url(#cl-nv)"/>
+      <text x="730" y="74" text-anchor="middle" class="cl-title">4 · Quality + Telemetry</text>
+      <text x="730" y="92" text-anchor="middle" class="cl-sub">SPC anomalies, tool drift,</text>
+      <text x="730" y="106" text-anchor="middle" class="cl-sub">equipment-state correlation</text>
+      <text x="730" y="130" text-anchor="middle" class="cl-tech">Steps 9 · 10 · 11 · 12</text>
+      <text x="730" y="148" text-anchor="middle" class="cl-tech">NVIDIA Triton + Omniverse</text>
+      <text x="730" y="162" text-anchor="middle" class="cl-tech">~90 sec</text>
+
+      <line x1="820" y1="110" x2="858" y2="110" stroke="#0078D4" stroke-width="1.6" marker-end="url(#arr-flow)"/>
+
+      <rect x="860" y="50" width="170" height="120" rx="6" fill="url(#cl-nv)"/>
+      <text x="945" y="74" text-anchor="middle" class="cl-title">5 · Supplier attribution</text>
+      <text x="945" y="92" text-anchor="middle" class="cl-sub">VIN → Lot → Vendor graph,</text>
+      <text x="945" y="106" text-anchor="middle" class="cl-sub">lot warranty rate vs. baseline</text>
+      <text x="945" y="130" text-anchor="middle" class="cl-tech">Steps 13 · 14 · 15 · 16</text>
+      <text x="945" y="148" text-anchor="middle" class="cl-tech">NVIDIA RAPIDS cuGraph</text>
+      <text x="945" y="162" text-anchor="middle" class="cl-tech">~60 sec</text>
+
+      <line x1="945" y1="170" x2="945" y2="200" stroke="#0078D4" stroke-width="1.6"/>
+      <line x1="945" y1="200" x2="100" y2="200" stroke="#0078D4" stroke-width="1.6"/>
+      <line x1="100" y1="200" x2="100" y2="240" stroke="#0078D4" stroke-width="1.6" marker-end="url(#arr-flow)"/>
+
+      <rect x="20" y="250" width="200" height="130" rx="6" fill="url(#cl-mixed)"/>
+      <text x="120" y="274" text-anchor="middle" class="cl-title">6 · Hypothesis + Evidence</text>
+      <text x="120" y="294" text-anchor="middle" class="cl-sub">RCA hypothesis with</text>
+      <text x="120" y="308" text-anchor="middle" class="cl-sub">confidence intervals; build</text>
+      <text x="120" y="322" text-anchor="middle" class="cl-sub">chargeback evidence package</text>
+      <text x="120" y="344" text-anchor="middle" class="cl-tech">Steps 17 · 18 · 19 · 20</text>
+      <text x="120" y="360" text-anchor="middle" class="cl-tech">Agent Framework +</text>
+      <text x="120" y="374" text-anchor="middle" class="cl-tech">NVIDIA NIM · NeMo Retriever</text>
+
+      <line x1="220" y1="315" x2="258" y2="315" stroke="#0078D4" stroke-width="1.6" marker-end="url(#arr-flow)"/>
+
+      <rect x="260" y="250" width="200" height="130" rx="6" fill="url(#cl-ms)"/>
+      <text x="360" y="274" text-anchor="middle" class="cl-title">7 · Compliance + HITL</text>
+      <text x="360" y="294" text-anchor="middle" class="cl-sub">NHTSA EWR check,</text>
+      <text x="360" y="308" text-anchor="middle" class="cl-sub">Quality Director review,</text>
+      <text x="360" y="322" text-anchor="middle" class="cl-sub">audit-ledger write</text>
+      <text x="360" y="344" text-anchor="middle" class="cl-tech">Steps 21 · 22 · 23 · 24</text>
+      <text x="360" y="360" text-anchor="middle" class="cl-tech">Teams Adaptive Card +</text>
+      <text x="360" y="374" text-anchor="middle" class="cl-tech">Purview audit</text>
+
+      <line x1="460" y1="315" x2="510" y2="315" stroke="#0078D4" stroke-width="2.4" marker-end="url(#arr-flow)"/>
+
+      <rect x="515" y="260" width="280" height="120" rx="6" fill="#fff" stroke="#0078D4" stroke-width="2"/>
+      <text x="655" y="284" text-anchor="middle" class="cl-cap">OUTPUT</text>
+      <text x="655" y="305" text-anchor="middle" font-family="Aptos, sans-serif" font-size="14" font-weight="700" fill="#1A2339">Chargeback evidence package</text>
+      <text x="655" y="324" text-anchor="middle" font-family="Aptos, sans-serif" font-size="12" fill="#1A2339">Statistically defensible RCA</text>
+      <text x="655" y="340" text-anchor="middle" font-family="Aptos, sans-serif" font-size="12" fill="#1A2339">Approver decision + audit row</text>
+      <text x="655" y="362" text-anchor="middle" font-family="'Cascadia Mono', monospace" font-size="11" fill="#0078D4" font-weight="700">~12 min · &lt; 5 person-hours</text>
+
+      <rect x="810" y="250" width="320" height="130" rx="6" fill="#F1F5F9" stroke="#E5E7EB" stroke-width="1"/>
+      <text x="970" y="274" text-anchor="middle" class="cl-cap">CUMULATIVE TIMING</text>
+      <text x="826" y="296" font-family="Aptos, sans-serif" font-size="11.5" fill="#1A2339">Cluster 1 · Detect &amp; scope</text>
+      <text x="1100" y="296" text-anchor="end" font-family="'Cascadia Mono', monospace" font-size="11.5" fill="#1A2339">~45 sec</text>
+      <text x="826" y="312" font-family="Aptos, sans-serif" font-size="11.5" fill="#1A2339">Cluster 2 · Build context</text>
+      <text x="1100" y="312" text-anchor="end" font-family="'Cascadia Mono', monospace" font-size="11.5" fill="#1A2339">~60 sec</text>
+      <text x="826" y="328" font-family="Aptos, sans-serif" font-size="11.5" fill="#1A2339">Cluster 3 · Stat tests <tspan fill="#5C9300">(GPU)</tspan></text>
+      <text x="1100" y="328" text-anchor="end" font-family="'Cascadia Mono', monospace" font-size="11.5" fill="#1A2339">~30 sec</text>
+      <text x="826" y="344" font-family="Aptos, sans-serif" font-size="11.5" fill="#1A2339">Cluster 4 · Quality + Telemetry</text>
+      <text x="1100" y="344" text-anchor="end" font-family="'Cascadia Mono', monospace" font-size="11.5" fill="#1A2339">~90 sec</text>
+      <text x="826" y="360" font-family="Aptos, sans-serif" font-size="11.5" fill="#1A2339">Cluster 5 · Supplier attribution</text>
+      <text x="1100" y="360" text-anchor="end" font-family="'Cascadia Mono', monospace" font-size="11.5" fill="#1A2339">~60 sec</text>
+      <text x="826" y="376" font-family="Aptos, sans-serif" font-size="11.5" fill="#1A2339">Clusters 6 + 7 · Hypothesis, HITL</text>
+      <text x="1100" y="376" text-anchor="end" font-family="'Cascadia Mono', monospace" font-size="11.5" fill="#1A2339">~7–9 min</text>
+
+      <rect x="20" y="410" width="1110" height="100" rx="6" fill="#fff" stroke="#0078D4" stroke-width="1"/>
+      <text x="40" y="436" font-family="Aptos, sans-serif" font-size="13" font-weight="700" fill="#1A2339">Single orchestrator agent (Microsoft Agent Framework on Azure AI Foundry) drives the entire chain</text>
+      <text x="40" y="456" font-family="Aptos, sans-serif" font-size="11.5" fill="#64748B">→ Calls Microsoft Fabric Gold views for joined data · calls NVIDIA RAPIDS/Triton/Omniverse for accelerated analytics + visualization · calls NVIDIA NIM for specialist reasoning</text>
+      <text x="40" y="474" font-family="Aptos, sans-serif" font-size="11.5" fill="#64748B">→ Pauses at step 22 for human approval via Microsoft Teams Adaptive Card · approver sees the evidence package, statistical confidence, visual replay</text>
+      <text x="40" y="492" font-family="Aptos, sans-serif" font-size="11.5" fill="#64748B">→ Every step writes an audit row to Microsoft Purview · hash chain ensures tamper-evidence · regulator-answerable</text>
+    </svg>
+    <figcaption>Seven functional clusters. Blue boxes are Microsoft platform components; green boxes are NVIDIA acceleration. The mixed-gradient cluster 6 calls both Microsoft Agent Framework hosted models and NVIDIA NIM specialist models. Human-in-the-loop happens at cluster 7 — the only step requiring person-hours.</figcaption>
+  </figure>
+
+  <h3>The 24 steps · grouped by cluster</h3>
+  <div class="steps">
+    <div class="step"><span class="step-num">01</span>Receive warranty claim cluster signal (volume threshold breach)</div>
+    <div class="step"><span class="step-num">02</span>Scope the claim cohort by part, failure mode, severity</div>
+    <div class="step"><span class="step-num">03</span>Pull VIN list for affected cohort</div>
+    <div class="step"><span class="step-num">04</span>Join VIN list to build records (per-VIN factory history)</div>
+    <div class="step"><span class="step-num">05</span>Extract build-week distribution of affected VINs</div>
+    <div class="step"><span class="step-num">06</span>Identify over-represented build weeks vs. baseline</div>
+    <div class="step"><span class="step-num">07</span>Within hot build weeks: extract station / tool / shift distribution</div>
+    <div class="step nv"><span class="step-num">08</span>Statistical test: cohort × station × tool × shift interactions <em style="color:var(--nv-green-dark);font-size:11px;">· GPU</em></div>
+    <div class="step"><span class="step-num">09</span>Join to quality event records (inspections / measurements)</div>
+    <div class="step nv"><span class="step-num">10</span>Identify SPC anomalies preceding the hot build weeks <em style="color:var(--nv-green-dark);font-size:11px;">· GPU</em></div>
+    <div class="step"><span class="step-num">11</span>Join to assembly telemetry (tool traces, equipment state)</div>
+    <div class="step nv"><span class="step-num">12</span>Correlate tool calibration drift with hot-station defects <em style="color:var(--nv-green-dark);font-size:11px;">· GPU</em></div>
+    <div class="step"><span class="step-num">13</span>Extract supplier lot codes installed in hot VIN population</div>
+    <div class="step nv"><span class="step-num">14</span>Compute supplier-lot warranty rate vs. baseline <em style="color:var(--nv-green-dark);font-size:11px;">· GPU</em></div>
+    <div class="step nv"><span class="step-num">15</span>Statistical test: supplier-lot attribution significance <em style="color:var(--nv-green-dark);font-size:11px;">· GPU</em></div>
+    <div class="step"><span class="step-num">16</span>Rank cohort × station × supplier-lot interactions by significance</div>
+    <div class="step nv"><span class="step-num">17</span>Generate root-cause hypothesis with confidence intervals <em style="color:var(--nv-green-dark);font-size:11px;">· NIM</em></div>
+    <div class="step nv"><span class="step-num">18</span>Build evidence package: cohort, statistical tests, raw data <em style="color:var(--nv-green-dark);font-size:11px;">· NIM</em></div>
+    <div class="step"><span class="step-num">19</span>Compute chargeback dollar exposure per supplier lot</div>
+    <div class="step"><span class="step-num">20</span>Generate supplier chargeback documentation</div>
+    <div class="step"><span class="step-num">21</span>Trigger NHTSA Early Warning Reporting check (if applicable)</div>
+    <div class="step"><span class="step-num">22</span>Route to Quality Director for human review &amp; approval</div>
+    <div class="step"><span class="step-num">23</span>Write decision &amp; rationale to audit ledger</div>
+    <div class="step"><span class="step-num">24</span>Notify downstream owners (CAPA, dealer advisories)</div>
+  </div>
+  <p style="font-size:12.5px;color:var(--slate);font-style:italic;margin-top:6px;">Steps marked <span style="color:var(--nv-green-dark);font-weight:700;">GPU</span> use NVIDIA RAPIDS / Triton for accelerated statistics; steps marked <span style="color:var(--nv-green-dark);font-weight:700;">NIM</span> use NVIDIA NIM microservices for specialist inference. Without NVIDIA, these steps still run — they just take longer (cluster 3 expands from ~30 sec to 8–15 min).</p>
+
+  <p><span class="src demo">Source</span>The 24-step chain length is sourced from the Toyota AgenticAI scenario brief (Deloitte-internal). Per-step latency is derived from comparable agent-orchestration benchmarks on the Microsoft platform with NVIDIA AI Enterprise acceleration on the GPU-bound steps. Full citations in the Calculations &amp; References companion §8.</p>
+</section>
+
+<section>
+  <h2><span class="num">06</span>Side-by-side · current vs. agentic</h2>
+  <p class="lead">The structural metrics for the current state and the agentic state, lined up directly. Same investigation, same evidence quality, same compliance posture. The economics and wall-clock change by orders of magnitude.</p>
+
+  <div class="tbl-wrap"><table>
+    <tr>
+      <th>Metric</th>
+      <th>Current state · manual investigation</th>
+      <th>Agentic state · Zero Day Warranty agent</th>
+    </tr>
+    <tr>
+      <td><strong>Wall-clock</strong><br><span style="color:var(--slate);font-size:12.5px;">cluster detection → chargeback evidence package ready</span></td>
+      <td class="num">8–12 weeks</td>
+      <td class="num"><strong style="color:var(--ms-blue-dark);">~12 minutes</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Teams involved</strong></td>
+      <td>6 teams · sequential handoffs</td>
+      <td>1 orchestrator + 1 HITL approver</td>
+    </tr>
+    <tr>
+      <td><strong>Person-hours per investigation</strong></td>
+      <td class="num">~440 hours</td>
+      <td class="num"><strong style="color:var(--ms-blue-dark);">&lt; 5 hours</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Cost per investigation</strong><br><span style="color:var(--slate);font-size:12.5px;">at $200/hr loaded labor rate</span></td>
+      <td class="num">~$88,000</td>
+      <td class="num"><strong style="color:var(--ms-blue-dark);">~$1,000</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Throughput per plant per year</strong></td>
+      <td>~10 investigations</td>
+      <td>Continuous · runs on every cluster signal</td>
+    </tr>
+    <tr>
+      <td><strong>Audit-ledger completeness</strong></td>
+      <td>Manual · variable per investigation</td>
+      <td class="num"><strong style="color:var(--ms-blue-dark);">100% · hash-chained</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Chargeback recovery rate</strong><br><span style="color:var(--slate);font-size:12.5px;">reference scenario</span></td>
+      <td class="num">~15%</td>
+      <td class="num"><strong style="color:var(--ms-blue-dark);">~67%</strong> (≈75–80% with NVIDIA NIM)</td>
+    </tr>
+    <tr>
+      <td class="total"><strong>Net impact per cluster investigated</strong></td>
+      <td class="total">~$0.63M recovered · 11 weeks</td>
+      <td class="total" style="color:var(--ms-blue-dark);"><strong>~$2.8M recovered · 12 minutes</strong></td>
+    </tr>
+  </table></div>
+
+  <div class="callout note">
+    <span class="label">Reference figures · not Toyota baseline</span>
+    <p>All figures in this section are reference-scenario figures. Toyota-specific values would be re-derived during a Business Value Assessment. The structural deltas (wall-clock, team count, audit-ledger completeness) are not currency-dependent and apply to any high-volume automotive manufacturer.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">07</span>Component Reference Key</h2>
+  <p class="lead">For navigating the diagrams above — the role each named component plays in the end-to-end scenario.</p>
+
+  <div class="cmps">
+    <div class="cmp">
+      <h4><span class="src ms">Microsoft</span> Components</h4>
+      <ul>
+        <li><strong>Microsoft Fabric · OneLake</strong> — unified data layer with bronze / silver / gold medallion</li>
+        <li><strong>Microsoft Agent Framework on Azure AI Foundry</strong> — Agent Framework SDK + Foundry Agent Service host the 24-step orchestrator</li>
+        <li><strong>Microsoft Teams</strong> — Adaptive Card delivery to Quality Director for HITL</li>
+        <li><strong>Power BI</strong> — warranty heatmaps and chargeback dashboards</li>
+        <li><strong>Microsoft Entra ID</strong> — per-agent identity, conditional access</li>
+        <li><strong>Microsoft Purview</strong> — DLP, DSPM for AI, lineage, audit retention</li>
+        <li><strong>Microsoft Defender for IoT</strong> — OT security across plants</li>
+        <li><strong>Azure ML · Azure Kubernetes Service</strong> — hosts NVIDIA AI Enterprise workloads on GPU SKUs</li>
+      </ul>
+    </div>
+    <div class="cmp nv">
+      <h4><span class="src nv">NVIDIA</span> Components <span class="opt">· optional / accelerative</span></h4>
+      <ul>
+        <li><strong>NVIDIA Metropolis + DeepStream</strong> — inline vision at the build station (Day-0 defect catch)</li>
+        <li><strong>NVIDIA Jetson</strong> — edge inference compute at the station</li>
+        <li><strong>NVIDIA RAPIDS</strong> (cuDF, cuML, cuGraph) — GPU-accelerated statistics on the data layer</li>
+        <li><strong>NVIDIA Triton Inference Server</strong> — high-throughput inference for time-series anomaly detection</li>
+        <li><strong>NVIDIA NIM microservices</strong> — specialist inference for root-cause hypothesis</li>
+        <li><strong>NVIDIA NeMo Retriever</strong> — RAG over service bulletins, supplier specs, prior RCA reports</li>
+        <li><strong>NVIDIA Omniverse</strong> — visual replay of the build cell for investigation cockpit</li>
+        <li><strong>NVIDIA AI Enterprise on Azure</strong> — the deployment bundle that ties it all together</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout nv">
+    <span class="label">Why Toyota in particular</span>
+    <p>Toyota already has NVIDIA depth on the vehicle side (NVIDIA Drive for AV development) and through Woven City (NVIDIA Omniverse for simulation). The Zero Day Warranty agent is one of the cleanest ways to extend that capability into the factory-to-field workflow — same partner, same chips, different workload.</p>
+  </div>
+</section>
+
+<section>
+  <!-- Component reference key was §07 in the overview tab; sections 08-09 below are referenced from the References tab -->
+</section>
+
+</div><!-- /tab-panel overview -->
+
+<div class="tab-panel" data-panel="microsoft" role="tabpanel">
+
+<section>
+  <h2><span class="num">M</span>Microsoft Stack · product details</h2>
+  <p class="lead">Eight Microsoft platform components are introduced into the Zero Day Warranty agentic solution. Each card explains the product's role in the architecture, which agent-chain steps it serves, what it does technically, why it is the right choice for this scenario, and links to the canonical Microsoft Learn reference.</p>
+
+  <div class="product-grid">
+
+    <article class="product-card ms">
+      <header>
+        <span class="vendor-badge ms">Microsoft</span>
+        <h3>Microsoft Fabric</h3>
+        <p class="tagline">Unified data platform · OneLake · Bronze / Silver / Gold medallion · the single source for joined per-VIN data</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 4 of <strong>Figure 1</strong> — the data plane. All four source domains (build records, connected-vehicle warranty data, quality events, assembly telemetry) land in Fabric, conform to canonical types in Silver, and join into per-VIN Gold views the agent reads.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Steps 4 – 9 · 13 · 14 · 19 · the build-context join, the quality-event join, the telemetry join, the supplier-lot lookup, the chargeback-cost composition.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>OneLake</strong> — single tenant-resident lake; cross-workspace shortcuts; no data movement</li>
+          <li><strong>Lakehouse</strong> — Delta Lake on Parquet; ACID; schema enforcement</li>
+          <li><strong>Real-Time Intelligence</strong> — Eventstream + Eventhouse + KQL for streaming telemetry</li>
+          <li><strong>Direct Lake</strong> — sub-second Power BI on Gold</li>
+          <li><strong>Fabric IQ Ontology</strong> (preview) — semantic layer over OneLake; native NL→data</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">Per-VIN joinable view across the four source domains is the architectural pre-requisite for the agent chain. Fabric collapses what would otherwise be 4–6 separate data systems into one. Toyota Connected's existing Azure data footprint provides natural continuity. Classification-aware Gold views enforce sensitivity at the data layer, not the agent layer.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://learn.microsoft.com/fabric/" target="_blank" rel="noopener">Microsoft Learn · Fabric →</a>
+        <span class="license">SaaS · F-SKU capacity · F2+</span>
+      </div>
+    </article>
+
+    <article class="product-card ms">
+      <header>
+        <span class="vendor-badge ms">Microsoft</span>
+        <h3>Microsoft Agent Framework <span style="font-size:13px;font-weight:400;color:var(--slate);">on Azure AI Foundry</span></h3>
+        <p class="tagline">Agent reasoning SDK + hosted runtime · orchestrates the 24-step chain · HITL gate via Tool Approval</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 2 of <strong>Figure 1</strong> — agent reasoning plane. Microsoft Agent Framework provides the SDK and orchestration patterns; Azure AI Foundry Agent Service provides the managed runtime. Together they host the orchestrator agent that drives all 24 steps and calls Fabric Gold views, NVIDIA NIM / RAPIDS / Triton, and custom MCP tools through typed contracts.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Orchestrates all 24 steps. Direct execution on steps 1 – 7 (detect, scope, build context) and step 22 (HITL gate via Tool Approval flow with Adaptive Card).</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>Agent Framework SDK</strong> — cross-language orchestration (Python / .NET); workflow + handoff patterns</li>
+          <li><strong>Foundry Agent Service runtime</strong> — managed orchestrator; tool catalog; state management</li>
+          <li><strong>Identity passthrough</strong> — on-behalf-of (OBO) for downstream tool calls</li>
+          <li><strong>Tool Approval</strong> — HITL gate before any tool fires</li>
+          <li><strong>Connected agents</strong> — Agent Framework agent can call Fabric Data Agent + custom MCP tools</li>
+          <li><strong>Audit trail</strong> — every tool call + decision logged to Purview</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">The HITL gate is non-negotiable for SOX-bounded and NHTSA-defensible decisions. Foundry's Tool Approval flow gives a native, audit-rowed pause-and-resume. Identity passthrough means the agent's downstream calls run under the originating user's permissions, not a service principal — which removes a whole class of governance escapes. Agent Framework's SDK is the same patterns developers already use for Microsoft AI assistants — lower onboarding cost for Toyota's engineering team.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://learn.microsoft.com/agent-framework/" target="_blank" rel="noopener">Microsoft Learn · Agent Framework →</a>
+        <span class="license">PAYG · per-token + per-call</span>
+      </div>
+    </article>
+
+    <article class="product-card ms">
+      <header>
+        <span class="vendor-badge ms">Microsoft</span>
+        <h3>Microsoft Teams</h3>
+        <p class="tagline">HITL approval surface · Adaptive Card delivery to the Quality Director · in-line approve / amend / deny</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 1 of <strong>Figure 1</strong> — consumption. The surface where the Quality Director sees the evidence package, the statistical confidence intervals, and the recommended chargeback action — and where the human decision happens.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Step 22 · HITL review. Step 24 · downstream owner notification (CAPA, dealer advisories) via channel posts.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>Adaptive Cards</strong> — structured payload with embedded evidence + action buttons</li>
+          <li><strong>In-line approve / amend / deny</strong> — Quality Director decides without leaving Teams</li>
+          <li><strong>Deep-link to evidence</strong> — back to Fabric Gold view + Omniverse cockpit</li>
+          <li><strong>Channel routing</strong> — escalation paths to VP Quality / Plant Manager / Compliance</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">The Quality Director already lives in Teams daily. No new tool to learn, no separate login, no context switch. The HITL gate fits into the natural workflow rather than imposing a new one. Adaptive Cards render with the same fidelity on desktop, web, and mobile — so the approval is portable.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://learn.microsoft.com/microsoftteams/platform/task-modules-and-cards/cards/cards-reference" target="_blank" rel="noopener">Microsoft Learn · Adaptive Cards →</a>
+        <span class="license">Existing M365 entitlement</span>
+      </div>
+    </article>
+
+    <article class="product-card ms">
+      <header>
+        <span class="vendor-badge ms">Microsoft</span>
+        <h3>Power BI</h3>
+        <p class="tagline">Warranty heatmaps · build-week cost dashboards · chargeback-recovery KPI rollup · semantic-model–driven</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 1 of <strong>Figure 1</strong> — consumption. Reads directly from Fabric Gold views via Direct Lake; surfaces the heatmaps, KPIs, and operational dashboards the Quality and Warranty organizations consume.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Continuous consumption surface. Quality leadership sees the warranty-cost heatmap before any agent fires; the dashboard is what triggers the cluster detection in step 1.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>Direct Lake</strong> — sub-second queries on Fabric Gold without import</li>
+          <li><strong>Semantic models</strong> — RLS / CLS / object-level security at the model layer</li>
+          <li><strong>Embed for Teams / SharePoint</strong> — single dashboard, many surfaces</li>
+          <li><strong>Copilot in Power BI</strong> — natural-language Q&amp;A over the same data</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">Existing Toyota BI surface — no displacement. Direct Lake means the heatmaps are always current with the Fabric medallion. Semantic models build once, consume many ways. The Copilot integration gives operational analysts a natural-language entry point without writing DAX.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://learn.microsoft.com/power-bi/" target="_blank" rel="noopener">Microsoft Learn · Power BI →</a>
+        <span class="license">Existing or Premium Per User</span>
+      </div>
+    </article>
+
+    <article class="product-card ms">
+      <header>
+        <span class="vendor-badge ms">Microsoft</span>
+        <h3>Microsoft Entra ID</h3>
+        <p class="tagline">Identity &amp; access · per-agent managed identities · conditional access · supplier-scope governance</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Foundation layer of <strong>Figure 1</strong> — always-on. Every agent has a managed identity; every tool call carries a token; every data access is identity-scoped.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">All 24 steps (auth on every step). Step 22 specifically — the HITL identity must match the Quality Director's Entra identity for the approval to count.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>Agent ID</strong> — per-agent managed identity; agent-specific tokens</li>
+          <li><strong>Conditional Access</strong> — supplier-data scopes; location / device / risk based</li>
+          <li><strong>Workload Identity Federation</strong> — OIDC for cross-cloud trust without secrets</li>
+          <li><strong>PIM (Privileged Identity Management)</strong> — just-in-time elevation for sensitive lots</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">Per-agent identity is what makes the audit row regulator-answerable — every decision is attributable to a specific agent identity, not a shared service principal. Toyota's existing Entra deployment means no greenfield identity setup. Conditional Access protects supplier-attributable data (chargeback evidence) from being viewed outside the right organizational scope.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://learn.microsoft.com/entra/" target="_blank" rel="noopener">Microsoft Learn · Entra ID →</a>
+        <span class="license">Existing M365 / Entra entitlement</span>
+      </div>
+    </article>
+
+    <article class="product-card ms">
+      <header>
+        <span class="vendor-badge ms">Microsoft</span>
+        <h3>Microsoft Purview</h3>
+        <p class="tagline">Governance · audit · lineage · DSPM for AI · the regulator-replayable evidence substrate</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Foundation layer of <strong>Figure 1</strong> — always-on. Every agent decision writes an audit row; every data access is lineage-tracked; every classification flows down through the medallion.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Step 23 · the audit-ledger write. Lineage continuously captured across all 24 steps. DSPM for AI assesses prompt + response risk for steps 17–18 (hypothesis + evidence).</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>Audit ledger</strong> — hash-chained 14-field rows per agent decision</li>
+          <li><strong>DSPM for AI</strong> — risk scoring on prompt + response patterns</li>
+          <li><strong>Sensitivity labels</strong> — flow from Bronze through Gold through agent outputs</li>
+          <li><strong>End-to-end lineage</strong> — Bronze row → agent decision → Adaptive Card → field action</li>
+          <li><strong>eDiscovery</strong> — regulator + auditor replay of any chain instance</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">SOX-defensibility and NHTSA EWR submission both require evidence that survives external review. Purview's audit row + lineage gives any auditor a complete reconstruction of why the agent recommended what it recommended, what data it accessed, who approved it. The Day-5 attestation package the Quality Director signs is anchored in Purview.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://learn.microsoft.com/purview/" target="_blank" rel="noopener">Microsoft Learn · Purview →</a>
+        <span class="license">M365 E5 Compliance · standalone</span>
+      </div>
+    </article>
+
+    <article class="product-card ms">
+      <header>
+        <span class="vendor-badge ms">Microsoft</span>
+        <h3>Microsoft Defender for IoT</h3>
+        <p class="tagline">OT security · threat detection on industrial signals · Sentinel integration for SOC visibility</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Foundation layer of <strong>Figure 1</strong> — security plane. Protects the operational technology layer the agent depends on — SCADA, historian, IoT, the NVIDIA Jetson edge devices at the build station.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Continuous monitoring — independent of agent execution. Surfaces threats to the Sentinel SOC; flags compromised telemetry sources that the agent should treat as low-confidence inputs.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>OT asset discovery</strong> — passive network monitoring; no agent on the device</li>
+          <li><strong>Threat signatures</strong> — industrial-protocol–aware (Modbus, OPC UA, MQTT)</li>
+          <li><strong>Anomaly detection</strong> — ML-driven baseline of normal operation</li>
+          <li><strong>Sentinel integration</strong> — OT threats flow to enterprise SIEM</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">14 manufacturing plants means a large OT attack surface. The agent's recommendations are only as trustworthy as the telemetry feeding them; compromised SCADA or Jetson devices would silently degrade the agent's accuracy. Defender for IoT is the upstream integrity check. Particularly relevant given Toyota's recent breach history (per the Toyota Account Snapshot).</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://learn.microsoft.com/azure/defender-for-iot/" target="_blank" rel="noopener">Microsoft Learn · Defender for IoT →</a>
+        <span class="license">PAYG · per device monitored</span>
+      </div>
+    </article>
+
+    <article class="product-card ms">
+      <header>
+        <span class="vendor-badge ms">Microsoft</span>
+        <h3>Azure ML + Azure Kubernetes Service</h3>
+        <p class="tagline">GPU compute substrate · the Azure-side host for NVIDIA AI Enterprise workloads</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 3 of <strong>Figure 1</strong> — inference acceleration host. Provides the NC / ND-series GPU compute that NVIDIA NIM microservices, RAPIDS pods, and Triton Inference Server run on. AKS gives the orchestration.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Steps 8 · 10 · 11 · 12 · 14 · 15 · 17 · 18 — all NVIDIA-accelerated steps run on this substrate.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>NC / ND-series GPU VMs</strong> — H100 / H200 / A100 inside Toyota tenant</li>
+          <li><strong>AKS</strong> — managed Kubernetes; auto-scale; spot-instance support</li>
+          <li><strong>Model registry</strong> — versioned models with lineage to training data</li>
+          <li><strong>Azure Container Registry</strong> — private images including NIM containers</li>
+          <li><strong>Azure Marketplace</strong> — NVIDIA AI Enterprise one-click deploy</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">Toyota's existing Azure footprint (Toyota Connected) provides the foundation. AKS is the canonical home for the NVIDIA stack on Azure — RAPIDS clusters and NIM microservices both deploy as standard Kubernetes workloads. Spot instances on NC-series for the batch RAPIDS jobs keeps GPU cost predictable.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://learn.microsoft.com/azure/aks/" target="_blank" rel="noopener">Microsoft Learn · AKS + Azure ML →</a>
+        <span class="license">Compute hours + storage</span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+</div><!-- /tab-panel microsoft -->
+
+<div class="tab-panel" data-panel="nvidia" role="tabpanel">
+
+<section>
+  <h2><span class="num">N</span>NVIDIA Stack · product details</h2>
+  <p class="lead">Seven NVIDIA components plus the umbrella deployment bundle. Each card explains the product's role, which agent-chain steps it serves, what it brings technically, why it is the right choice for this scenario, and links to canonical NVIDIA documentation. All NVIDIA components run inside the Toyota Azure tenant through <strong>NVIDIA AI Enterprise on Azure</strong>.</p>
+
+  <div class="ai-ent-strip">
+    <div class="ae-eyebrow">Deployment bundle · the umbrella</div>
+    <h3>NVIDIA AI Enterprise on Azure</h3>
+    <p>The Microsoft + NVIDIA co-sell bundle that packages every NVIDIA component below for deployment inside an Azure tenant. Available on Azure Marketplace. Single license; tenant-resident; co-engineering support from both vendors. The Toyota Azure tenant becomes the deployment substrate; no data leaves it. This is the procurement path; the seven products below are what gets deployed.</p>
+  </div>
+
+  <div class="product-grid">
+
+    <article class="product-card nv">
+      <header>
+        <span class="vendor-badge nv">NVIDIA</span>
+        <h3>NVIDIA Metropolis + DeepStream</h3>
+        <p class="tagline">Inline AI vision at the build station · the Day-0 layer that prevents the defect rather than diagnosing it</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 5 edge of <strong>Figure 1</strong> · primary subject of <strong>Figure 2</strong>. At every build station: cameras feed Jetson industrial PCs running DeepStream pipelines with Metropolis vision models.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Pre-chain. Generates the quality event records the agent reads at step 9. Independent of the 24-step chain — it runs continuously, station-by-station, ~5ms per VIN.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>DeepStream SDK</strong> — streaming inference pipeline (ingest → preprocess → model → post-process → emit)</li>
+          <li><strong>Metropolis models</strong> — pre-trained for industrial inspection; fine-tunable to plant-specific defect taxonomies</li>
+          <li><strong>Multi-camera per station</strong> — up to 8 streams per Jetson with concurrent inference</li>
+          <li><strong>Jidoka integration</strong> — emits a "stop the line" signal on FAIL verdicts</li>
+          <li><strong>~98% detection rate · &lt;5% false-positive</strong> — at production-grade tuning</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">"Zero Day Warranty" in its most literal reading: catch the defect at Day 0, on the build floor, before the vehicle ever ships. ~30–40% of cluster-driving defects are surface / fastener / seating issues that Metropolis catches inline. The defect that never becomes a warranty claim costs zero. Toyota's TPS "jidoka" principle aligns directly — every station becomes a jidoka point with AI evidence.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://www.nvidia.com/metropolis/" target="_blank" rel="noopener">NVIDIA · Metropolis →</a>
+        <span class="license">NVIDIA AI Enterprise</span>
+      </div>
+    </article>
+
+    <article class="product-card nv">
+      <header>
+        <span class="vendor-badge nv">NVIDIA</span>
+        <h3>NVIDIA Jetson</h3>
+        <p class="tagline">Ruggedized industrial-PC edge compute · the hardware substrate at every build station</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 5 edge hardware of <strong>Figure 1</strong> · the green box in <strong>Figure 2</strong>. The physical device at each station that runs the DeepStream + Metropolis software stack.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Pre-chain edge compute. Generates inputs that flow up the medallion to the agent at step 9.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>Orin AGX / Orin NX</strong> — embedded GPU; up to 275 TOPS in the AGX</li>
+          <li><strong>Industrial form factor</strong> — fanless; IP67 rated; vibration-tolerant</li>
+          <li><strong>Power envelope</strong> — 15W (NX) to 60W (AGX) — runs from standard plant power</li>
+          <li><strong>DeepStream-native</strong> — zero-friction deployment of Metropolis pipelines</li>
+          <li><strong>JetPack OS</strong> — Linux + CUDA + cuDNN + TensorRT pre-bundled</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">Inference at the station — not in the cloud — is what makes the ~5ms cycle and jidoka stop possible. A round trip to Azure for every inspection would add latency that breaks the line. Jetson form factor + industrial ratings means it deploys in real plant conditions (dust, vibration, temperature) without a dedicated server room.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://developer.nvidia.com/embedded/jetson" target="_blank" rel="noopener">NVIDIA · Jetson →</a>
+        <span class="license">NVIDIA hardware + AI Enterprise</span>
+      </div>
+    </article>
+
+    <article class="product-card nv">
+      <header>
+        <span class="vendor-badge nv">NVIDIA</span>
+        <h3>NVIDIA RAPIDS</h3>
+        <p class="tagline">GPU-accelerated data science · cuDF + cuML + cuGraph · 10–50× the cohort statistics speed</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 3 of <strong>Figure 1</strong> — inference acceleration on the data layer. Pods running on AKS-managed GPU nodes execute the heavy joins + statistical tests the agent dispatches.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Step 8 · cohort × station × tool × shift interaction tests · Steps 14 + 15 · supplier-lot warranty rate + significance test · Step 16 · ranking by significance.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>cuDF</strong> — pandas-API on GPU; drop-in replacement for analyst code</li>
+          <li><strong>cuML</strong> — scikit-learn API on GPU; same patterns, GPU substrate</li>
+          <li><strong>cuGraph</strong> — NetworkX-style graph algorithms; VIN → Lot → Vendor traversal</li>
+          <li><strong>Dask integration</strong> — multi-GPU + multi-node scale-out</li>
+          <li><strong>Apache Arrow on GPU</strong> — zero-copy with Spark / Triton</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">Joining 12 months of warranty claims (millions of rows) × 12 months of build records (tens of millions of VIN-step rows) × telemetry (billions of sensor rows) is where CPU-bound execution becomes the bottleneck. RAPIDS collapses the cohort-stats step from 8–15 minutes to ~30 seconds — the difference between "agent runs every WBR" and "agent runs continuously."</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://rapids.ai/" target="_blank" rel="noopener">NVIDIA · RAPIDS →</a>
+        <span class="license">NVIDIA AI Enterprise</span>
+      </div>
+    </article>
+
+    <article class="product-card nv">
+      <header>
+        <span class="vendor-badge nv">NVIDIA</span>
+        <h3>NVIDIA Triton Inference Server</h3>
+        <p class="tagline">High-throughput inference serving · time-series anomaly detection on streaming telemetry</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 3 of <strong>Figure 1</strong> — inference acceleration. Hosts the anomaly-detection and tool-drift models that the agent dispatches against the streaming assembly telemetry.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Step 10 · SPC anomaly detection · Step 11 · assembly telemetry join · Step 12 · tool-calibration-drift correlation with hot-station defects.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>Multi-framework</strong> — PyTorch, TensorFlow, ONNX, TensorRT, OpenVINO</li>
+          <li><strong>Dynamic batching</strong> — sub-millisecond inference at thousands of QPS</li>
+          <li><strong>Ensemble pipelines</strong> — chain models (preprocess → infer → post-process)</li>
+          <li><strong>Model versioning + A/B</strong> — drift detection across model versions</li>
+          <li><strong>Open-source</strong> — community + commercial support via AI Enterprise</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">Tool-drift detection requires inference over high-frequency sensor signals (torque traces, robot cycles) at millisecond latency. Triton's dynamic batching + ensemble pipelines fit this profile natively. Same server can host multiple models concurrently (one per defect type / station type) — single deployment substrate, many specialized inference endpoints.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://developer.nvidia.com/triton-inference-server" target="_blank" rel="noopener">NVIDIA · Triton →</a>
+        <span class="license">Open-source + AI Enterprise</span>
+      </div>
+    </article>
+
+    <article class="product-card nv">
+      <header>
+        <span class="vendor-badge nv">NVIDIA</span>
+        <h3>NVIDIA NIM microservices</h3>
+        <p class="tagline">Specialist inference for root-cause hypothesis · automotive-tuned reasoning models</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 2 of <strong>Figure 1</strong> — agent reasoning. Sits alongside the general-purpose models hosted by Microsoft Agent Framework on Azure AI Foundry; provides domain-specialized inference for the hypothesis-generation + evidence-writing steps.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Step 17 · root-cause hypothesis with confidence intervals · Step 18 · chargeback evidence package generation.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>Pre-built inference containers</strong> — domain models packaged as drop-in microservices</li>
+          <li><strong>Fine-tunable</strong> — adapt to Toyota-specific defect taxonomy + supplier vocabulary</li>
+          <li><strong>OpenAI-compatible API</strong> — Agent Framework agent calls NIM with the same patterns it calls hosted models</li>
+          <li><strong>Identity passthrough</strong> — Entra Agent ID flows through NIM call chain</li>
+          <li><strong>On-prem or cloud</strong> — same container deploys anywhere AKS runs</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">A general-purpose LLM explains a defect cluster generically; a NIM specialist model trained on automotive defect taxonomies + IATF 16949 audit language + NHTSA EWR templates writes the evidence package the way a supplier-quality engineer or NHTSA reviewer actually expects. Higher-quality output → higher chargeback recovery rate (the calculations show 67% → 75–80% with NIM).</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://www.nvidia.com/en-us/ai/nim/" target="_blank" rel="noopener">NVIDIA · NIM →</a>
+        <span class="license">NVIDIA AI Enterprise</span>
+      </div>
+    </article>
+
+    <article class="product-card nv">
+      <header>
+        <span class="vendor-badge nv">NVIDIA</span>
+        <h3>NVIDIA NeMo Retriever</h3>
+        <p class="tagline">GPU-accelerated RAG · technical service bulletins · supplier specs · prior RCA reports</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 2 of <strong>Figure 1</strong> — knowledge retrieval for agent reasoning. Augments NIM specialist models with retrieval over the existing corpus of technical documents.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Steps 17 + 18 — provides retrieved context (relevant TSBs, supplier specs, prior RCA reports for similar defects) for the hypothesis and evidence-package generation.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>GPU-accelerated embedding</strong> — ingest millions of documents in hours, not days</li>
+          <li><strong>Vector DB integration</strong> — Pinecone, Weaviate, pgvector, Azure AI Search</li>
+          <li><strong>Multi-modal retrieval</strong> — text + diagrams + tables from technical PDFs</li>
+          <li><strong>Reranking</strong> — second-pass relevance to top-k candidates</li>
+          <li><strong>NIM-native</strong> — designed to feed NIM specialist inference</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">Automotive root-cause investigations succeed or fail on prior knowledge. The supplier spec, the prior CAPA on a similar defect, the technical service bulletin from last year — all of that is sitting in PDFs, Word documents, scanned forms. NeMo Retriever turns that corpus into agent-readable context, dramatically improving hypothesis quality.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://www.nvidia.com/en-us/ai-data-science/products/nemo/" target="_blank" rel="noopener">NVIDIA · NeMo →</a>
+        <span class="license">NVIDIA AI Enterprise</span>
+      </div>
+    </article>
+
+    <article class="product-card nv">
+      <header>
+        <span class="vendor-badge nv">NVIDIA</span>
+        <h3>NVIDIA Omniverse</h3>
+        <p class="tagline">Visual replay of the build cell · digital-twin investigation cockpit · the Toyota Woven City extension</p>
+      </header>
+      <div class="field">
+        <div class="field-label">Role in the architecture</div>
+        <p class="field-content">Layer 1 of <strong>Figure 1</strong> — consumption (investigation cockpit). The visual replay surface the Quality Director uses to inspect the build conditions at the moment of the defective build.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Agent-chain steps using it</div>
+        <p class="field-content">Post-chain — at the HITL review (step 22). Quality Director clicks the deep-link in the Adaptive Card, lands in Omniverse, sees the cell visualized at the defective moment.</p>
+      </div>
+      <div class="field">
+        <div class="field-label">Key capabilities</div>
+        <p class="field-content"><ul>
+          <li><strong>USD / OpenUSD</strong> — interoperable 3D scene authoring</li>
+          <li><strong>Real-time ray tracing</strong> — photorealistic visualization at interactive frame rates</li>
+          <li><strong>Digital twin integration</strong> — connects to Azure Digital Twins for the physical model</li>
+          <li><strong>Multi-user collaboration</strong> — Quality Director + Plant Manager review together</li>
+          <li><strong>Timeline scrubbing</strong> — replay the build minute by minute</li>
+        </ul></p>
+      </div>
+      <div class="field">
+        <div class="field-label">Why this component for this scenario</div>
+        <p class="field-content">Toyota already runs NVIDIA Omniverse for Woven City simulation. Extending it into the manufacturing-investigation surface is a natural continuity — same partner, same tool, different workload. The visual replay is especially powerful for explaining root cause to non-technical stakeholders (CFO, legal, regulators) who need to see, not read.</p>
+      </div>
+      <div class="card-footer">
+        <a class="ref-link" href="https://developer.nvidia.com/omniverse" target="_blank" rel="noopener">NVIDIA · Omniverse →</a>
+        <span class="license">NVIDIA AI Enterprise</span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+</div><!-- /tab-panel nvidia -->
+
+<div class="tab-panel" data-panel="references" role="tabpanel">
+
+<section>
+  <h2><span class="num">08</span>References</h2>
+  <p class="lead">Source citations for the diagrams and the structural claims. Currency-figure citations live in the Calculations &amp; References companion §8.</p>
+
+  <div class="refs">
+    <ol>
+      <li><span class="ref-source"><span class="src demo">Demo</span></span><strong>Deloitte internal warranty traceability scenario.</strong> Source of the 24-step agent chain composition and the seven-cluster grouping. Same source referenced in the Calculations document.</li>
+
+      <li><span class="ref-source"><span class="src demo">Demo</span></span><strong>Deloitte Toyota AgenticAI scenario brief.</strong> Source of the current-state 8–12 week / 6-team baseline and the Microsoft platform component selection (Fabric · Agent Framework on Foundry · Purview · Entra · Teams).</li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>Microsoft + NVIDIA · NVIDIA AI Enterprise on Azure.</strong> The deployment bundle that places NVIDIA RAPIDS, Triton, NIM microservices, NeMo Retriever, and Omniverse Workstation inside the customer's Azure tenant. <em>Microsoft Industry Blog · NVIDIA Azure Marketplace listings.</em></li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>NVIDIA RAPIDS for GPU-accelerated data science.</strong> The 10–50× CPU-to-GPU performance multiplier on cohort statistical tests is sourced from NVIDIA RAPIDS published benchmarks for cuDF / cuML / cuGraph workloads at the data volumes typical of automotive warranty analysis.</li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>NVIDIA Metropolis + DeepStream for industrial vision.</strong> Reference for the inline-station vision inspection pattern. Used by multiple automotive manufacturers for first-pass quality inspection at the line edge.</li>
+
+      <li><span class="ref-source"><span class="src toyota">Toyota-derived</span></span><strong>Toyota + NVIDIA partnership context.</strong> Public references to Toyota's NVIDIA Drive usage in AV development and Toyota Woven City's NVIDIA Omniverse deployment for smart-city simulation. <em>NVIDIA press releases · Toyota corporate communications · Woven by Toyota disclosures.</em></li>
+
+      <li><span class="ref-source"><span class="src toyota">Toyota-derived</span></span><strong>Toyota Connected Azure footprint.</strong> Public reference for the existing Azure deployment that anchors the Microsoft platform-side of the architecture. <em>Microsoft Industry Blog · Toyota USA Newsroom.</em></li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>SAE J2562 + AIAG Effective Problem Solving (8D) standards.</strong> Reference for the six-team decomposition of automotive warranty RCA in Figure 3. <em>SAE International · Automotive Industry Action Group.</em></li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>NHTSA Early Warning Reporting (EWR) · 49 CFR Part 579.</strong> Reference for step 21 of the agent chain. <em>National Highway Traffic Safety Administration.</em></li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>Microsoft platform component documentation.</strong> Fabric · Agent Framework · Foundry · Purview · Entra ID · Teams · Azure Kubernetes Service · all documented at <code>learn.microsoft.com</code>. Specific anchors available on request.</li>
+    </ol>
+  </div>
+
+  <div class="callout method" style="margin-top:18px;">
+    <span class="label">Methodology disclosure</span>
+    <p>The four diagrams in this document are illustrative reference architectures. They reflect a representative deployment pattern for the Zero Day Warranty agent and would be adapted to Toyota's specific tenant configuration, existing Microsoft footprint, supplier ecosystem, and regulatory requirements in any actual engagement. The NVIDIA components are shown as optional — the architecture is viable on Microsoft components alone and the NVIDIA layer is a pure additive.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">09</span>What this document is not</h2>
+  <p class="lead">A note on what to set aside as we discuss.</p>
+  <ul style="font-size:14.5px;">
+    <li><strong>Not a proposal.</strong> No scope of work, no fee, no timeline.</li>
+    <li><strong>Not a Toyota-tenant architecture.</strong> The diagrams are reference architectures; the actual deployment shape for Toyota would reflect Toyota Connected's existing Azure footprint, Toyota's data residency requirements, and Toyota's existing supplier-portal and dealer integrations.</li>
+    <li><strong>Not a vendor-lock statement.</strong> NVIDIA components are shown as optional. The architecture pattern (four data domains, agent chain, audit row, HITL gate) is largely portable; a different acceleration provider could substitute for the NVIDIA layer if Toyota's evaluation lands elsewhere.</li>
+    <li><strong>Not exhaustive on the agent chain.</strong> The 24-step chain is illustrative. Toyota-specific steps tied to Toyota's compliance requirements, supplier-portal interactions, or dealer-network coordination would extend or modify the chain in a real engagement.</li>
+  </ul>
+</section>
+
+</div><!-- /tab-panel references -->
+
+</main>
+
+<script>
+(function() {
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      tabs.forEach(b => {
+        const isActive = b === btn;
+        b.classList.toggle('active', isActive);
+        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      panels.forEach(p => {
+        p.classList.toggle('active', p.dataset.panel === target);
+      });
+      // Reset URL hash to the tab; scroll to top of main
+      if (history.replaceState) {
+        history.replaceState(null, '', '#' + target);
+      }
+      const main = document.querySelector('main');
+      if (main) {
+        const top = main.getBoundingClientRect().top + window.scrollY - 60;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
+  });
+  // Open the tab specified by URL hash on load
+  function openTabFromHash() {
+    const h = (location.hash || '').replace('#', '');
+    if (!h) return;
+    const target = document.querySelector(`.tab-btn[data-tab="${h}"]`);
+    if (target) target.click();
+  }
+  window.addEventListener('hashchange', openTabFromHash);
+  document.addEventListener('DOMContentLoaded', openTabFromHash);
+})();
+</script>
+
+<footer>
+  <p style="margin:0 0 6px;"><strong>Keven Markham</strong> · Vice President · Deloitte's Microsoft Technology &amp; Services Practice</p>
+  <p style="margin:0;">22+ years on the Microsoft platform · Industrial Products &amp; Services · kmarkham@deloitte.com</p>
+  <p style="margin:8px 0 0;font-size:11px;color:var(--slate-light);">Reference document · Discovery-stage · Architecture &amp; process diagrams · Companion to the Calculations &amp; References document and the discovery email of same date</p>
+</footer>
+
+</body>
+</html>

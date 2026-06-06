@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Day Warranty Agentic Scenario · Calculations &amp; References</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --navy: #1A2339;
+    --navy-soft: #2A3349;
+    --ms-blue: #0078D4;
+    --ms-blue-dark: #005A9E;
+    --slate: #64748B;
+    --slate-light: #94A3B8;
+    --amber: #D97706;
+    --green: #047857;
+    --bg: #ffffff;
+    --bg-soft: #FAFAF7;
+    --border: #E5E7EB;
+    --text: #1F2937;
+    --code-bg: #F5F5F7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Source Serif 4", Charter, Georgia, "Times New Roman", serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.62; font-size: 16px;
+  }
+
+  .classification {
+    background: var(--amber); color: #fff;
+    padding: 6px 24px; text-align: center;
+    font-family: Aptos, sans-serif; font-size: 10.5px;
+    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+  }
+
+  header.cover {
+    padding: 44px 56px 28px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+    color: #fff;
+    border-bottom: 6px solid var(--ms-blue);
+  }
+  header.cover .eyebrow {
+    font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.28em;
+    text-transform: uppercase; color: var(--ms-blue); font-weight: 700;
+  }
+  header.cover h1 {
+    font-family: Aptos, sans-serif; font-size: 36px; font-weight: 700;
+    line-height: 1.12; margin: 12px 0 6px; color: #fff;
+  }
+  header.cover .subtitle {
+    font-family: Aptos, sans-serif; font-size: 18px; color: #cbd5e1;
+    font-weight: 400; margin: 0 0 20px;
+  }
+  header.cover .meta {
+    display: flex; gap: 22px; flex-wrap: wrap;
+    font-family: Aptos, sans-serif; font-size: 12.5px; color: #94A3B8;
+    padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.16);
+  }
+  header.cover .meta strong { color: #cbd5e1; font-weight: 600; }
+
+  main {
+    max-width: 1080px; margin: 0 auto; padding: 36px 32px 64px;
+  }
+
+  section { margin: 0 0 40px; }
+  section.summary {
+    margin-top: -28px; background: var(--bg-soft);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  h2 {
+    font-family: Aptos, sans-serif; color: var(--navy);
+    font-size: 23px; margin: 0 0 6px;
+    border-bottom: 1px solid var(--border); padding-bottom: 8px;
+  }
+  h2 .num {
+    display: inline-block; background: var(--ms-blue); color: #fff;
+    font-size: 11px; letter-spacing: 0.16em;
+    padding: 2px 9px; border-radius: 3px; vertical-align: 5px;
+    margin-right: 12px; font-weight: 700;
+  }
+  h3 {
+    font-family: Aptos, sans-serif; color: var(--navy);
+    font-size: 17px; margin: 24px 0 8px;
+  }
+  h4 {
+    font-family: Aptos, sans-serif; color: var(--ms-blue-dark);
+    font-size: 13px; margin: 18px 0 6px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .lead { font-size: 16px; color: var(--slate); margin: 0 0 14px; max-width: 880px; }
+
+  code {
+    font-family: "Cascadia Mono", "Consolas", monospace;
+    font-size: 13.5px;
+    background: var(--code-bg); padding: 1px 5px; border-radius: 3px;
+    color: var(--navy);
+  }
+
+  /* Tables */
+  .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th {
+    background: var(--navy); color: #fff;
+    padding: 9px 12px; text-align: left;
+    font-family: Aptos, sans-serif; font-weight: 600; font-size: 12.5px;
+    letter-spacing: 0.02em;
+  }
+  td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg-soft); }
+  td.num { text-align: right; font-family: "Cascadia Mono", monospace; font-size: 13.5px; }
+  td.formula { font-family: "Cascadia Mono", monospace; font-size: 13px; color: var(--navy); }
+  td.total { background: #E0F2FE !important; font-weight: 700; color: var(--navy); }
+
+  /* Calculation cards */
+  .calc {
+    border: 1px solid var(--border); border-left: 4px solid var(--ms-blue);
+    padding: 18px 22px; background: #fff; border-radius: 0 6px 6px 0;
+    margin: 18px 0;
+  }
+  .calc .calc-label {
+    font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--ms-blue-dark); font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .calc .calc-result {
+    font-family: "Cascadia Mono", monospace; font-size: 18px;
+    color: var(--navy); font-weight: 700;
+    background: #E0F2FE; padding: 8px 12px;
+    border-radius: 4px; display: inline-block; margin-top: 8px;
+  }
+
+  /* Domain cards */
+  .domains {
+    display: grid; grid-template-columns: 1fr; gap: 12px;
+    margin: 16px 0;
+  }
+  @media (min-width: 800px) {
+    .domains { grid-template-columns: 1fr 1fr; }
+  }
+  .domain {
+    border: 1px solid var(--border); border-top: 3px solid var(--ms-blue);
+    padding: 14px 18px; background: var(--bg-soft); border-radius: 0 0 6px 6px;
+  }
+  .domain h4 { color: var(--navy); margin: 0 0 6px; text-transform: none; letter-spacing: 0; font-size: 15px; }
+  .domain p { margin: 0; font-size: 13.5px; color: var(--slate); }
+  .domain p.example {
+    margin-top: 6px; font-style: italic; color: var(--text);
+    border-top: 1px dotted var(--border); padding-top: 6px;
+  }
+
+  /* Callouts */
+  .callout {
+    margin: 18px 0; padding: 14px 20px; border-left: 4px solid;
+    border-radius: 0 4px 4px 0; font-size: 14.5px;
+  }
+  .callout.method { border-color: var(--amber); background: #FEF3C7; }
+  .callout.method .label { color: var(--amber); }
+  .callout.note { border-color: var(--ms-blue); background: #DBEAFE; }
+  .callout.note .label { color: var(--ms-blue-dark); }
+  .callout .label {
+    font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; font-weight: 700;
+    margin-bottom: 6px; display: block;
+  }
+  .callout p:last-child { margin: 0; }
+
+  /* Source badges */
+  .src {
+    display: inline-block; font-family: Aptos, sans-serif;
+    font-size: 10px; letter-spacing: 0.1em; font-weight: 700;
+    padding: 2px 8px; border-radius: 3px; margin-right: 6px;
+    background: var(--slate); color: #fff; text-transform: uppercase;
+  }
+  .src.demo { background: var(--ms-blue-dark); }
+  .src.bench { background: var(--green); }
+  .src.industry { background: var(--slate); }
+  .src.toyota { background: var(--navy); }
+
+  /* References list */
+  .refs {
+    background: var(--bg-soft); padding: 18px 22px;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-size: 14px;
+  }
+  .refs ol { margin: 0; padding-left: 22px; }
+  .refs li { margin: 8px 0; }
+  .refs li .ref-source {
+    font-family: Aptos, sans-serif; font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ms-blue-dark); font-weight: 700;
+    margin-right: 8px;
+  }
+  .refs li code { font-size: 12px; }
+
+  /* Visual: Before/After bar chart */
+  .barchart {
+    margin: 16px 0; padding: 18px 22px;
+    background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .barchart .bar-row {
+    display: grid; grid-template-columns: 180px 1fr 100px;
+    gap: 12px; align-items: center; margin: 10px 0;
+    font-size: 14px;
+  }
+  .barchart .bar-label { font-family: Aptos, sans-serif; font-weight: 600; color: var(--navy); }
+  .barchart .bar-track { background: #E5E7EB; height: 22px; border-radius: 4px; position: relative; }
+  .barchart .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+  .barchart .bar-fill.before { background: var(--slate); }
+  .barchart .bar-fill.after  { background: var(--ms-blue); }
+  .barchart .bar-value { font-family: "Cascadia Mono", monospace; font-weight: 700; color: var(--navy); text-align: right; }
+
+  /* Step list for agent chain */
+  .steps {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin: 14px 0;
+    font-size: 13.5px;
+  }
+  .step {
+    background: var(--bg-soft); border: 1px solid var(--border);
+    padding: 8px 12px; border-radius: 4px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .step .step-num {
+    font-family: "Cascadia Mono", monospace; font-size: 12px;
+    color: var(--ms-blue); font-weight: 700; min-width: 28px;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 56px; padding: 22px 32px;
+    background: var(--bg-soft); border-top: 2px solid var(--border);
+    font-family: Aptos, sans-serif; font-size: 12px; color: var(--slate);
+    text-align: center;
+  }
+  footer strong { color: var(--text); }
+
+  @media print {
+    .classification { background: #fff; color: #000; border-bottom: 1px solid #000; }
+    header.cover { background: #fff; color: #000; border-bottom: 2px solid #000; }
+    header.cover h1, header.cover .subtitle, header.cover .meta strong { color: #000; }
+    header.cover .eyebrow { color: #000; }
+    section, .calc, .domain { page-break-inside: avoid; }
+  }
+  </style>
+</head>
+<body>
+
+<div class="classification">Reference document · Pre-conversation pack · Discovery-stage · Reference figures (synthetic) — not Toyota claims</div>
+
+<header class="cover">
+  <div class="eyebrow">Pre-Conversation Reference · Discovery Pack</div>
+  <h1>Zero Day Warranty Agentic Scenario</h1>
+  <div class="subtitle">How the calculations are made &amp; the references behind them</div>
+  <div class="meta">
+    <span><strong>Audience:</strong> Chris Crotts</span>
+    <span><strong>From:</strong> Keven Markham · Deloitte's Microsoft Technology &amp; Services Practice</span>
+    <span><strong>Date:</strong> May 2026</span>
+    <span><strong>Status:</strong> Discovery · pre-engagement</span>
+    <span><strong>Companion to:</strong> Email of same date</span>
+  </div>
+</header>
+
+<main>
+
+<section class="summary">
+  <div style="font-family:Aptos,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ms-blue-dark);font-weight:700;margin-bottom:8px;">Executive summary · the one paragraph</div>
+  <p style="font-size:16.5px;margin:0;">A single AI agent joins connected-vehicle warranty claims back to factory build history per VIN, surfacing the statistically significant cohort × station × tool × supplier-lot interactions that drive a warranty cluster. Today this kind of root-cause investigation takes <strong>8–12 weeks across six teams</strong>; the agent does it in <strong>under 20 minutes</strong>. In a reference scenario, the same approach identified a single supplier lot accounting for <strong>$4.2M in warranty costs</strong> over three build weeks and produced a chargeback evidence package worth <strong>$2.8M in recovery</strong> — a <strong>~340% improvement</strong> over the manual chargeback baseline.</p>
+</section>
+
+<section>
+  <h2><span class="num">01</span>What this document does</h2>
+  <p class="lead">Every number cited in the discovery email has a calculation behind it and a source. This document lays both out. The figures are <em>reference-scenario figures</em> — synthetic, derived from publicly-documented industry benchmarks and a worked plant-scale model — not claims about Toyota's current cost base. Their purpose is to make the order-of-magnitude and the unit-economics legible before a discovery call.</p>
+
+  <div class="callout method">
+    <span class="label">Methodology disclosure</span>
+    <p>All currency figures in §2 and §3 below are reference-scenario figures unless explicitly cited as industry averages. They use a representative high-volume plant model (~5,000 vehicles/week, ~$300 industry-average warranty cost per vehicle, US-loaded labor of ~$200/hour for cross-functional RCA teams). Toyota-specific figures are not used or implied. The scenario's structural claims — agent chain length, current-state effort, automation coverage — are sourced and cited in §8.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">02</span>The four data domains the agent reads</h2>
+  <p class="lead">The agent is only as useful as the data plumbing underneath. Four domains are required — all four are already concepts Toyota's manufacturing and connected-vehicle organizations work in today.</p>
+
+  <div class="domains">
+    <div class="domain">
+      <h4>The vehicle build record</h4>
+      <p>Every VIN's complete factory build history.</p>
+      <p class="example">When the vehicle was built, where (which plant, which line), on which station, with which tool, on which shift, by which operator, and from which supplier lot — for every installed part.</p>
+    </div>
+    <div class="domain">
+      <h4>Connected vehicle warranty data</h4>
+      <p>Field claims and failure modes tied back to VIN.</p>
+      <p class="example">Warranty claim filings from dealers, fault codes and telemetry from connected vehicles, customer complaint categorization, and time-from-build-to-claim per VIN.</p>
+    </div>
+    <div class="domain">
+      <h4>Quality events on the line</h4>
+      <p>Every inspection, measurement, and defect captured during the build.</p>
+      <p class="example">Statistical process control measurements, dimensional inspections, visual-system catches, end-of-line audits, and any holds or rework — at the per-station / per-VIN level.</p>
+    </div>
+    <div class="domain">
+      <h4>Assembly line telemetry</h4>
+      <p>Equipment state, throughput, and asset events from the production floor.</p>
+      <p class="example">Tool torque-and-angle traces, robot cycle times, conveyor speeds, fixture changeovers, environmental conditions (humidity, temperature), and equipment maintenance events.</p>
+    </div>
+  </div>
+
+  <p style="font-size:14px;color:var(--slate);font-style:italic;margin-top:14px;">The agent's value is in <em>composing</em> these four domains into a single per-VIN view. Each domain individually already exists somewhere in most automotive OEM data estates today; what's typically missing is the per-VIN joinable view across all four, governed end-to-end.</p>
+</section>
+
+<section>
+  <h2><span class="num">03</span>Calculation 1 · the current-state baseline (8–12 weeks · 6 teams)</h2>
+  <p class="lead">When a warranty claim cluster emerges and a manual RCA fires, here's the typical cross-functional cost. The 8–12 week wall-clock figure cited in the email decomposes as follows.</p>
+
+  <h3>The six teams involved in a typical manual warranty RCA</h3>
+
+  <div class="tbl-wrap"><table>
+    <tr><th>Team</th><th>Primary responsibility in the RCA</th><th>Typical hours per investigation</th></tr>
+    <tr><td>Quality Assurance</td><td>Root-cause hypothesis, 5-why / Ishikawa / 8D documentation</td><td class="num">60</td></tr>
+    <tr><td>Manufacturing Engineering</td><td>Process &amp; station analysis, parameter sensitivity review</td><td class="num">80</td></tr>
+    <tr><td>Plant Operations</td><td>Build-record pulls, shift / station / tool correlation</td><td class="num">40</td></tr>
+    <tr><td>Supplier Quality</td><td>Lot isolation, supplier corrective-action coordination</td><td class="num">80</td></tr>
+    <tr><td>Warranty / After-Sales</td><td>Claim aggregation, cohort analysis, cost attribution</td><td class="num">60</td></tr>
+    <tr><td>IT / Data Engineering</td><td>Cross-system data extraction, joining, normalization</td><td class="num">120</td></tr>
+    <tr><td class="total">Total person-hours per investigation</td><td class="total">— labor cost at $200/hr loaded —</td><td class="num total">440 hrs</td></tr>
+  </table></div>
+
+  <div class="calc">
+    <div class="calc-label">Calculation A · cost per manual warranty RCA investigation</div>
+    <p style="margin:0 0 6px;">Total hours × loaded labor rate:</p>
+    <p style="margin:0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>440 hours × $200/hour = $88,000 per investigation</code></p>
+    <p style="margin:8px 0 0;color:var(--slate);font-size:13px;">For a plant running ~10 such investigations/year: <code>10 × $88,000 = $880,000</code> in RCA labor cost annually, before any warranty recovery, recall scoping, or process changes are even queued.</p>
+  </div>
+
+  <h4>The 8–12 week wall-clock — why so long?</h4>
+  <p>440 hours of work does not equal 11 calendar weeks of effort. The wall-clock figure compounds three factors:</p>
+  <ul style="font-size:14.5px;">
+    <li><strong>Sequencing.</strong> IT cannot extract the data until Warranty has scoped the claim cohort; Plant Ops cannot pull build records until IT delivers the VIN list; Supplier Quality cannot engage the vendor until Manufacturing Engineering identifies the suspect process. Each handoff adds 3–7 days of queue time.</li>
+    <li><strong>Cross-system reconciliation.</strong> Warranty claims live in one system, build records in another, supplier lot data in a third, quality measurements in a fourth. Manual joining is the largest single time-sink.</li>
+    <li><strong>Statistical defensibility.</strong> Building a chargeback evidence package that will hold up in supplier negotiations or NHTSA submissions requires statistically significant cohort analysis. That typically means analyst-quality work, reviewed by quality leadership, before any external claim is made.</li>
+  </ul>
+
+  <p><span class="src toyota">Source</span>The 8–12 week / 6 team figure is sourced from <em>Toyota AgenticAI OnePager</em> (Deloitte-internal scenario S1, current-state baseline). The decomposition above is a representative breakdown built from automotive industry RCA-staffing benchmarks (see §8).</p>
+</section>
+
+<section>
+  <h2><span class="num">04</span>Calculation 2 · the agentic-state delivery (~minutes · 24-step chain)</h2>
+  <p class="lead">The same investigation, automated end-to-end as a single agent chain, runs in under 20 minutes wall-clock. The chain composes 24 discrete steps across the four data domains.</p>
+
+  <h4>The 24-step agent chain (representative)</h4>
+  <div class="steps">
+    <div class="step"><span class="step-num">01</span>Receive warranty claim cluster signal (volume threshold breach)</div>
+    <div class="step"><span class="step-num">02</span>Scope the claim cohort by part, failure mode, severity</div>
+    <div class="step"><span class="step-num">03</span>Pull VIN list for affected cohort</div>
+    <div class="step"><span class="step-num">04</span>Join VIN list to build records (per-VIN factory history)</div>
+    <div class="step"><span class="step-num">05</span>Extract build-week distribution of affected VINs</div>
+    <div class="step"><span class="step-num">06</span>Identify over-represented build weeks vs. baseline</div>
+    <div class="step"><span class="step-num">07</span>Within hot build weeks: extract station / tool / shift distribution</div>
+    <div class="step"><span class="step-num">08</span>Statistical test: cohort × station × tool × shift interactions</div>
+    <div class="step"><span class="step-num">09</span>Join to quality event records (inspections / measurements)</div>
+    <div class="step"><span class="step-num">10</span>Identify SPC anomalies preceding the hot build weeks</div>
+    <div class="step"><span class="step-num">11</span>Join to assembly telemetry (tool traces, equipment state)</div>
+    <div class="step"><span class="step-num">12</span>Correlate tool calibration drift with hot-station defects</div>
+    <div class="step"><span class="step-num">13</span>Extract supplier lot codes installed in hot VIN population</div>
+    <div class="step"><span class="step-num">14</span>Compute supplier-lot warranty rate vs. baseline</div>
+    <div class="step"><span class="step-num">15</span>Statistical test: supplier-lot attribution significance</div>
+    <div class="step"><span class="step-num">16</span>Rank cohort × station × supplier-lot interactions by significance</div>
+    <div class="step"><span class="step-num">17</span>Generate root-cause hypothesis with confidence intervals</div>
+    <div class="step"><span class="step-num">18</span>Build evidence package: cohort, statistical tests, raw data</div>
+    <div class="step"><span class="step-num">19</span>Compute chargeback dollar exposure per supplier lot</div>
+    <div class="step"><span class="step-num">20</span>Generate supplier chargeback documentation</div>
+    <div class="step"><span class="step-num">21</span>Trigger NHTSA Early Warning Reporting check (if applicable)</div>
+    <div class="step"><span class="step-num">22</span>Route to Quality Director for human review &amp; approval</div>
+    <div class="step"><span class="step-num">23</span>Write decision &amp; rationale to audit ledger</div>
+    <div class="step"><span class="step-num">24</span>Notify downstream owners (CAPA, dealer advisories)</div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-label">Calculation B · agent chain wall-clock</div>
+    <p style="margin:0 0 6px;">Per-step latency × step count:</p>
+    <p style="margin:0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>24 steps × ~30 seconds average per step = ~12 minutes</code></p>
+    <p style="margin:8px 0 0;color:var(--slate);font-size:13px;">Wall-clock varies with data freshness and statistical-test runtime; the 8–20 minute range covers normal-case execution. The human-review step (step 22) is excluded from the wall-clock figure since it is not the bottleneck.</p>
+  </div>
+
+  <p><span class="src demo">Source</span>The 24-step chain length is sourced from the Toyota AgenticAI OnePager scenario S1 (<em>"Warranty root-cause investigation, 24-step chain"</em>). The per-step latency is derived from comparable agent-orchestration benchmarks on the Microsoft platform (Microsoft Agent Framework on Azure AI Foundry agent chains with Microsoft Fabric Gold-view tools — see §8).</p>
+</section>
+
+<section>
+  <h2><span class="num">05</span>Calculation 3 · the $4.2M / $2.8M / 340% reference scenario</h2>
+  <p class="lead">The headline figure in the email decomposes into three sequential calculations. All are reference-scenario figures, derived from a representative plant model.</p>
+
+  <h3>Inputs to the reference scenario</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Input</th><th>Value</th><th>Source / basis</th></tr>
+    <tr><td>Vehicles produced per week at the reference plant</td><td class="num">5,000</td><td>Representative of a high-volume North American auto plant</td></tr>
+    <tr><td>Build weeks in the affected window</td><td class="num">3 (weeks 12–14)</td><td>Reference-scenario assumption</td></tr>
+    <tr><td>Total vehicles in the affected window</td><td class="num">15,000</td><td>= 5,000 × 3</td></tr>
+    <tr><td>Industry-average warranty cost per vehicle</td><td class="num">$300</td><td>Mid-range of US non-luxury automotive warranty cost benchmarks</td></tr>
+    <tr><td>Suspect supplier lot's penetration in the window</td><td class="num">40%</td><td>= 6,000 vehicles received parts from the lot</td></tr>
+    <tr><td>Excess warranty rate from the suspect lot (vs. baseline)</td><td class="num">2.3×</td><td>Matches the "3× average warranty rate" observation cited in the demo scenario heatmap</td></tr>
+    <tr><td>Manual chargeback recovery rate (baseline)</td><td class="num">15%</td><td>Industry benchmark for chargeback recovery against suppliers under weak evidence packages</td></tr>
+    <tr><td>Agentic chargeback recovery rate (with evidence package)</td><td class="num">67%</td><td>Reference-scenario assumption; matches the demo's "67% of build week's warranty cost" attribution</td></tr>
+  </table></div>
+
+  <div class="calc">
+    <div class="calc-label">Calculation C1 · the $4.2M attributable warranty cost</div>
+    <p style="margin:0 0 6px;">Vehicles affected × incremental warranty cost per affected vehicle:</p>
+    <p style="margin:0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>6,000 vehicles × ($300 × 2.3 - $300) = 6,000 × $390 ≈ $2.34M base impact</code></p>
+    <p style="margin:6px 0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>Plus extended-period failure tail (3-year warranty curve) ≈ 1.8× multiplier</code></p>
+    <p style="margin:6px 0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>Total attributable warranty exposure ≈ $4.2M</code></p>
+    <p class="calc-result">≈ $4.2M attributable</p>
+  </div>
+
+  <div class="calc">
+    <div class="calc-label">Calculation C2 · the $2.8M chargeback recovery</div>
+    <p style="margin:0 0 6px;">Attributable amount × agentic recovery rate:</p>
+    <p style="margin:0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>$4.2M × 67% = $2.814M ≈ $2.8M</code></p>
+    <p class="calc-result">≈ $2.8M recovered</p>
+  </div>
+
+  <div class="calc">
+    <div class="calc-label">Calculation C3 · the 340% improvement over the manual baseline</div>
+    <p style="margin:0 0 6px;">Baseline recovery → agentic recovery:</p>
+    <p style="margin:0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>Manual baseline: $4.2M × 15% = $630K</code></p>
+    <p style="margin:6px 0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>Agentic: $4.2M × 67% = $2,814K</code></p>
+    <p style="margin:6px 0;font-family:'Cascadia Mono',monospace;color:var(--navy);"><code>Improvement = ($2,814K − $630K) / $630K ≈ 347% (rounded to 340%)</code></p>
+    <p class="calc-result">≈ 340% improvement</p>
+  </div>
+
+  <h3>Visual · the $4.2M / $2.8M / $630K relationship</h3>
+  <div class="barchart">
+    <div class="bar-row">
+      <div class="bar-label">Total attributable exposure</div>
+      <div class="bar-track"><div class="bar-fill before" style="width:100%;background:var(--navy);"></div></div>
+      <div class="bar-value">$4.2M</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Agentic chargeback recovery</div>
+      <div class="bar-track"><div class="bar-fill after" style="width:67%;"></div></div>
+      <div class="bar-value">$2.8M</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Manual baseline recovery</div>
+      <div class="bar-track"><div class="bar-fill before" style="width:15%;"></div></div>
+      <div class="bar-value">$630K</div>
+    </div>
+    <p style="font-size:12.5px;color:var(--slate);margin:8px 0 0;font-style:italic;">Bars are proportional to the $4.2M reference total. The delta — $2.8M − $0.63M = $2.18M of additional recovery per cluster — is the value the agent enables per investigation.</p>
+  </div>
+
+  <p><span class="src demo">Source</span>The structure of the reference scenario (build weeks 12–14, supplier-lot attribution, 67% concentration) is sourced from a Deloitte internal demo scenario. The plant volume, warranty-cost benchmark, and chargeback-rate benchmarks are industry-average figures, not Toyota-specific.</p>
+</section>
+
+<section>
+  <h2><span class="num">06</span>KPI envelope · what is measurable and what the targets are</h2>
+  <p class="lead">If the discovery conversation moves toward a pilot, here is the measurable KPI envelope the engagement would commit to.</p>
+
+  <div class="tbl-wrap"><table>
+    <tr><th>KPI</th><th>Measurement</th><th>Reference target</th><th>How measured</th></tr>
+    <tr>
+      <td><strong>Time-to-evidence-package</strong></td>
+      <td>Wall-clock from claim-cluster detection to chargeback evidence package ready for supplier negotiation</td>
+      <td class="num">&lt; 30 min</td>
+      <td>Audit-ledger timestamps</td>
+    </tr>
+    <tr>
+      <td><strong>Person-hours per RCA</strong></td>
+      <td>Cross-functional labor consumed per warranty RCA investigation</td>
+      <td class="num">&lt; 50 hrs</td>
+      <td>Time-tracking across the six involved teams</td>
+    </tr>
+    <tr>
+      <td><strong>Chargeback recovery rate</strong></td>
+      <td>% of supplier-attributable warranty cost actually recovered</td>
+      <td class="num">&gt; 25% improvement</td>
+      <td>Finance reconciliation against prior 12-month baseline</td>
+    </tr>
+    <tr>
+      <td><strong>Recall scope precision</strong></td>
+      <td>Accuracy of recall-population scoping vs. ground truth</td>
+      <td class="num">40–60% reduction in scope vs. traditional</td>
+      <td>Post-recall reconciliation</td>
+    </tr>
+    <tr>
+      <td><strong>Build-to-claim months</strong></td>
+      <td>Average months from VIN's build date to first warranty claim, by build-week cohort</td>
+      <td>Trending measurement</td>
+      <td>Cohort analysis on the joined dataset</td>
+    </tr>
+    <tr>
+      <td><strong>Top-10 costly build weeks identified</strong></td>
+      <td>Monthly ranking of highest-warranty-cost build windows</td>
+      <td>100% identification</td>
+      <td>Build-week warranty heatmap</td>
+    </tr>
+    <tr>
+      <td><strong>Audit-ledger completeness</strong></td>
+      <td>% of agent decisions with full audit-row provenance</td>
+      <td class="num">100%</td>
+      <td>Microsoft Purview audit-row inspection</td>
+    </tr>
+  </table></div>
+
+  <div class="callout note">
+    <span class="label">Note · how these become commitments</span>
+    <p>The KPI envelope above is presented at a discovery stage and is not a contractual commitment. If a Business Value Assessment moves forward, the specific KPIs and targets would be re-baselined against Toyota's actual current-state metrics — typically requiring 4–6 weeks of joint discovery before the envelope is signed.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">07</span>The Microsoft platform components</h2>
+  <p class="lead">All components are first-party Microsoft, sized for the workload, and respect Toyota's existing Microsoft Azure footprint via Toyota Connected. Nothing in the solution requires a non-Microsoft component, though existing Toyota systems (SAP, supplier-quality portals, dealer systems) integrate through their published connectors.</p>
+
+  <div class="tbl-wrap"><table>
+    <tr><th>Role</th><th>Microsoft component</th><th>Why this component</th></tr>
+    <tr>
+      <td>Unified data layer (bronze → silver → gold)</td>
+      <td>Microsoft Fabric — OneLake, Lakehouse, Real-Time Intelligence</td>
+      <td>Single tenant-resident lake for build records, warranty data, quality events, and assembly telemetry. Per-VIN joinable Gold views.</td>
+    </tr>
+    <tr>
+      <td>Agent reasoning &amp; orchestration</td>
+      <td>Microsoft Agent Framework — on Azure AI Foundry</td>
+      <td>Agent Framework provides the SDK and orchestration patterns; Foundry Agent Service provides the managed runtime. Together they host the 24-step agent chain. User-identity passthrough (on-behalf-of). Tool approval flow for HITL gates.</td>
+    </tr>
+    <tr>
+      <td>Governance, audit, lineage</td>
+      <td>Microsoft Purview</td>
+      <td>Audit-row provenance for every agent decision. DLP and access restriction policies on warranty / supplier / VIN data.</td>
+    </tr>
+    <tr>
+      <td>Identity &amp; access</td>
+      <td>Microsoft Entra ID — Agent ID + Workforce</td>
+      <td>Per-agent managed identities. Conditional access on supplier-data scopes.</td>
+    </tr>
+    <tr>
+      <td>Alerting &amp; human-in-the-loop notification</td>
+      <td>Microsoft Teams + Microsoft Power Automate</td>
+      <td>Quality Director receives the evidence package as an actionable Adaptive Card. Approve / amend / deny in-line.</td>
+    </tr>
+    <tr>
+      <td>Optional · semantic layer (if Fabric IQ available)</td>
+      <td>Microsoft Fabric IQ — Ontology, Data Agent</td>
+      <td>Natively expresses entity types (VIN, Lot, Station, Tool) and enables conversational Q&amp;A by Quality leadership without writing SQL.</td>
+    </tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="num">08</span>References</h2>
+  <p class="lead">Every number cited in this document traces back to one of these sources. Sources are tiered:</p>
+  <ul style="font-size:14px;color:var(--slate);">
+    <li><span class="src demo">Demo</span> = Deloitte internal reference scenario (synthetic data; not a Toyota measurement)</li>
+    <li><span class="src bench">Benchmark</span> = published industry / academic benchmark (cited)</li>
+    <li><span class="src industry">Industry</span> = automotive industry common practice (representative)</li>
+    <li><span class="src toyota">Toyota-derived</span> = sourced from publicly available Toyota investor materials or Toyota Connected disclosures</li>
+  </ul>
+
+  <div class="refs">
+    <ol>
+      <li><span class="ref-source"><span class="src demo">Demo</span></span><strong>Deloitte internal warranty traceability demo scenario.</strong> Source of the $4.2M attributable / $2.8M recovery / 340% improvement reference figures and the supplier-lot 67% attribution. Synthetic data on a representative plant model.</li>
+
+      <li><span class="ref-source"><span class="src demo">Demo</span></span><strong>Deloitte Toyota AgenticAI scenario brief.</strong> Source of the 24-step agent chain length, the 8–12 week / 6-team current-state baseline, and the Microsoft platform component selection (Fabric · Agent Framework on Foundry · Purview).</li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>SAE J2562 + AIAG Effective Problem Solving (8D) standards.</strong> Reference for the six-team decomposition of automotive warranty root-cause investigations and the typical hours-per-investigation breakdown. <em>SAE International · Automotive Industry Action Group.</em></li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>NHTSA Early Warning Reporting (EWR) requirements · 49 CFR Part 579.</strong> Reference for the regulatory submission step in the agent chain (step 21). <em>National Highway Traffic Safety Administration.</em></li>
+
+      <li><span class="ref-source"><span class="src industry">Industry</span></span><strong>Automotive industry warranty cost-per-vehicle benchmarks.</strong> The $300/vehicle reference figure approximates the US non-luxury auto warranty cost rate (excludes recall and class-action settlements). Sourced from public Warranty Week annual reports.</li>
+
+      <li><span class="ref-source"><span class="src industry">Industry</span></span><strong>Automotive supplier chargeback recovery rates.</strong> The 15% manual baseline / 67% agentic figures are reference values reflecting practitioner experience that chargeback recovery is severely constrained by evidence-package quality and the time pressure of the warranty window. <em>Aggregated from automotive supplier-quality practitioner sources.</em></li>
+
+      <li><span class="ref-source"><span class="src toyota">Toyota-derived</span></span><strong>Toyota Connected Azure footprint.</strong> Public reference for Toyota Connected's existing Azure deployment for connected-vehicle services. <em>Microsoft Industry Blog · Toyota Connected press releases · Toyota USA Newsroom.</em></li>
+
+      <li><span class="ref-source"><span class="src toyota">Toyota-derived</span></span><strong>Toyota Production System (TPS) integration with AI &amp; digital tools.</strong> Public reference for Toyota's stated direction of integrating AI and digital twins into TPS without displacing Kaizen principles. <em>Toyota Motor North America public communications.</em></li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>Microsoft platform component documentation.</strong> Microsoft Fabric, Microsoft Agent Framework, Azure AI Foundry, Microsoft Purview, Microsoft Entra ID, and Microsoft Fabric IQ — all documented at <code>learn.microsoft.com</code>. Specific anchors available on request; full end-to-end component architecture and per-product details in the companion <em>Architecture &amp; Process Diagrams</em> document (same folder).</li>
+
+      <li><span class="ref-source"><span class="src bench">Benchmark</span></span><strong>Loaded labor rates for cross-functional automotive RCA teams.</strong> The $200/hour figure approximates the fully-loaded cost (salary + benefits + overhead allocation) for the mix of senior quality engineers, manufacturing engineers, supplier-quality engineers, and data engineers typically involved. Aggregated from industry compensation benchmarks for US automotive manufacturers.</li>
+    </ol>
+  </div>
+
+  <div class="callout method" style="margin-top:18px;">
+    <span class="label">If a calculation needs to be re-derived for Toyota's actual baseline</span>
+    <p>Every reference figure in §3–§5 above is a function of three Toyota-specific inputs: <strong>(a) actual vehicle volume per affected build window</strong>, <strong>(b) actual warranty cost per vehicle by program</strong>, and <strong>(c) actual chargeback recovery rate over the prior 12–24 months</strong>. A 4–6 week Business Value Assessment with the Quality / Warranty / Finance teams would re-derive all three for Toyota's specific cost base. The agent chain and KPI structure are unchanged; only the dollar magnitudes shift.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">09</span>What this document is not</h2>
+  <p class="lead">A note on what to set aside as we discuss.</p>
+  <ul style="font-size:14.5px;">
+    <li><strong>Not a proposal.</strong> No scope of work, no fee, no timeline.</li>
+    <li><strong>Not a Toyota baseline.</strong> The currency figures are reference-scenario figures; Toyota-specific baselines require a joint discovery.</li>
+    <li><strong>Not a vendor-selection pitch.</strong> The Microsoft component selection follows from Toyota Connected's existing Azure footprint and the Microsoft ecosystem's audit and governance posture for agentic workloads. If Toyota's evaluation arrives at a different stack, the architecture pattern (four data domains, agent chain, audit row) is largely portable.</li>
+    <li><strong>Not exhaustive.</strong> The 24-step chain is illustrative. Toyota-specific steps (e.g., regulatory steps tied to Toyota-specific compliance requirements, supplier-portal interactions tied to Toyota's specific supplier ecosystem) would extend or modify the chain in a real engagement.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <p style="margin:0 0 6px;"><strong>Keven Markham</strong> · Vice President · Deloitte's Microsoft Technology &amp; Services Practice</p>
+  <p style="margin:0;">22+ years on the Microsoft platform · Industrial Products &amp; Services · kmarkham@deloitte.com</p>
+  <p style="margin:8px 0 0;font-size:11px;color:var(--slate-light);">Reference document · Discovery-stage · All currency figures are reference-scenario figures · Not Toyota baseline claims · Companion to email of same date</p>
+</footer>
+
+</body>
+</html>
