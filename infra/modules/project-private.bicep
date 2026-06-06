@@ -23,6 +23,9 @@ param imageTag string
 @secure()
 param auditSigningKey string
 
+@description('Deploy the Container Apps. Set false for phase 1 (before images exist), true after import.')
+param deployApps bool = true
+
 // Network inputs (from modules/network.bicep)
 param appsSubnetId string
 param peSubnetId string
@@ -397,7 +400,7 @@ resource cae 'Microsoft.App/managedEnvironments@2024-03-01' = {
   }
 }
 
-var apps = [
+var apps = deployApps ? [
   {
     name: 'ca-zdw-orchestrator'
     repo: 'orchestrator'
@@ -413,7 +416,7 @@ var apps = [
     repo: 'mcp-ledger'
     external: false
   }
-]
+] : []
 
 resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [
   for app in apps: {
@@ -539,4 +542,3 @@ output aoaiEndpoint string = aoai.properties.endpoint
 output identityPrincipalId string = mi.properties.principalId
 output identityClientId string = mi.properties.clientId
 output keyVaultUri string = kv.properties.vaultUri
-output orchestratorFqdn string = containerApps[0].properties.configuration.ingress.fqdn

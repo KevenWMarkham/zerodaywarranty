@@ -3,7 +3,6 @@
 // the Postgres delegated subnet, plus the private DNS zones each service needs.
 
 param location string
-param suffix string
 
 var vnetName = 'vnet-zdw-agentic'
 

@@ -31,6 +31,9 @@ param imageTag string = '0.1.0'
 @secure()
 param auditSigningKey string = base64(newGuid())
 
+@description('Deploy the Container Apps. Phase 1: false (before images exist). Phase 2: true (after import).')
+param deployApps bool = true
+
 var suffix = take(uniqueString(subscription().subscriptionId, resourceGroupName), 6)
 
 resource rg 'Microsoft.Resources/resourceGroups@2023-07-01' = {
@@ -43,7 +46,6 @@ module network 'modules/network.bicep' = {
   scope: rg
   params: {
     location: location
-    suffix: suffix
   }
 }
 
@@ -67,6 +69,7 @@ module project 'modules/project-private.bicep' = {
     pgAdminPassword: pgAdminPassword
     imageTag: imageTag
     auditSigningKey: auditSigningKey
+    deployApps: deployApps
     appsSubnetId: network.outputs.appsSubnetId
     peSubnetId: network.outputs.peSubnetId
     pgSubnetId: network.outputs.pgSubnetId
@@ -83,4 +86,3 @@ output acrLoginServer string = project.outputs.acrLoginServer
 output aoaiEndpoint string = project.outputs.aoaiEndpoint
 output keyVaultUri string = project.outputs.keyVaultUri
 output identityClientId string = project.outputs.identityClientId
-output orchestratorFqdn string = project.outputs.orchestratorFqdn
