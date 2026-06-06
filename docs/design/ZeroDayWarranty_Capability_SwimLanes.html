@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Day Warranty · Capability Swim Lanes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --navy: #1A2339; --navy-soft: #2A3349;
+    --ms-blue: #0078D4; --ms-blue-dark: #005A9E;
+    --nv-green: #76B900; --nv-green-dark: #5C9300;
+    --slate: #64748B; --slate-light: #94A3B8;
+    --amber: #D97706; --green: #047857; --rust: #B85450;
+    --bg: #ffffff; --bg-soft: #FAFAF7; --border: #E5E7EB;
+    --text: #1F2937; --code-bg: #F5F5F7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Source Serif 4", Charter, Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.62; font-size: 16px; }
+
+  .classification { background: var(--amber); color: #fff; padding: 6px 24px; text-align: center; font-family: Aptos, sans-serif; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; }
+
+  header.cover { padding: 44px 56px 28px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%); color: #fff; border-bottom: 6px solid var(--ms-blue); }
+  header.cover .eyebrow { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ms-blue); font-weight: 700; }
+  header.cover h1 { font-family: Aptos, sans-serif; font-size: 36px; font-weight: 700; line-height: 1.12; margin: 12px 0 6px; color: #fff; }
+  header.cover .subtitle { font-family: Aptos, sans-serif; font-size: 18px; color: #cbd5e1; font-weight: 400; margin: 0 0 20px; }
+  header.cover .meta { display: flex; gap: 22px; flex-wrap: wrap; font-family: Aptos, sans-serif; font-size: 12.5px; color: #94A3B8; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.16); }
+  header.cover .meta strong { color: #cbd5e1; font-weight: 600; }
+
+  main { max-width: 1240px; margin: 0 auto; padding: 36px 32px 64px; }
+  section { margin: 0 0 40px; }
+  section.summary { margin-top: -28px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+
+  h2 { font-family: Aptos, sans-serif; color: var(--navy); font-size: 23px; margin: 0 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  h2 .num { display: inline-block; background: var(--ms-blue); color: #fff; font-size: 11px; letter-spacing: 0.16em; padding: 2px 9px; border-radius: 3px; vertical-align: 5px; margin-right: 12px; font-weight: 700; }
+  h3 { font-family: Aptos, sans-serif; color: var(--navy); font-size: 17px; margin: 24px 0 8px; }
+  .lead { font-size: 16px; color: var(--slate); margin: 0 0 14px; max-width: 940px; }
+  code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; color: var(--navy); }
+
+  figure { border: 1px solid var(--border); border-left: 4px solid var(--ms-blue); padding: 18px 22px; background: #fff; border-radius: 0 6px 6px 0; margin: 18px 0; overflow-x: auto; }
+  figure .fig-label { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ms-blue-dark); font-weight: 700; margin-bottom: 10px; }
+  figure svg { display: block; width: 100%; height: auto; min-width: 1000px; }
+  figcaption { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 13px; color: var(--slate); line-height: 1.55; }
+
+  .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: var(--navy); color: #fff; padding: 9px 12px; text-align: left; font-family: Aptos, sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.02em; }
+  td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg-soft); }
+  td.mono { font-family: "Cascadia Mono", monospace; font-size: 12.5px; color: var(--navy); }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin: 14px 0; font-family: Aptos, sans-serif; font-size: 12.5px; }
+  .legend .key { display: inline-flex; align-items: center; gap: 7px; }
+  .legend .swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+  .sw-ms { background: var(--ms-blue); } .sw-nv { background: var(--nv-green); }
+  .sw-navy { background: var(--navy); } .sw-slate { background: var(--slate); }
+  .sw-rust { background: var(--rust); } .sw-gov { background: #334155; }
+
+  .src { display: inline-block; font-family: Aptos, sans-serif; font-size: 10px; letter-spacing: 0.1em; font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-right: 6px; background: var(--slate); color: #fff; text-transform: uppercase; }
+  .src.ms { background: var(--ms-blue); } .src.nv { background: var(--nv-green-dark); } .src.gov { background: #334155; }
+
+  .callout { margin: 18px 0; padding: 14px 20px; border-left: 4px solid; border-radius: 0 4px 4px 0; font-size: 14.5px; }
+  .callout.note { border-color: var(--ms-blue); background: #DBEAFE; }
+  .callout.note .label { color: var(--ms-blue-dark); }
+  .callout.nv { border-color: var(--nv-green-dark); background: #ECFCCB; }
+  .callout.nv .label { color: var(--nv-green-dark); }
+  .callout .label { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; display: block; }
+  .callout p:last-child { margin: 0; }
+
+  footer { margin-top: 56px; padding: 22px 32px; background: var(--bg-soft); border-top: 2px solid var(--border); font-family: Aptos, sans-serif; font-size: 12px; color: var(--slate); text-align: center; }
+  footer strong { color: var(--text); }
+
+  @media print {
+    .classification { background: #fff; color: #000; border-bottom: 1px solid #000; }
+    header.cover { background: #fff; color: #000; border-bottom: 2px solid #000; }
+    header.cover h1, header.cover .subtitle, header.cover .meta strong, header.cover .eyebrow { color: #000; }
+    section, figure { page-break-inside: avoid; }
+  }
+  </style>
+</head>
+<body>
+
+<div class="classification">Reference document · Pre-conversation pack · Discovery-stage · Reference figures (synthetic) — not Toyota claims</div>
+
+<header class="cover">
+  <div class="eyebrow">Pre-Conversation Reference · Capability Pack</div>
+  <h1>Zero Day Warranty Agentic Scenario</h1>
+  <div class="subtitle">Capability swim lanes — every capability, mapped to owner and phase</div>
+  <div class="meta">
+    <span><strong>Audience:</strong> Chris Crotts</span>
+    <span><strong>From:</strong> Keven Markham · Deloitte's Microsoft Technology &amp; Services Practice</span>
+    <span><strong>Date:</strong> June 2026</span>
+    <span><strong>Status:</strong> Discovery · pre-engagement</span>
+    <span><strong>Companion to:</strong> Architecture &amp; Calculations documents</span>
+  </div>
+</header>
+
+<main>
+
+<section class="summary">
+  <div style="font-family:Aptos,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ms-blue-dark);font-weight:700;margin-bottom:8px;">Executive summary · the one paragraph</div>
+  <p style="font-size:16.5px;margin:0;">The Zero Day Warranty solution is a set of <strong>capabilities</strong> that compose end-to-end. This document lays them out as <strong>swim lanes</strong>: the rows are the <em>capability owners</em> (consumption, data plane, agent orchestration, accelerated analytics, human-in-the-loop, downstream action) over an always-on <em>governance foundation</em>; the columns are the seven <em>phases</em> of an investigation, from cluster detection to action. Each cell is a discrete capability. Two more lanes cover the <strong>Day-0 prevention</strong> path (catch the defect at the build station) and a full <strong>capability catalog</strong> that enumerates all 30+ capabilities with their platform component, agent step, and persona owner.</p>
+</section>
+
+<section>
+  <h2><span class="num">01</span>How to read these lanes</h2>
+  <p class="lead">A swim lane diagram answers two questions at once: <em>what</em> the capability is, and <em>who owns it</em>. Rows are owners; columns are the phases of one warranty root-cause investigation. The same lanes run for every cluster the platform investigates.</p>
+  <div class="legend">
+    <span class="key"><span class="swatch sw-ms"></span> Microsoft component</span>
+    <span class="key"><span class="swatch sw-nv"></span> NVIDIA acceleration (optional)</span>
+    <span class="key"><span class="swatch sw-navy"></span> Data plane (Fabric medallion)</span>
+    <span class="key"><span class="swatch sw-slate"></span> Source / consumption</span>
+    <span class="key"><span class="swatch sw-rust"></span> Human decision</span>
+    <span class="key"><span class="swatch sw-gov"></span> Governance foundation (cross-cutting)</span>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">02</span>Master capability swim lane</h2>
+  <p class="lead">Six owner lanes across seven phases, over the always-on governance foundation. Every box is a capability the solution ships. Steps in <code>[n]</code> reference the 24-step agent chain.</p>
+
+  <figure>
+    <div class="fig-label">Figure 1 · Master capability swim lane · owners × phases</div>
+    <svg viewBox="0 0 1200 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Master capability swim lane across owners and phases">
+      <defs>
+        <linearGradient id="g-ms" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#0078D4"/><stop offset="1" stop-color="#005A9E"/></linearGradient>
+        <linearGradient id="g-nv" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#76B900"/><stop offset="1" stop-color="#5C9300"/></linearGradient>
+        <linearGradient id="g-navy" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1A2339"/><stop offset="1" stop-color="#2A3349"/></linearGradient>
+        <linearGradient id="g-slate" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#64748B"/><stop offset="1" stop-color="#475569"/></linearGradient>
+        <linearGradient id="g-rust" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#B85450"/><stop offset="1" stop-color="#9C3F3C"/></linearGradient>
+        <marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10" fill="#94A3B8"/></marker>
+      </defs>
+      <style>
+        .ph { font-family: Aptos, sans-serif; font-size: 11px; fill: #1A2339; font-weight: 700; }
+        .ph-sub { font-family:'Cascadia Mono',monospace; font-size: 8.5px; fill:#64748B; }
+        .lane { font-family: Aptos, sans-serif; font-size: 11px; fill: #1A2339; font-weight: 700; }
+        .lane-sub { font-family: Aptos, sans-serif; font-size: 8.5px; fill: #64748B; }
+        .nm { font-family: Aptos, sans-serif; font-size: 9.7px; fill: #fff; font-weight: 600; }
+        .nd { font-family:'Cascadia Mono',monospace; font-size: 8px; fill: #fff; opacity: .9; }
+        .ndk { font-family: Aptos, sans-serif; font-size: 9.7px; fill:#1A2339; font-weight:700; }
+      </style>
+
+      <!-- phase header -->
+      <g>
+        <text x="280" y="20" class="ph">1 · Detect</text><text x="280" y="31" class="ph-sub">steps 1-3</text>
+        <text x="415" y="20" class="ph">2 · Context</text><text x="415" y="31" class="ph-sub">steps 4-7</text>
+        <text x="550" y="20" class="ph">3 · Analyze</text><text x="550" y="31" class="ph-sub">steps 8-12</text>
+        <text x="688" y="20" class="ph">4 · Attribute</text><text x="688" y="31" class="ph-sub">steps 13-16</text>
+        <text x="825" y="20" class="ph">5 · Hypothesis</text><text x="825" y="31" class="ph-sub">steps 17-20</text>
+        <text x="965" y="20" class="ph">6 · Decide</text><text x="965" y="31" class="ph-sub">steps 21-22</text>
+        <text x="1095" y="20" class="ph">7 · Act</text><text x="1095" y="31" class="ph-sub">steps 23-24</text>
+      </g>
+      <!-- column separators -->
+      <g stroke="#E5E7EB" stroke-width="1">
+        <line x1="270" y1="38" x2="270" y2="556"/>
+        <line x1="405" y1="38" x2="405" y2="556"/><line x1="540" y1="38" x2="540" y2="556"/>
+        <line x1="675" y1="38" x2="675" y2="556"/><line x1="810" y1="38" x2="810" y2="556"/>
+        <line x1="945" y1="38" x2="945" y2="556"/><line x1="1080" y1="38" x2="1080" y2="556"/>
+      </g>
+
+      <!-- LANE 1 Consumption & Detection -->
+      <rect x="0" y="40" width="270" height="78" fill="#F1F5F9"/>
+      <text x="14" y="72" class="lane">Consumption &amp; Detection</text><text x="14" y="88" class="lane-sub">Power BI · Teams</text>
+      <rect x="276" y="52" width="124" height="54" rx="5" fill="url(#g-slate)"/><text x="284" y="70" class="nm">Warranty-cost</text><text x="284" y="82" class="nm">heatmap → signal</text><text x="284" y="98" class="nd">Power BI · Direct Lake</text>
+      <rect x="951" y="52" width="124" height="54" rx="5" fill="url(#g-slate)"/><text x="959" y="70" class="nm">Decision pushed</text><text x="959" y="82" class="nm">to dashboards</text><text x="959" y="98" class="nd">Power BI</text>
+      <rect x="1086" y="52" width="108" height="54" rx="5" fill="url(#g-slate)"/><text x="1094" y="70" class="nm">Recovery KPI</text><text x="1094" y="82" class="nm">rollups</text><text x="1094" y="98" class="nd">Power BI</text>
+
+      <!-- LANE 2 Data Plane -->
+      <rect x="0" y="120" width="270" height="78" fill="#FFFFFF"/>
+      <text x="14" y="152" class="lane">Data Plane</text><text x="14" y="168" class="lane-sub">Microsoft Fabric · medallion</text>
+      <rect x="276" y="132" width="124" height="54" rx="5" fill="url(#g-navy)"/><text x="284" y="150" class="nm">Cohort VIN</text><text x="284" y="162" class="nm">query (Gold)</text><text x="284" y="178" class="nd">[3]</text>
+      <rect x="411" y="132" width="124" height="54" rx="5" fill="url(#g-navy)"/><text x="419" y="150" class="nm">Per-VIN build</text><text x="419" y="162" class="nm">join · Gold view</text><text x="419" y="178" class="nd">[4-7]</text>
+      <rect x="546" y="132" width="124" height="54" rx="5" fill="url(#g-navy)"/><text x="554" y="150" class="nm">Quality + telemetry</text><text x="554" y="162" class="nm">join</text><text x="554" y="178" class="nd">[9·11]</text>
+      <rect x="681" y="132" width="124" height="54" rx="5" fill="url(#g-navy)"/><text x="689" y="150" class="nm">Supplier-lot</text><text x="689" y="162" class="nm">trace</text><text x="689" y="178" class="nd">[13]</text>
+      <rect x="816" y="132" width="124" height="54" rx="5" fill="url(#g-navy)"/><text x="824" y="150" class="nm">Chargeback</text><text x="824" y="162" class="nm">exposure compose</text><text x="824" y="178" class="nd">[19]</text>
+
+      <!-- LANE 3 Agent Orchestration -->
+      <rect x="0" y="200" width="270" height="78" fill="#F1F5F9"/>
+      <text x="14" y="232" class="lane">Agent Orchestration</text><text x="14" y="248" class="lane-sub">Agent Framework · Foundry</text>
+      <rect x="276" y="212" width="124" height="54" rx="5" fill="url(#g-ms)"/><text x="284" y="230" class="nm">Detect &amp; Scope</text><text x="284" y="242" class="nm">agent</text><text x="284" y="258" class="nd">[1-3]</text>
+      <rect x="411" y="212" width="124" height="54" rx="5" fill="url(#g-ms)"/><text x="419" y="230" class="nm">Build Context</text><text x="419" y="242" class="nm">agent</text><text x="419" y="258" class="nd">[4-7]</text>
+      <rect x="816" y="212" width="124" height="54" rx="5" fill="url(#g-ms)"/><text x="824" y="230" class="nm">Hypothesis &amp;</text><text x="824" y="242" class="nm">Evidence agent</text><text x="824" y="258" class="nd">[17-20]</text>
+      <rect x="951" y="212" width="124" height="54" rx="5" fill="url(#g-ms)"/><text x="959" y="230" class="nm">Compliance agent</text><text x="959" y="242" class="nm">routing</text><text x="959" y="258" class="nd">[21-24]</text>
+
+      <!-- LANE 4 Accelerated Analytics -->
+      <rect x="0" y="280" width="270" height="78" fill="#FFFFFF"/>
+      <text x="14" y="312" class="lane">Accelerated Analytics</text><text x="14" y="328" class="lane-sub">NVIDIA · AI Enterprise (opt)</text>
+      <rect x="546" y="292" width="124" height="54" rx="5" fill="url(#g-nv)"/><text x="554" y="310" class="nm">Stats · SPC · drift</text><text x="554" y="322" class="nm">cuML · Triton</text><text x="554" y="338" class="nd">[8·10·12]</text>
+      <rect x="681" y="292" width="124" height="54" rx="5" fill="url(#g-nv)"/><text x="689" y="310" class="nm">Lot attribution</text><text x="689" y="322" class="nm">graph + sig.</text><text x="689" y="338" class="nd">cuGraph [14·15]</text>
+      <rect x="816" y="292" width="124" height="54" rx="5" fill="url(#g-nv)"/><text x="824" y="310" class="nm">RCA reasoning +</text><text x="824" y="322" class="nm">RAG</text><text x="824" y="338" class="nd">NIM · NeMo [17-18]</text>
+
+      <!-- LANE 5 Human in the loop -->
+      <rect x="0" y="360" width="270" height="78" fill="#F1F5F9"/>
+      <text x="14" y="392" class="lane">Human-in-the-Loop</text><text x="14" y="408" class="lane-sub">Quality Director · Teams</text>
+      <rect x="951" y="372" width="124" height="54" rx="5" fill="url(#g-rust)"/><text x="959" y="390" class="nm">Review &amp; decide</text><text x="959" y="402" class="nm">approve/amend/deny</text><text x="959" y="418" class="nd">Teams card [22]</text>
+
+      <!-- LANE 6 Downstream Action -->
+      <rect x="0" y="440" width="270" height="78" fill="#FFFFFF"/>
+      <text x="14" y="472" class="lane">Downstream Action</text><text x="14" y="488" class="lane-sub">CAPA · Supplier · Dealer · NHTSA</text>
+      <rect x="951" y="452" width="124" height="54" rx="5" fill="url(#g-slate)"/><text x="959" y="470" class="nm">NHTSA EWR</text><text x="959" y="482" class="nm">check</text><text x="959" y="498" class="nd">[21]</text>
+      <rect x="1086" y="452" width="108" height="54" rx="5" fill="url(#g-slate)"/><text x="1094" y="470" class="nm">CAPA · SCAR ·</text><text x="1094" y="482" class="nm">dealer advisories</text><text x="1094" y="498" class="nd">[24]</text>
+
+      <!-- flow arrows along the spine -->
+      <g stroke="#94A3B8" stroke-width="1.4" fill="none">
+        <path d="M400 159 H410" marker-end="url(#fl)"/>
+        <path d="M535 159 H545" marker-end="url(#fl)"/>
+        <path d="M670 159 H680" marker-end="url(#fl)"/>
+        <path d="M805 159 H815" marker-end="url(#fl)"/>
+      </g>
+
+      <!-- GOVERNANCE foundation band -->
+      <rect x="0" y="524" width="1194" height="64" rx="6" fill="#334155"/>
+      <text x="16" y="548" class="lane" style="fill:#fff;">Governance foundation · cross-cutting · every phase</text>
+      <text x="16" y="566" class="lane-sub" style="fill:#cbd5e1;">Microsoft Entra ID — per-agent managed identity · on-behalf-of</text>
+      <text x="430" y="566" class="lane-sub" style="fill:#cbd5e1;">Microsoft Purview — DLP · DSPM · sensitivity labels · lineage</text>
+      <text x="830" y="566" class="lane-sub" style="fill:#cbd5e1;">14-field hash-chained audit ledger — one row per step [23]</text>
+      <text x="16" y="582" class="lane-sub" style="fill:#94A3B8;">Identity-scoped, classification-aware Gold views · regulator-replayable tamper-evident chain</text>
+    </svg>
+    <figcaption>Each box is a capability. The data plane and agent lanes carry the spine of the investigation; the NVIDIA lane accelerates the analyze/attribute/hypothesis phases; the human lane is the single decision gate; the action lane fires only after approval. The governance band underlies every cell — identity, DLP/lineage, and a hash-chained audit row for every one of the 24 steps.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2><span class="num">03</span>Day-0 prevention swim lane</h2>
+  <p class="lead">The second reading of "Zero Day Warranty" — catch the defect at the build station so it never becomes a claim. A separate, station-local capability set running on NVIDIA Metropolis, feeding the same medallion and audit foundation.</p>
+
+  <figure>
+    <div class="fig-label">Figure 2 · Day-0 prevention swim lane · build-station capabilities</div>
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Day-0 prevention swim lane">
+      <defs>
+        <marker id="fl2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10" fill="#94A3B8"/></marker>
+      </defs>
+      <style>
+        .ph2 { font-family: Aptos, sans-serif; font-size: 11px; fill: #1A2339; font-weight: 700; }
+        .lane2 { font-family: Aptos, sans-serif; font-size: 11px; fill: #1A2339; font-weight: 700; }
+        .lane2s { font-family: Aptos, sans-serif; font-size: 8.5px; fill: #64748B; }
+        .nm2 { font-family: Aptos, sans-serif; font-size: 10px; fill: #fff; font-weight: 600; }
+        .nd2 { font-family:'Cascadia Mono',monospace; font-size: 8.5px; fill: #fff; opacity:.9; }
+      </style>
+      <g>
+        <text x="300" y="22" class="ph2">Capture</text>
+        <text x="500" y="22" class="ph2">Infer (edge)</text>
+        <text x="730" y="22" class="ph2">Verdict</text>
+        <text x="980" y="22" class="ph2">Persist / feed forward</text>
+      </g>
+      <g stroke="#E5E7EB" stroke-width="1"><line x1="280" y1="30" x2="280" y2="300"/><line x1="470" y1="30" x2="470" y2="300"/><line x1="700" y1="30" x2="700" y2="300"/><line x1="930" y1="30" x2="930" y2="300"/></g>
+
+      <rect x="0" y="36" width="280" height="80" fill="#F1F5F9"/>
+      <text x="14" y="70" class="lane2">Build station</text><text x="14" y="86" class="lane2s">cameras · conveyor · VIN</text>
+      <rect x="286" y="50" width="170" height="52" rx="5" fill="#64748B"/><text x="296" y="70" class="nm2">Multi-camera capture</text><text x="296" y="86" class="nd2">every unit · no sampling</text>
+
+      <rect x="0" y="116" width="280" height="80" fill="#FFFFFF"/>
+      <text x="14" y="150" class="lane2">Edge compute</text><text x="14" y="166" class="lane2s">NVIDIA Jetson · DeepStream</text>
+      <rect x="476" y="130" width="210" height="52" rx="5" fill="#5C9300"/><text x="486" y="150" class="nm2">DeepStream inference pipeline</text><text x="486" y="166" class="nd2">Metropolis models · ~5 ms/unit</text>
+
+      <rect x="0" y="196" width="280" height="80" fill="#F1F5F9"/>
+      <text x="14" y="230" class="lane2">Quality control</text><text x="14" y="246" class="lane2s">jidoka · operator</text>
+      <rect x="706" y="200" width="100" height="52" rx="5" fill="#10B981"/><text x="716" y="224" class="nm2">PASS</text><text x="716" y="240" class="nd2">continue</text>
+      <rect x="812" y="200" width="110" height="52" rx="5" fill="#B85450"/><text x="822" y="220" class="nm2">FAIL · jidoka</text><text x="822" y="236" class="nd2">line stop · rework</text>
+
+      <rect x="0" y="276" width="280" height="56" fill="#FFFFFF"/>
+      <text x="14" y="300" class="lane2">Data + audit</text><text x="14" y="316" class="lane2s">Fabric · Purview</text>
+      <rect x="936" y="50" width="250" height="52" rx="5" fill="url(#g-ms)"/><text x="946" y="70" class="nm2">Per-VIN inspection record → Bronze</text><text x="946" y="86" class="nd2">Real-Time Hub · Eventstream</text>
+      <rect x="936" y="200" width="250" height="52" rx="5" fill="url(#g-ms)"/><text x="946" y="220" class="nm2">Lifetime quality evidence</text><text x="946" y="236" class="nd2">Purview audit · ties station→VIN→field</text>
+
+      <g stroke="#94A3B8" stroke-width="1.4" fill="none">
+        <path d="M456 76 H474" marker-end="url(#fl2)"/>
+        <path d="M686 156 C700 156 700 222 704 222" marker-end="url(#fl2)"/>
+        <path d="M806 222 C900 222 900 80 934 76" marker-end="url(#fl2)"/>
+      </g>
+    </svg>
+    <figcaption>Pass or fail, every per-VIN inspection record is written to the medallion — so when a field cluster later emerges, the agent at step 9 reads proof of whether the defect was present at the build floor. A failed unit is contained at the station and never enters the warranty pool.</figcaption>
+  </figure>
+
+  <div class="callout nv">
+    <span class="label">Two readings, one operating model</span>
+    <p>The agent chain (Figure 1) gives <strong>zero-day investigation latency</strong>; the build-station layer (Figure 2) gives <strong>Day-0 detection</strong>. Both write to the same Fabric medallion, run under the same Entra identity, and seal to the same Purview audit substrate. Optional, but together they are the full story.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">04</span>Capability catalog · all capabilities</h2>
+  <p class="lead">The complete capability inventory, grouped by owner lane. Each row maps a capability to its platform component, the agent-chain step(s) it serves, and the persona that consumes it.</p>
+
+  <div class="tbl-wrap"><table>
+    <tr><th style="width:18%">Lane / owner</th><th style="width:24%">Capability</th><th style="width:24%">Platform component</th><th style="width:9%">Steps</th><th>Persona</th></tr>
+
+    <tr><td rowspan="3"><strong>Consumption &amp; Detection</strong></td><td>Warranty-cost heatmap &amp; build-week cost</td><td><span class="src ms">MS</span>Power BI · Direct Lake</td><td class="mono">—</td><td>Warranty Analyst</td></tr>
+    <tr><td>Cluster-signal threshold detection</td><td><span class="src ms">MS</span>Power BI alert · Eventstream</td><td class="mono">1</td><td>Warranty Analyst</td></tr>
+    <tr><td>Chargeback-recovery &amp; KPI dashboards</td><td><span class="src ms">MS</span>Power BI semantic model</td><td class="mono">24</td><td>VP Quality</td></tr>
+
+    <tr><td rowspan="6"><strong>Data Plane</strong></td><td>Bronze raw landing (4 domains)</td><td><span class="src ms">MS</span>Fabric OneLake · Real-Time Hub</td><td class="mono">—</td><td>IT / Data Eng</td></tr>
+    <tr><td>Silver canonical · VIN-conformed · tokenized</td><td><span class="src ms">MS</span>Fabric Lakehouse · Delta</td><td class="mono">—</td><td>IT / Data Eng</td></tr>
+    <tr><td>Gold per-VIN joinable view</td><td><span class="src ms">MS</span>Fabric Direct Lake</td><td class="mono">4-7</td><td>Agent / all</td></tr>
+    <tr><td>Cohort VIN resolution</td><td><span class="src ms">MS</span>Gold view · MCP tool</td><td class="mono">3</td><td>Agent</td></tr>
+    <tr><td>Supplier-lot trace lookup</td><td><span class="src ms">MS</span>Gold view · MCP tool</td><td class="mono">13</td><td>Supplier Quality</td></tr>
+    <tr><td>Chargeback-exposure composition</td><td><span class="src ms">MS</span>Gold view · measures</td><td class="mono">19</td><td>Supplier Quality</td></tr>
+
+    <tr><td rowspan="5"><strong>Agent Orchestration</strong></td><td>Detect &amp; Scope cluster</td><td><span class="src ms">MS</span>Agent Framework · Foundry</td><td class="mono">1-3</td><td>Quality Analyst</td></tr>
+    <tr><td>Build-context join &amp; hot-week detection</td><td><span class="src ms">MS</span>Agent Framework</td><td class="mono">4-7</td><td>Plant Ops</td></tr>
+    <tr><td>Hypothesis &amp; evidence-package assembly</td><td><span class="src ms">MS</span>Agent Framework</td><td class="mono">17-20</td><td>Quality Director</td></tr>
+    <tr><td>Compliance routing &amp; notification</td><td><span class="src ms">MS</span>Agent Framework</td><td class="mono">21-24</td><td>Compliance</td></tr>
+    <tr><td>Typed tool-calling (OBO) &amp; tool-approval</td><td><span class="src ms">MS</span>Foundry tool catalog</td><td class="mono">all</td><td>—</td></tr>
+
+    <tr><td rowspan="4"><strong>Accelerated Analytics</strong></td><td>Cohort × station × tool × shift stats</td><td><span class="src nv">NV</span>RAPIDS cuML</td><td class="mono">8</td><td>Mfg Engineering</td></tr>
+    <tr><td>SPC anomaly + tool-drift correlation</td><td><span class="src nv">NV</span>Triton Inference Server</td><td class="mono">10·12</td><td>Mfg Engineering</td></tr>
+    <tr><td>Supplier-lot attribution graph + significance</td><td><span class="src nv">NV</span>RAPIDS cuGraph / cuML</td><td class="mono">14·15</td><td>Supplier Quality</td></tr>
+    <tr><td>RCA specialist reasoning + RAG</td><td><span class="src nv">NV</span>NIM · NeMo Retriever</td><td class="mono">17·18</td><td>Quality Director</td></tr>
+
+    <tr><td rowspan="2"><strong>Human-in-the-Loop</strong></td><td>Evidence-package review (approve/amend/deny)</td><td><span class="src ms">MS</span>Teams Adaptive Card</td><td class="mono">22</td><td>Quality Director</td></tr>
+    <tr><td>Escalation routing &amp; SLA</td><td><span class="src ms">MS</span>Teams · Power Automate</td><td class="mono">22</td><td>VP Quality</td></tr>
+
+    <tr><td rowspan="3"><strong>Downstream Action</strong></td><td>NHTSA Early Warning Reporting check</td><td><span class="src">REG</span>Compliance tool · 49 CFR 579</td><td class="mono">21</td><td>Compliance</td></tr>
+    <tr><td>Supplier chargeback documentation</td><td><span class="src ms">MS</span>Agent + draft schema</td><td class="mono">20</td><td>Supplier Quality</td></tr>
+    <tr><td>CAPA · SCAR · dealer-advisory dispatch</td><td><span class="src ms">MS</span>Teams channel · connectors</td><td class="mono">24</td><td>Plant Ops / Dealer</td></tr>
+
+    <tr><td rowspan="4"><strong>Governance Foundation</strong></td><td>Per-agent managed identity · OBO passthrough</td><td><span class="src gov">GOV</span>Microsoft Entra ID</td><td class="mono">all</td><td>IT / Security</td></tr>
+    <tr><td>DLP · DSPM for AI · sensitivity labels · lineage</td><td><span class="src gov">GOV</span>Microsoft Purview</td><td class="mono">all</td><td>Compliance</td></tr>
+    <tr><td>14-field hash-chained audit row per step</td><td><span class="src gov">GOV</span>Audit ledger · Purview echo</td><td class="mono">23</td><td>Compliance / Audit</td></tr>
+    <tr><td>OT security across plants</td><td><span class="src gov">GOV</span>Microsoft Defender for IoT</td><td class="mono">—</td><td>IT / Security</td></tr>
+
+    <tr><td rowspan="3"><strong>Day-0 Prevention</strong></td><td>Inline multi-camera vision capture</td><td><span class="src nv">NV</span>Metropolis · cameras</td><td class="mono">—</td><td>Line Operator</td></tr>
+    <tr><td>Edge defect inference + jidoka stop</td><td><span class="src nv">NV</span>Jetson · DeepStream</td><td class="mono">—</td><td>Line Operator</td></tr>
+    <tr><td>Per-VIN inspection record to medallion</td><td><span class="src ms">MS</span>Fabric Real-Time Hub</td><td class="mono">9</td><td>Quality / Agent</td></tr>
+  </table></div>
+
+  <div class="callout note">
+    <span class="label">Reading the catalog</span>
+    <p>Capabilities with a step number are exercised inside one investigation run; those marked <code>—</code> are always-on (data landing, dashboards, identity, OT security) or continuous (Day-0 vision). The persona column is the primary consumer — the <em>Persona Portals</em> companion document turns each persona's column into a tailored view.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p style="margin:0 0 6px;"><strong>Keven Markham</strong> · Vice President · Deloitte's Microsoft Technology &amp; Services Practice</p>
+  <p style="margin:0;">Capability swim lanes · Companion to the Architecture &amp; Calculations documents</p>
+  <p style="margin:8px 0 0;font-size:11px;color:var(--slate-light);">Reference document · Discovery-stage · All figures are reference-scenario figures · Not Toyota baseline claims</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Day Warranty · Persona Portals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --navy: #1A2339; --navy-soft: #2A3349;
+    --ms-blue: #0078D4; --ms-blue-dark: #005A9E;
+    --nv-green: #76B900; --nv-green-dark: #5C9300;
+    --slate: #64748B; --slate-light: #94A3B8;
+    --amber: #D97706; --green: #047857; --rust: #B85450;
+    --bg: #ffffff; --bg-soft: #FAFAF7; --border: #E5E7EB;
+    --text: #1F2937; --code-bg: #F5F5F7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Source Serif 4", Charter, Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+
+  .classification { background: var(--amber); color: #fff; padding: 6px 24px; text-align: center; font-family: Aptos, sans-serif; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; }
+
+  header.cover { padding: 44px 56px 28px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%); color: #fff; border-bottom: 6px solid var(--ms-blue); }
+  header.cover .eyebrow { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ms-blue); font-weight: 700; }
+  header.cover h1 { font-family: Aptos, sans-serif; font-size: 36px; font-weight: 700; line-height: 1.12; margin: 12px 0 6px; color: #fff; }
+  header.cover .subtitle { font-family: Aptos, sans-serif; font-size: 18px; color: #cbd5e1; font-weight: 400; margin: 0 0 20px; }
+  header.cover .meta { display: flex; gap: 22px; flex-wrap: wrap; font-family: Aptos, sans-serif; font-size: 12.5px; color: #94A3B8; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.16); }
+  header.cover .meta strong { color: #cbd5e1; font-weight: 600; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 64px; }
+  .lead { font-size: 16px; color: var(--slate); margin: 0 0 14px; max-width: 940px; }
+  h2 { font-family: Aptos, sans-serif; color: var(--navy); font-size: 22px; margin: 0 0 6px; }
+  code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; color: var(--navy); }
+
+  /* Tab navigation */
+  .tab-nav { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 2px solid var(--border); padding: 0 16px; display: flex; gap: 2px; flex-wrap: wrap; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .tab-btn { border: none; background: transparent; padding: 12px 14px; cursor: pointer; font-family: Aptos, sans-serif; font-size: 12.5px; font-weight: 600; color: var(--slate); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 7px; }
+  .tab-btn:hover { color: var(--navy); background: var(--bg-soft); }
+  .tab-btn.active { color: var(--navy); border-bottom-color: var(--ms-blue); }
+  .tab-btn .vmark { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--ms-blue); }
+  .tab-btn .vmark.exec { background: var(--navy); }
+  .tab-btn .vmark.nv { background: var(--nv-green-dark); }
+  .tab-btn .vmark.gov { background: #334155; }
+  .tab-btn .vmark.rust { background: var(--rust); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Portal shell */
+  .portal { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+  .portal-top { background: linear-gradient(135deg, var(--navy), var(--navy-soft)); color: #fff; padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-bottom: 4px solid var(--ms-blue); }
+  .portal-top.nv { border-bottom-color: var(--nv-green); }
+  .portal-top.rust { border-bottom-color: var(--rust); }
+  .portal-top.gov { border-bottom-color: #64748B; }
+  .portal-id { display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--ms-blue); display: flex; align-items: center; justify-content: center; font-family: Aptos, sans-serif; font-weight: 700; font-size: 16px; color: #fff; }
+  .portal-id h3 { font-family: Aptos, sans-serif; margin: 0; font-size: 18px; }
+  .portal-id .role { font-family: Aptos, sans-serif; font-size: 12px; color: #cbd5e1; }
+  .portal-scope { font-family: Aptos, sans-serif; font-size: 11px; color: #94A3B8; text-align: right; max-width: 360px; }
+  .portal-body { background: var(--bg-soft); padding: 18px; }
+
+  /* KPI tiles */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 760px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  .kpi { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; border-top: 3px solid var(--ms-blue); }
+  .kpi.nv { border-top-color: var(--nv-green); } .kpi.rust { border-top-color: var(--rust); } .kpi.gov { border-top-color: #64748B; } .kpi.amber { border-top-color: var(--amber); }
+  .kpi-val { font-family: Aptos, sans-serif; font-size: 24px; font-weight: 700; color: var(--navy); line-height: 1.1; }
+  .kpi-lbl { font-family: Aptos, sans-serif; font-size: 11px; color: var(--slate); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+  .kpi-delta { font-family: "Cascadia Mono", monospace; font-size: 11px; margin-top: 6px; }
+  .kpi-delta.up { color: var(--green); } .kpi-delta.down { color: var(--rust); } .kpi-delta.flat { color: var(--slate); }
+
+  /* Panels */
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .panels.thirds { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 860px) { .panels, .panels.thirds { grid-template-columns: 1fr; } }
+  .panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .panel.span2 { grid-column: span 2; }
+  @media (max-width: 860px) { .panel.span2 { grid-column: span 1; } }
+  .panel-title { font-family: Aptos, sans-serif; font-size: 12px; font-weight: 700; color: var(--ms-blue-dark); text-transform: uppercase; letter-spacing: 0.07em; margin: 0 0 10px; display: flex; justify-content: space-between; align-items: center; }
+  .panel-title .meta { color: var(--slate-light); font-weight: 600; font-size: 10.5px; }
+
+  /* list rows */
+  .lrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px dotted var(--border); font-size: 13.5px; }
+  .lrow:last-child { border-bottom: none; }
+  .lrow .l-main { font-family: Aptos, sans-serif; color: var(--navy); font-weight: 600; }
+  .lrow .l-sub { font-size: 11.5px; color: var(--slate); }
+  .lrow .l-mono { font-family: "Cascadia Mono", monospace; font-size: 12px; color: var(--navy); }
+
+  /* badges */
+  .badge { font-family: Aptos, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .badge.crit { background: #FEE2E2; color: #B91C1C; }
+  .badge.warn { background: #FEF3C7; color: #B45309; }
+  .badge.ok { background: #DCFCE7; color: #15803D; }
+  .badge.info { background: #DBEAFE; color: var(--ms-blue-dark); }
+  .badge.pend { background: #E0E7FF; color: #4338CA; }
+
+  /* mini bars */
+  .bar { display: grid; grid-template-columns: 110px 1fr 56px; gap: 8px; align-items: center; margin: 7px 0; font-size: 12.5px; }
+  .bar .bar-l { font-family: Aptos, sans-serif; color: var(--navy); font-weight: 600; }
+  .bar .bar-t { background: #EEF2F7; height: 16px; border-radius: 4px; overflow: hidden; }
+  .bar .bar-f { height: 100%; background: var(--ms-blue); border-radius: 4px; }
+  .bar .bar-f.nv { background: var(--nv-green); } .bar .bar-f.rust { background: var(--rust); } .bar .bar-f.amber { background: var(--amber); }
+  .bar .bar-v { font-family: "Cascadia Mono", monospace; text-align: right; color: var(--navy); font-weight: 700; }
+
+  /* heatmap */
+  .heat { display: grid; grid-template-columns: 70px repeat(6, 1fr); gap: 3px; font-family: Aptos, sans-serif; font-size: 10.5px; }
+  .heat .hc { padding: 6px 4px; text-align: center; border-radius: 3px; color: #fff; font-weight: 600; }
+  .heat .hh { color: var(--slate); font-weight: 700; padding: 6px 2px; text-align: center; }
+  .heat .hr { color: var(--navy); font-weight: 700; padding: 6px 2px; }
+
+  /* actions */
+  .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .btn { font-family: Aptos, sans-serif; font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border); cursor: default; }
+  .btn.approve { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn.amend { background: #fff; color: var(--ms-blue-dark); border-color: var(--ms-blue); }
+  .btn.deny { background: #fff; color: var(--rust); border-color: var(--rust); }
+
+  .evidence { background: var(--bg-soft); border: 1px dashed var(--border); border-radius: 6px; padding: 10px 12px; font-size: 12.5px; }
+  .evidence b { color: var(--navy); font-family: Aptos, sans-serif; }
+  .feed-line { font-family: "Cascadia Mono", monospace; font-size: 11.5px; padding: 4px 0; border-bottom: 1px dotted var(--border); display: flex; justify-content: space-between; }
+
+  footer { margin-top: 40px; padding: 22px 32px; background: var(--bg-soft); border-top: 2px solid var(--border); font-family: Aptos, sans-serif; font-size: 12px; color: var(--slate); text-align: center; }
+  footer strong { color: var(--text); }
+
+  @media print {
+    .classification { background:#fff; color:#000; border-bottom:1px solid #000; }
+    header.cover { background:#fff; color:#000; border-bottom:2px solid #000; }
+    header.cover h1, header.cover .subtitle, header.cover .meta strong, header.cover .eyebrow { color:#000; }
+    .tab-nav { display:none; }
+    .tab-panel { display:block !important; }
+    .portal { page-break-inside: avoid; }
+  }
+  </style>
+</head>
+<body>
+
+<div class="classification">Reference document · Pre-conversation pack · Discovery-stage · UI mockups (illustrative) · Reference figures (synthetic)</div>
+
+<header class="cover">
+  <div class="eyebrow">Pre-Conversation Reference · Persona Portals</div>
+  <h1>Zero Day Warranty Agentic Scenario</h1>
+  <div class="subtitle">Persona portals — a tailored view into the solution for every role</div>
+  <div class="meta">
+    <span><strong>Audience:</strong> Chris Crotts</span>
+    <span><strong>From:</strong> Keven Markham · Deloitte's Microsoft Technology &amp; Services Practice</span>
+    <span><strong>Date:</strong> June 2026</span>
+    <span><strong>Status:</strong> Discovery · pre-engagement</span>
+    <span><strong>Companion to:</strong> Capability Swim Lanes</span>
+  </div>
+</header>
+
+<nav class="tab-nav" role="tablist" aria-label="Persona portals">
+  <button class="tab-btn active" data-tab="exec"><span class="vmark exec"></span>VP Quality</button>
+  <button class="tab-btn" data-tab="director"><span class="vmark rust"></span>Quality Director</button>
+  <button class="tab-btn" data-tab="supplier"><span class="vmark"></span>Supplier Quality</button>
+  <button class="tab-btn" data-tab="warranty"><span class="vmark"></span>Warranty Analyst</button>
+  <button class="tab-btn" data-tab="plant"><span class="vmark"></span>Plant Ops</button>
+  <button class="tab-btn" data-tab="mfg"><span class="vmark nv"></span>Mfg Engineering</button>
+  <button class="tab-btn" data-tab="it"><span class="vmark"></span>IT / Data Eng</button>
+  <button class="tab-btn" data-tab="compliance"><span class="vmark gov"></span>Compliance</button>
+  <button class="tab-btn" data-tab="operator"><span class="vmark nv"></span>Line Operator · Day-0</button>
+</nav>
+
+<main>
+
+<p class="lead" style="margin-top:16px;">Each persona sees the same solution through a portal scoped to their decisions and KPIs — Power BI surfaces, Teams Adaptive Cards, and the agent's evidence package, all governed by identity-scoped Gold views. The mockups below are illustrative; numbers are reference-scenario figures. Use the tabs to switch personas (print shows all).</p>
+
+<!-- ============ VP QUALITY (EXEC) ============ -->
+<div class="tab-panel active" data-panel="exec" role="tabpanel">
+  <h2>VP Quality · Executive program view</h2>
+  <p class="lead">Is the program returning value across the plant network? Recovery, throughput, and trust at a glance.</p>
+  <div class="portal">
+    <div class="portal-top">
+      <div class="portal-id"><div class="avatar" style="background:var(--navy)">VQ</div><div><h3>Diane Whitfield</h3><div class="role">VP Quality · North America</div></div></div>
+      <div class="portal-scope">Scope: all 14 NA plants · all warranty programs · YTD · Power BI executive app</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-val">$31.2M</div><div class="kpi-lbl">Chargeback recovered YTD</div><div class="kpi-delta up">▲ 340% vs manual baseline</div></div>
+        <div class="kpi"><div class="kpi-val">112</div><div class="kpi-lbl">Clusters investigated</div><div class="kpi-delta up">▲ vs ~10/plant manual</div></div>
+        <div class="kpi"><div class="kpi-val">14 min</div><div class="kpi-lbl">Avg time-to-evidence</div><div class="kpi-delta up">▼ from 8–12 weeks</div></div>
+        <div class="kpi gov"><div class="kpi-val">100%</div><div class="kpi-lbl">Audit-ledger completeness</div><div class="kpi-delta flat">hash-chained</div></div>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-title">Recovery by quarter <span class="meta">USD, reference</span></div>
+          <div class="bar"><span class="bar-l">Q1</span><span class="bar-t"><span class="bar-f" style="width:58%"></span></span><span class="bar-v">$6.4M</span></div>
+          <div class="bar"><span class="bar-l">Q2</span><span class="bar-t"><span class="bar-f" style="width:72%"></span></span><span class="bar-v">$8.1M</span></div>
+          <div class="bar"><span class="bar-l">Q3</span><span class="bar-t"><span class="bar-f" style="width:80%"></span></span><span class="bar-v">$9.0M</span></div>
+          <div class="bar"><span class="bar-l">Q4 (proj)</span><span class="bar-t"><span class="bar-f amber" style="width:69%"></span></span><span class="bar-v">$7.7M</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Plant rollup <span class="meta">recovered · clusters</span></div>
+          <div class="lrow"><span><span class="l-main">Georgetown KY</span><br><span class="l-sub">brake actuator · powertrain</span></span><span class="l-mono">$5.9M · 18</span></div>
+          <div class="lrow"><span><span class="l-main">Princeton IN</span><br><span class="l-sub">harness · trim</span></span><span class="l-mono">$4.2M · 14</span></div>
+          <div class="lrow"><span><span class="l-main">San Antonio TX</span><br><span class="l-sub">weld · body-in-white</span></span><span class="l-mono">$3.8M · 11</span></div>
+          <div class="lrow"><span><span class="l-main">Blue Springs MS</span><br><span class="l-sub">paint · electronics</span></span><span class="l-mono">$2.6M · 9</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUALITY DIRECTOR ============ -->
+<div class="tab-panel" data-panel="director" role="tabpanel">
+  <h2>Quality Director · HITL approval portal</h2>
+  <p class="lead">The single human gate. Each evidence package arrives as a Teams Adaptive Card; approve, amend, or deny — every decision is sealed to the audit ledger.</p>
+  <div class="portal">
+    <div class="portal-top rust">
+      <div class="portal-id"><div class="avatar" style="background:var(--rust)">QD</div><div><h3>Marcus Lee</h3><div class="role">Quality Director · Georgetown KY</div></div></div>
+      <div class="portal-scope">Scope: clusters at this plant requiring approval · Microsoft Teams · step 22 HITL gate</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid">
+        <div class="kpi rust"><div class="kpi-val">3</div><div class="kpi-lbl">Pending approvals</div><div class="kpi-delta down">1 over SLA</div></div>
+        <div class="kpi"><div class="kpi-val">$6.1M</div><div class="kpi-lbl">$ awaiting decision</div><div class="kpi-delta flat">across 3 clusters</div></div>
+        <div class="kpi"><div class="kpi-val">96%</div><div class="kpi-lbl">Avg evidence confidence</div><div class="kpi-delta up">p &lt; 0.05 all</div></div>
+        <div class="kpi"><div class="kpi-val">52 min</div><div class="kpi-lbl">Avg decision SLA</div><div class="kpi-delta up">target &lt; 60 min</div></div>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-title">Approval queue <span class="meta">Adaptive Cards</span></div>
+          <div class="lrow"><span><span class="l-main">LOT-7743 · brake actuator</span><br><span class="l-sub">STATION-07 · weeks 12–14</span></span><span class="badge crit">SLA 04:12</span></div>
+          <div class="lrow"><span><span class="l-main">LOT-2210 · harness clip</span><br><span class="l-sub">STATION-03 · week 22</span></span><span class="badge pend">pending</span></div>
+          <div class="lrow"><span><span class="l-main">LOT-9034 · weld bead</span><br><span class="l-sub">STATION-07 · week 31</span></span><span class="badge pend">pending</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Selected evidence · LOT-7743 <span class="meta">trace zdw-…0001</span></div>
+          <div class="evidence">
+            <p style="margin:0 0 6px;"><b>Hypothesis:</b> Supplier lot LOT-7743 at STATION-07 / TOOL-TQ-07 drives a <b>2.4×</b> warranty rate (6.2% vs 2.5%); drift 8.9%, 304 SPC anomalies.</p>
+            <p style="margin:0;"><b>Exposure $4.2M</b> · recovery target <b>$2.8M</b> (67%) · confidence <b>96%</b> · NHTSA EWR: applicable.</p>
+          </div>
+          <div class="actions"><span class="btn approve">Approve chargeback</span><span class="btn amend">Amend</span><span class="btn deny">Deny</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SUPPLIER QUALITY ============ -->
+<div class="tab-panel" data-panel="supplier" role="tabpanel">
+  <h2>Supplier Quality Engineer · attribution &amp; SCAR portal</h2>
+  <p class="lead">From attributed lot to supplier corrective action and recovered dollars — the chargeback pipeline.</p>
+  <div class="portal">
+    <div class="portal-top">
+      <div class="portal-id"><div class="avatar">SQ</div><div><h3>Priya Nair</h3><div class="role">Supplier Quality Engineer</div></div></div>
+      <div class="portal-scope">Scope: attributed supplier lots · SCAR workflow · supplier-confidential Gold view (OBO-scoped)</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-val">7</div><div class="kpi-lbl">Open SCARs</div><div class="kpi-delta flat">3 awaiting supplier</div></div>
+        <div class="kpi"><div class="kpi-val">$9.4M</div><div class="kpi-lbl">Recovery pipeline</div><div class="kpi-delta up">▲ this quarter</div></div>
+        <div class="kpi"><div class="kpi-val">67%</div><div class="kpi-lbl">Recovery rate</div><div class="kpi-delta up">▲ from 15% manual</div></div>
+        <div class="kpi"><div class="kpi-val">12</div><div class="kpi-lbl">Lots flagged YTD</div><div class="kpi-delta flat">5 suppliers</div></div>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-title">Attributed lots <span class="meta">rate ratio · p-value · $</span></div>
+          <div class="lrow"><span><span class="l-main">LOT-7743</span> <span class="l-sub">Supplier Delta-Brake</span></span><span class="l-mono">2.4× · 1e-6 · $4.2M</span></div>
+          <div class="lrow"><span><span class="l-main">LOT-2210</span> <span class="l-sub">Supplier Harness-Co</span></span><span class="l-mono">1.9× · 3e-4 · $1.1M</span></div>
+          <div class="lrow"><span><span class="l-main">LOT-9034</span> <span class="l-sub">Supplier Weldtech</span></span><span class="l-mono">2.1× · 8e-5 · $2.0M</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Supplier scorecard <span class="meta">warranty rate vs baseline</span></div>
+          <div class="bar"><span class="bar-l">Delta-Brake</span><span class="bar-t"><span class="bar-f rust" style="width:88%"></span></span><span class="bar-v">2.4×</span></div>
+          <div class="bar"><span class="bar-l">Weldtech</span><span class="bar-t"><span class="bar-f rust" style="width:76%"></span></span><span class="bar-v">2.1×</span></div>
+          <div class="bar"><span class="bar-l">Harness-Co</span><span class="bar-t"><span class="bar-f amber" style="width:64%"></span></span><span class="bar-v">1.9×</span></div>
+          <div class="bar"><span class="bar-l">Trim-Source</span><span class="bar-t"><span class="bar-f" style="width:34%"></span></span><span class="bar-v">1.0×</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WARRANTY ANALYST ============ -->
+<div class="tab-panel" data-panel="warranty" role="tabpanel">
+  <h2>Warranty / After-Sales Analyst · cluster &amp; cohort portal</h2>
+  <p class="lead">Where the cluster signal is born. The warranty-cost heatmap that triggers an investigation, with build-week cohorts and the live cluster feed.</p>
+  <div class="portal">
+    <div class="portal-top">
+      <div class="portal-id"><div class="avatar">WA</div><div><h3>Tom Alvarez</h3><div class="role">Warranty / After-Sales Analyst</div></div></div>
+      <div class="portal-scope">Scope: connected-vehicle warranty stream · build-week cohorts · Power BI · Direct Lake on Gold</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid">
+        <div class="kpi amber"><div class="kpi-val">2</div><div class="kpi-lbl">Active clusters</div><div class="kpi-delta down">1 new this week</div></div>
+        <div class="kpi"><div class="kpi-val">2.5%</div><div class="kpi-lbl">Baseline warranty rate</div><div class="kpi-delta flat">key-value parts</div></div>
+        <div class="kpi"><div class="kpi-val">9.1 mo</div><div class="kpi-lbl">Avg build-to-claim</div><div class="kpi-delta flat">by cohort</div></div>
+        <div class="kpi"><div class="kpi-val">418</div><div class="kpi-lbl">Claims this week</div><div class="kpi-delta down">▲ above threshold</div></div>
+      </div>
+      <div class="panels">
+        <div class="panel span2">
+          <div class="panel-title">Warranty-cost heatmap <span class="meta">station × build week (rate vs baseline)</span></div>
+          <div class="heat">
+            <div></div><div class="hh">Wk11</div><div class="hh">Wk12</div><div class="hh">Wk13</div><div class="hh">Wk14</div><div class="hh">Wk15</div><div class="hh">Wk16</div>
+            <div class="hr">ST-05</div><div class="hc" style="background:#DCFCE7;color:#15803D">0.9×</div><div class="hc" style="background:#DCFCE7;color:#15803D">1.0×</div><div class="hc" style="background:#FEF3C7;color:#B45309">1.2×</div><div class="hc" style="background:#DCFCE7;color:#15803D">1.0×</div><div class="hc" style="background:#DCFCE7;color:#15803D">0.8×</div><div class="hc" style="background:#DCFCE7;color:#15803D">1.0×</div>
+            <div class="hr">ST-07</div><div class="hc" style="background:#FEF3C7;color:#B45309">1.3×</div><div class="hc" style="background:#F87171">2.2×</div><div class="hc" style="background:#DC2626">2.6×</div><div class="hc" style="background:#DC2626">2.4×</div><div class="hc" style="background:#FCA5A5;color:#7F1D1D">1.6×</div><div class="hc" style="background:#FEF3C7;color:#B45309">1.2×</div>
+            <div class="hr">ST-09</div><div class="hc" style="background:#DCFCE7;color:#15803D">1.0×</div><div class="hc" style="background:#DCFCE7;color:#15803D">0.9×</div><div class="hc" style="background:#FEF3C7;color:#B45309">1.1×</div><div class="hc" style="background:#DCFCE7;color:#15803D">1.0×</div><div class="hc" style="background:#DCFCE7;color:#15803D">0.9×</div><div class="hc" style="background:#DCFCE7;color:#15803D">1.0×</div>
+          </div>
+          <p style="font-size:11.5px;color:var(--slate);margin:10px 0 0;">STATION-07 × weeks 12–14 lights up red — the cluster signal that fires step 1 of the agent chain.</p>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Live cluster feed</div>
+          <div class="feed-line"><span>14:02 · threshold breach · brake actuator · ST-07</span><span class="badge crit">cluster</span></div>
+          <div class="feed-line"><span>14:02 · agent dispatched · trace zdw-…0001</span><span class="badge info">running</span></div>
+          <div class="feed-line"><span>14:14 · evidence package ready · routed to QD</span><span class="badge ok">12 min</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PLANT OPS ============ -->
+<div class="tab-panel" data-panel="plant" role="tabpanel">
+  <h2>Plant Operations Manager · station &amp; shift portal</h2>
+  <p class="lead">Where on the line the cluster concentrates — station, tool, and shift hot-spots within the affected build weeks.</p>
+  <div class="portal">
+    <div class="portal-top">
+      <div class="portal-id"><div class="avatar">PO</div><div><h3>Rachel Kim</h3><div class="role">Plant Operations Manager</div></div></div>
+      <div class="portal-scope">Scope: build records · station/tool/shift correlation · line health · Georgetown KY</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid">
+        <div class="kpi rust"><div class="kpi-val">1</div><div class="kpi-lbl">Hot station</div><div class="kpi-delta down">STATION-07</div></div>
+        <div class="kpi"><div class="kpi-val">94%</div><div class="kpi-lbl">Line health</div><div class="kpi-delta flat">OEE proxy</div></div>
+        <div class="kpi amber"><div class="kpi-val">B</div><div class="kpi-lbl">Shift over-indexed</div><div class="kpi-delta down">1.4× claims</div></div>
+        <div class="kpi"><div class="kpi-val">6</div><div class="kpi-lbl">Open holds</div><div class="kpi-delta flat">2 rework</div></div>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-title">Station hot-spots <span class="meta">claim rate, hot weeks</span></div>
+          <div class="bar"><span class="bar-l">STATION-07</span><span class="bar-t"><span class="bar-f rust" style="width:92%"></span></span><span class="bar-v">6.2%</span></div>
+          <div class="bar"><span class="bar-l">STATION-03</span><span class="bar-t"><span class="bar-f amber" style="width:42%"></span></span><span class="bar-v">2.8%</span></div>
+          <div class="bar"><span class="bar-l">STATION-05</span><span class="bar-t"><span class="bar-f" style="width:30%"></span></span><span class="bar-v">2.0%</span></div>
+          <div class="bar"><span class="bar-l">STATION-09</span><span class="bar-t"><span class="bar-f" style="width:28%"></span></span><span class="bar-v">1.9%</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Shift correlation <span class="meta">claims vs production share</span></div>
+          <div class="bar"><span class="bar-l">Shift A</span><span class="bar-t"><span class="bar-f" style="width:33%"></span></span><span class="bar-v">1.0×</span></div>
+          <div class="bar"><span class="bar-l">Shift B</span><span class="bar-t"><span class="bar-f rust" style="width:58%"></span></span><span class="bar-v">1.4×</span></div>
+          <div class="bar"><span class="bar-l">Shift C</span><span class="bar-t"><span class="bar-f" style="width:30%"></span></span><span class="bar-v">0.9×</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MFG ENGINEERING ============ -->
+<div class="tab-panel" data-panel="mfg" role="tabpanel">
+  <h2>Manufacturing Engineering · process &amp; drift portal</h2>
+  <p class="lead">The physical mechanism — tool calibration drift and SPC anomalies that turn a correlation into a root cause. NVIDIA-accelerated time-series.</p>
+  <div class="portal">
+    <div class="portal-top nv">
+      <div class="portal-id"><div class="avatar" style="background:var(--nv-green-dark)">ME</div><div><h3>David Osei</h3><div class="role">Manufacturing Engineering Lead</div></div></div>
+      <div class="portal-scope">Scope: assembly telemetry · SPC · tool calibration · Triton-accelerated · steps 8–12</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid">
+        <div class="kpi nv"><div class="kpi-val">1</div><div class="kpi-lbl">Tool drifting</div><div class="kpi-delta down">TOOL-TQ-07</div></div>
+        <div class="kpi nv"><div class="kpi-val">8.9%</div><div class="kpi-lbl">Avg calibration drift</div><div class="kpi-delta down">▲ threshold 5%</div></div>
+        <div class="kpi"><div class="kpi-val">304</div><div class="kpi-lbl">SPC anomalies (hot wks)</div><div class="kpi-delta down">at ST-07</div></div>
+        <div class="kpi"><div class="kpi-val">0.91</div><div class="kpi-lbl">Cpk · weld bead</div><div class="kpi-delta down">below 1.33</div></div>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-title">Calibration drift trend <span class="meta">TOOL-TQ-07 · % drift</span></div>
+          <div class="bar"><span class="bar-l">Wk11</span><span class="bar-t"><span class="bar-f" style="width:15%"></span></span><span class="bar-v">1.2%</span></div>
+          <div class="bar"><span class="bar-l">Wk12</span><span class="bar-t"><span class="bar-f nv" style="width:62%"></span></span><span class="bar-v">6.4%</span></div>
+          <div class="bar"><span class="bar-l">Wk13</span><span class="bar-t"><span class="bar-f rust" style="width:88%"></span></span><span class="bar-v">9.1%</span></div>
+          <div class="bar"><span class="bar-l">Wk14</span><span class="bar-t"><span class="bar-f rust" style="width:92%"></span></span><span class="bar-v">9.6%</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Parameter sensitivity <span class="meta">contribution to defect</span></div>
+          <div class="lrow"><span class="l-main">Torque drift</span><span class="badge crit">high</span></div>
+          <div class="lrow"><span class="l-main">Angle window</span><span class="badge warn">medium</span></div>
+          <div class="lrow"><span class="l-main">Cycle time</span><span class="badge ok">low</span></div>
+          <div class="lrow"><span class="l-main">Humidity / temp</span><span class="badge ok">low</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ IT / DATA ENG ============ -->
+<div class="tab-panel" data-panel="it" role="tabpanel">
+  <h2>IT / Data Engineering · data plane portal</h2>
+  <p class="lead">The plumbing that makes the per-VIN view possible — medallion freshness, pipeline health, lineage, and the MCP tool catalog the agent calls.</p>
+  <div class="portal">
+    <div class="portal-top">
+      <div class="portal-id"><div class="avatar">IT</div><div><h3>Sofia Reyes</h3><div class="role">Data Engineering Lead</div></div></div>
+      <div class="portal-scope">Scope: Fabric OneLake medallion · Eventstream · MCP servers · Purview lineage</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid">
+        <div class="kpi ok"><div class="kpi-val">4 / 4</div><div class="kpi-lbl">Domains landing</div><div class="kpi-delta up">healthy</div></div>
+        <div class="kpi"><div class="kpi-val">2.1 min</div><div class="kpi-lbl">Gold view freshness</div><div class="kpi-delta up">Direct Lake</div></div>
+        <div class="kpi"><div class="kpi-val">99.7%</div><div class="kpi-lbl">Pipeline success 24h</div><div class="kpi-delta flat">3 dead-letter</div></div>
+        <div class="kpi"><div class="kpi-val">9 / 9</div><div class="kpi-lbl">MCP tools online</div><div class="kpi-delta up">all green</div></div>
+      </div>
+      <div class="panels thirds">
+        <div class="panel">
+          <div class="panel-title">Domain ingestion</div>
+          <div class="lrow"><span class="l-main">Build records</span><span class="badge ok">fresh</span></div>
+          <div class="lrow"><span class="l-main">Warranty (Connected)</span><span class="badge ok">fresh</span></div>
+          <div class="lrow"><span class="l-main">Quality events</span><span class="badge warn">+6 min lag</span></div>
+          <div class="lrow"><span class="l-main">Assembly telemetry</span><span class="badge ok">stream</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Medallion stages</div>
+          <div class="lrow"><span class="l-main">Bronze</span><span class="l-mono">raw · 1.2B rows</span></div>
+          <div class="lrow"><span class="l-main">Silver</span><span class="l-mono">VIN-conformed</span></div>
+          <div class="lrow"><span class="l-main">Gold</span><span class="l-mono">per-VIN view</span></div>
+          <div class="lrow"><span class="l-main">Tokenizer</span><span class="badge ok">PII boundary</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">MCP tool catalog</div>
+          <div class="lrow"><span class="l-mono">fabric.gold.per_vin_view</span><span class="badge ok">up</span></div>
+          <div class="lrow"><span class="l-mono">axle_warranty.get_lot_trace</span><span class="badge ok">up</span></div>
+          <div class="lrow"><span class="l-mono">rapids.cuml.proportion_test</span><span class="badge ok">up</span></div>
+          <div class="lrow"><span class="l-mono">nim.rca_reasoner</span><span class="badge ok">up</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ COMPLIANCE ============ -->
+<div class="tab-panel" data-panel="compliance" role="tabpanel">
+  <h2>Compliance / Regulatory · audit &amp; EWR portal</h2>
+  <p class="lead">Regulator-answerable by design. The NHTSA EWR queue, the hash-chained audit ledger, and DLP/label posture across the investigation.</p>
+  <div class="portal">
+    <div class="portal-top gov">
+      <div class="portal-id"><div class="avatar" style="background:#334155">CO</div><div><h3>Janet Wu</h3><div class="role">Compliance &amp; Regulatory Officer</div></div></div>
+      <div class="portal-scope">Scope: NHTSA EWR (49 CFR 579) · Purview audit · sensitivity labels · retention</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid">
+        <div class="kpi gov"><div class="kpi-val">100%</div><div class="kpi-lbl">Audit completeness</div><div class="kpi-delta flat">24/24 rows/run</div></div>
+        <div class="kpi gov"><div class="kpi-val">VERIFIED</div><div class="kpi-lbl">Hash chain</div><div class="kpi-delta up">tamper-evident</div></div>
+        <div class="kpi amber"><div class="kpi-val">2</div><div class="kpi-lbl">EWR flags open</div><div class="kpi-delta down">review due</div></div>
+        <div class="kpi"><div class="kpi-val">7 yr</div><div class="kpi-lbl">Retention policy</div><div class="kpi-delta flat">WORM</div></div>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-title">NHTSA EWR queue <span class="meta">49 CFR Part 579</span></div>
+          <div class="lrow"><span><span class="l-main">LOT-7743 · brake actuator</span><br><span class="l-sub">severity high · 15k VIN window</span></span><span class="badge crit">EWR review</span></div>
+          <div class="lrow"><span><span class="l-main">LOT-9034 · weld bead</span><br><span class="l-sub">severity medium</span></span><span class="badge warn">monitor</span></div>
+          <div class="lrow"><span><span class="l-main">LOT-2210 · harness clip</span><br><span class="l-sub">severity low</span></span><span class="badge ok">n/a</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Audit ledger · trace zdw-…0001 <span class="meta">14-field rows</span></div>
+          <div class="feed-line"><span>step 22 · hitl_status=approved · QD</span><span class="badge ok">sealed</span></div>
+          <div class="feed-line"><span>step 23 · decision + rationale</span><span class="badge ok">sealed</span></div>
+          <div class="feed-line"><span>step 24 · downstream notify</span><span class="badge ok">sealed</span></div>
+          <div class="feed-line"><span>prev_link chain · 24/24</span><span class="badge info">verified</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LINE OPERATOR (DAY-0) ============ -->
+<div class="tab-panel" data-panel="operator" role="tabpanel">
+  <h2>Line Quality Operator · Day-0 jidoka station</h2>
+  <p class="lead">The build-floor view. NVIDIA Metropolis inspects every unit; a fail stops the line and shows the AI evidence inline — the defect is contained before it can ever become a claim.</p>
+  <div class="portal">
+    <div class="portal-top nv">
+      <div class="portal-id"><div class="avatar" style="background:var(--nv-green-dark)">LO</div><div><h3>Carlos Mendez</h3><div class="role">Line Quality Operator · STATION-07</div></div></div>
+      <div class="portal-scope">Scope: this station · live inline vision · jidoka · NVIDIA Jetson · DeepStream + Metropolis</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid">
+        <div class="kpi nv"><div class="kpi-val">1,284</div><div class="kpi-lbl">Units inspected (shift)</div><div class="kpi-delta flat">every unit</div></div>
+        <div class="kpi ok"><div class="kpi-val">98.1%</div><div class="kpi-lbl">Pass rate</div><div class="kpi-delta flat">~5 ms/unit</div></div>
+        <div class="kpi rust"><div class="kpi-val">24</div><div class="kpi-lbl">Defects caught</div><div class="kpi-delta up">contained at source</div></div>
+        <div class="kpi"><div class="kpi-val">RUNNING</div><div class="kpi-lbl">Line state</div><div class="kpi-delta flat">no active stop</div></div>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-title">Current unit <span class="meta">VIN 1ZDW…123456</span></div>
+          <div class="evidence">
+            <p style="margin:0 0 6px;"><b>Inspection:</b> weld bead · STATION-07 · 14:32:17</p>
+            <p style="margin:0 0 6px;"><b>Verdict:</b> <span class="badge ok">PASS</span> confidence 0.97 · within spec</p>
+            <p style="margin:0;"><b>Record:</b> written to medallion · ties to VIN lifetime quality</p>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Live verdict feed</div>
+          <div class="feed-line"><span>14:32:17 · 1ZDW…3456 · weld OK</span><span class="badge ok">PASS</span></div>
+          <div class="feed-line"><span>14:32:11 · 1ZDW…3451 · porosity</span><span class="badge crit">FAIL · stop</span></div>
+          <div class="feed-line"><span>14:32:04 · 1ZDW…3447 · weld OK</span><span class="badge ok">PASS</span></div>
+          <div class="feed-line"><span>14:31:58 · 1ZDW…3442 · weld OK</span><span class="badge ok">PASS</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <p style="margin:0 0 6px;"><strong>Keven Markham</strong> · Vice President · Deloitte's Microsoft Technology &amp; Services Practice</p>
+  <p style="margin:0;">Persona portals · Companion to the Capability Swim Lanes &amp; Architecture documents</p>
+  <p style="margin:8px 0 0;font-size:11px;color:var(--slate-light);">Reference document · Discovery-stage · Portal mockups are illustrative · All figures are reference-scenario figures · Not Toyota baseline claims</p>
+</footer>
+
+<script>
+  (function () {
+    var tabs = document.querySelectorAll(".tab-btn");
+    var panels = document.querySelectorAll(".tab-panel");
+    tabs.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var name = btn.getAttribute("data-tab");
+        tabs.forEach(function (b) { b.classList.toggle("active", b === btn); });
+        panels.forEach(function (p) {
+          p.classList.toggle("active", p.getAttribute("data-panel") === name);
+        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
