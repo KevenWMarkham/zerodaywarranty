@@ -23,8 +23,24 @@ DEVICE(S):       <edge/vision/none>                            # optional
 ```
 
 If only the idea is given, Claude **infers** the rest from the taxonomy (§4) and
-the scenario library (`docs/reference/scenario-library.csv`, 762 scenarios),
-states its assumptions in one short paragraph, then generates everything in §3.
+the scenario library (`docs/reference/scenario-library.csv`), states its
+assumptions in one short paragraph, then generates everything in §3.
+
+Search the library first to reuse a service code or avoid a duplicate:
+
+```bash
+python zdw.py scenarios --search <term>      # free-text across id/title/brief/kpi
+python zdw.py scenarios --industry axle      # filter by service-code prefix
+python zdw.py scenarios --show <scenario_id> # full detail for one
+```
+
+After generating a scenario, register it back into the library so the workbook
+stays the source of truth:
+
+```bash
+python zdw.py scenarios --check   # is the repo scenario in the library? (exit 1 if not)
+python zdw.py scenarios --sync    # append missing repo scenarios to the CSV + xlsx
+```
 
 > Example one-liner: *"A grid-reliability agent that traces transformer failures
 > back to load history and weather to recommend predictive maintenance."* →

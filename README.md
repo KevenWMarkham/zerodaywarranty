@@ -30,6 +30,8 @@ python zdw.py validate       # validate manifests + verify the hash chain
 python zdw.py roadmap        # phases + sprint progress (from the backlog)
 python zdw.py sprints        # every backlog story as a checkbox
 python zdw.py checklist      # deployment validation matrix (built/deployed/tested)
+python zdw.py scenarios --search markdown   # search the 762-scenario library
+python zdw.py scenarios --sync              # register repo scenarios into the library (CSV + xlsx)
 ```
 
 Delivery is planned in `backlog/roadmap.yaml` (4 phases / 12 sprints) and driven

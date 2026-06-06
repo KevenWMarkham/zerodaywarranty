@@ -6,6 +6,11 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **`zdw scenarios`** — search the scenario library (`--search` / `--industry` /
+  `--domain` / `--show`) and register the repo's own `service/*/scenario.yaml`
+  into the library (`--check` / `--sync`) when missing, updating both the CSV and
+  the Excel workbook (`scenarios.py` + tests). Registered
+  `axle-warranty-zero-day-root-cause` into the library (now 762).
 - **Scenario playbook** `docs/SCENARIO_PLAYBOOK.md` — single-context document to
   generate a new Service-Scenario from a one-line idea, plus reference data
   (`docs/reference/APEX-Scenario-Chains.xlsx`, `scenario-library.csv`) and the

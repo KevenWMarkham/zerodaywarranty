@@ -29,6 +29,16 @@ from zero_day_warranty.roadmap import (
     render_roadmap,
     render_sprints,
 )
+from zero_day_warranty.scenarios import (
+    find as find_scenario,
+)
+from zero_day_warranty.scenarios import (
+    load_library,
+    missing_from_library,
+    register_missing,
+    repo_scenarios,
+    search,
+)
 from zero_day_warranty.synthetic import generate
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -61,6 +71,7 @@ Commands
   zdw roadmap     phases + sprint progress (from the backlog)
   zdw sprints     every backlog story as a checkbox
   zdw checklist   deployment validation matrix (built/deployed/tested)
+  zdw scenarios   search the scenario library (--sync registers repo scenarios)
   zdw --help      argparse help
 
 Design pack: docs/design/  ·  Service: service/AXLE-WARRANTY-01/  ·  Backlog: backlog/roadmap.yaml
@@ -199,6 +210,57 @@ def cmd_checklist(_args: argparse.Namespace) -> int:
     return 0 if summary["validated"] == summary["total"] else 1
 
 
+def cmd_scenarios(args: argparse.Namespace) -> int:
+    """Search the scenario library, show one scenario, or register repo scenarios."""
+    if args.sync or args.check:
+        library = load_library()
+        missing = missing_from_library(library, repo_scenarios())
+        if not missing:
+            print("Scenario library is up to date — all repo scenarios are registered.")
+            return 0
+        if args.check:
+            print(f"{len(missing)} repo scenario(s) NOT in the library:")
+            for r in missing:
+                print(f"  - {r.scenario_id} ({r.service_code})")
+            return 1
+        added, xlsx_added = register_missing()
+        for r in added:
+            print(f"[added] {r.scenario_id} ({r.service_code}) — {r.title}")
+        print(
+            f"Registered {len(added)} scenario(s): CSV updated"
+            + (
+                f", xlsx updated ({xlsx_added})"
+                if xlsx_added
+                else ", xlsx NOT updated (install openpyxl)"
+            )
+        )
+        return 0
+
+    rows = load_library()
+    if args.show:
+        row = find_scenario(rows, args.show)
+        if row is None:
+            print(f"No scenario with id {args.show!r}")
+            return 1
+        print(f"{row.scenario_id}\n" + "-" * 60)
+        print(f"  Title       : {row.title}")
+        print(f"  Service code: {row.service_code}")
+        print(f"  Domain      : {row.domain}")
+        print(f"  Schemas     : {row.schemas or '—'}")
+        print(f"  Brief       : {row.brief}")
+        print(f"  KPI         : {row.kpi}")
+        print(f"  Featured    : {row.featured}")
+        print(f"  Device(s)   : {row.devices or '—'}")
+        return 0
+
+    hits = search(rows, term=args.search, industry=args.industry, domain=args.domain)
+    for r in hits[: args.limit]:
+        print(f"{r.service_code:<22} {r.scenario_id:<46} {r.kpi}")
+    shown = min(len(hits), args.limit)
+    print(f"\n{shown} of {len(hits)} match · {len(rows)} scenarios in library")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point."""
     parser = argparse.ArgumentParser(prog="zdw", description="Zero Day Warranty CLI")
@@ -224,6 +286,23 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("checklist", help="deployment validation matrix").set_defaults(
         func=cmd_checklist
     )
+    p_scn = sub.add_parser(
+        "scenarios", help="search the scenario library / register repo scenarios"
+    )
+    p_scn.add_argument("--search", help="free-text filter over id/title/brief/kpi")
+    p_scn.add_argument("--industry", help="filter by service-code prefix (e.g. axle)")
+    p_scn.add_argument("--domain", help="filter by domain substring")
+    p_scn.add_argument("--show", help="show full detail for one scenario id")
+    p_scn.add_argument("--limit", type=int, default=40, help="max rows to list (default 40)")
+    p_scn.add_argument(
+        "--check",
+        action="store_true",
+        help="report repo scenarios missing from the library (exit 1 if any)",
+    )
+    p_scn.add_argument(
+        "--sync", action="store_true", help="add missing repo scenarios to the library CSV + xlsx"
+    )
+    p_scn.set_defaults(func=cmd_scenarios)
 
     args = parser.parse_args(argv)
     if not getattr(args, "command", None):
