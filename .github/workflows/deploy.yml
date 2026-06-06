@@ -1,0 +1,125 @@
+name: Deploy (Agentic-Automotives)
+
+# Gated CD for the self-contained Azure deployment. Manual only.
+# Closes Experts-Panel gap #5 (backlog S4-5).
+#
+# Flow:  what-if + validate  ->  manual environment approval  ->  deploy
+#        ->  build/push images  ->  apply schema  ->  smoke test.
+#
+# Reference pipeline: requires repository secrets + a protected `production`
+# environment. It deploys nothing until those are configured and the run is
+# approved. Auth is keyless via Entra OIDC (federated credentials on the
+# deploying service principal / managed identity).
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Container image tag to build/deploy
+        required: true
+        default: "0.1.0"
+      confirm:
+        description: Type DEPLOY to confirm a real apply
+        required: true
+        default: "what-if-only"
+
+permissions:
+  id-token: write   # Entra OIDC
+  contents: read
+
+env:
+  LOCATION: eastus2
+  RESOURCE_GROUP: Agentic-Automotives
+
+jobs:
+  # ---------------------------------------------------------------- gate
+  whatif:
+    name: Validate & what-if
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Bicep build (lint)
+        run: az bicep build --file infra/main.bicep
+
+      - name: Validate
+        run: |
+          az deployment sub validate \
+            --location "$LOCATION" \
+            --template-file infra/main.bicep \
+            --parameters infra/main.parameters.json \
+            --parameters pgAdminPassword='${{ secrets.PG_ADMIN_PASSWORD }}'
+
+      - name: What-if
+        run: |
+          az deployment sub what-if \
+            --location "$LOCATION" \
+            --template-file infra/main.bicep \
+            --parameters infra/main.parameters.json \
+            --parameters pgAdminPassword='${{ secrets.PG_ADMIN_PASSWORD }}'
+
+  # ---------------------------------------------------------------- apply
+  deploy:
+    name: Deploy
+    needs: whatif
+    if: ${{ github.event.inputs.confirm == 'DEPLOY' }}
+    runs-on: ubuntu-latest
+    environment: production   # protected: requires manual approval
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # --- built: provision infrastructure ---
+      - name: Deploy infrastructure (creates Agentic-Automotives)
+        id: infra
+        run: |
+          az deployment sub create \
+            --location "$LOCATION" \
+            --template-file infra/main.bicep \
+            --parameters infra/main.parameters.json \
+            --parameters pgAdminPassword='${{ secrets.PG_ADMIN_PASSWORD }}' \
+            --parameters imageTag='${{ github.event.inputs.image_tag }}'
+          echo "acr=$(az deployment sub show -n main --query properties.outputs.acrLoginServer.value -o tsv)" >> "$GITHUB_OUTPUT"
+
+      # --- built: container images ---
+      - name: Build & push images
+        run: |
+          ACR="${{ steps.infra.outputs.acr }}"
+          az acr login -n "${ACR%%.*}"
+          for svc in orchestrator mcp-warranty mcp-ledger; do
+            docker build -t "$ACR/zdw/$svc:${{ github.event.inputs.image_tag }}" --target "$svc" .
+            docker push "$ACR/zdw/$svc:${{ github.event.inputs.image_tag }}"
+          done
+
+      # --- deployed: data plane ---
+      - name: Apply medallion + audit schema
+        run: |
+          DB_URL=$(az keyvault secret show --vault-name kv-zero-day-warranty -n database-url --query value -o tsv)
+          psql "$DB_URL" -f infra/scripts/postgres-schemas.sql
+
+      # --- tested: post-deploy validation ---
+      - name: Smoke test (audit chain + manifests)
+        run: |
+          python -m pip install --upgrade pip
+          pip install pydantic pyyaml && pip install -e .
+          python zdw.py validate
+          # When the orchestrator API is reachable, assert 24 rows + chain VERIFIED:
+          # curl -fsS "https://ca-zdw-orchestrator.<env>.${LOCATION}.azurecontainerapps.io/run" | jq -e '.chain_verified == true'
+
+      - name: Deployment summary
+        run: |
+          echo "Deployed image tag ${{ github.event.inputs.image_tag }} to $RESOURCE_GROUP."
+          echo "Update backlog/roadmap.yaml deployment gates (built/deployed/tested) and run: python zdw.py checklist"

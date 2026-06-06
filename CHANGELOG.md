@@ -6,6 +6,12 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **Scenario playbook** `docs/SCENARIO_PLAYBOOK.md` — single-context document to
+  generate a new Service-Scenario from a one-line idea, plus reference data
+  (`docs/reference/APEX-Scenario-Chains.xlsx`, `scenario-library.csv`) and the
+  canonical chain template `templates/canonical-24-step-chain.yaml`.
+- **Gated CD workflow** `.github/workflows/deploy.yml` — what-if/validate →
+  environment approval → deploy → build/push → schema → smoke test (gap #5 / S4-5).
 - **Sprint orchestrator** `roadmap.py` + `backlog/roadmap.yaml` (4 phases / 12
   sprints) with the `zdw roadmap` / `sprints` / `checklist` commands. Deployments
   are gated **built → deployed → tested**; `checklist` exits non-zero while any

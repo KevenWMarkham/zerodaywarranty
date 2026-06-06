@@ -74,7 +74,7 @@ sprints:
       - {id: S4-2, title: Multiple-testing correction (Bonferroni/BH), status: done, acceptance: tests/test_stats.py green}
       - {id: S4-3, title: Model-evaluation harness design, status: in_progress, acceptance: roadmap doc §eval}
       - {id: S4-4, title: Audit durability + private networking design, status: todo, acceptance: roadmap doc §hardening}
-      - {id: S4-5, title: CD pipeline (what-if/validate gate), status: todo, acceptance: .github/workflows/deploy.yml}
+      - {id: S4-5, title: CD pipeline (what-if/validate gate), status: done, acceptance: .github/workflows/deploy.yml}
 
   # ---------------------------------------------------------------- P3
   - id: S5

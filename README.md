@@ -35,6 +35,14 @@ python zdw.py checklist      # deployment validation matrix (built/deployed/test
 Delivery is planned in `backlog/roadmap.yaml` (4 phases / 12 sprints) and driven
 by the sprint orchestrator above; see [`docs/design/ZeroDayWarranty_Roadmap.html`](docs/design/ZeroDayWarranty_Roadmap.html).
 
+### Spin up the next scenario
+
+To generate another Service-Scenario in this pattern, give Claude
+[`docs/SCENARIO_PLAYBOOK.md`](docs/SCENARIO_PLAYBOOK.md) plus a one-line idea —
+it has the full context (conventions, the canonical 24-step chain, the artifact
+inventory, and the scenario library in [`docs/reference/`](docs/reference/)) to
+build the rest.
+
 `python zdw.py run` prints the discovered suspect supplier lot, the hot
 station/tool, the significance test, the root-cause hypothesis, the chargeback
 financials, and the audit-ledger status.
