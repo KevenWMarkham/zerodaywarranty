@@ -317,10 +317,12 @@ az deployment sub create -n <name> --location <region> \
 #   Private ACR: build on GitHub then import server-side (a private ACR can't be
 #   pushed from a public shell):
 gh workflow run "Build images (GHCR)" --repo <owner>/<repo> -f image_tag=<tag>
-ACR=$(az deployment sub show -n <name> --query properties.outputs.acrLoginServer.value -o tsv)
+#   (make the 3 GHCR packages public first, or pass --username/--password)
+ACRNAME=$(az acr list -g <RG> --query "[0].name" -o tsv)   # robust; deployment output can be empty
 for s in orchestrator mcp-warranty mcp-ledger; do
-  az acr import --name "${ACR%%.*}" --source ghcr.io/<owner-lower>/zdw-$s:<tag> --image zdw/$s:<tag>
+  az acr import --name "$ACRNAME" --source ghcr.io/<owner-lower>/zdw-$s:<tag> --image zdw/$s:<tag>
 done
+az acr repository list --name "$ACRNAME" -o tsv            # verify the 3 images landed
 
 # 3) Roll the apps to the images + smoke test
 for s in orchestrator mcp-warranty mcp-ledger; do
@@ -350,6 +352,7 @@ app without the database. Then flip the `built/deployed/tested` flags in
 | `MANIFEST_UNKNOWN: …:<tag> is not found` on the apps | apps are created in the same deploy that creates the ACR, before images exist | **two-phase**: deploy `-p deployApps=false`, build+import images, then redeploy (`deployApps` defaults true) |
 | AOAI `AccountProvisioningStateInvalid … state Accepted` | Cognitive Services provisioning race | re-run the deployment (idempotent) |
 | `az acr import` → 401/403 `DENIED` from ghcr | the GHCR package is private | make the 3 packages public, or `az acr import … --username <gh-user> --password <PAT read:packages>` |
+| `Registry names may contain only alphanumeric…` on import | `acrLoginServer` deployment output came back empty | get the name directly: `ACRNAME=$(az acr list -g <RG> --query "[0].name" -o tsv)` |
 | container app revision won't start (private) | app reads KV secrets at startup; VNet→KV private link not resolving | verify KV private endpoint + DNS, or make those secrets optional for a synthetic-only smoke test |
 | `gh` device-code never arrives | it's terminal-based, not a phone push | type the `XXXX-XXXX` from the terminal, or use `GH_TOKEN` |
 
