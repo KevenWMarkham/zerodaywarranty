@@ -85,6 +85,7 @@ sprints:
     stories:
       - {id: S5-1, title: Subscription-scoped Bicep (RG + module), status: done, acceptance: infra/main.bicep}
       - {id: S5-2, title: Seed Key Vault secrets, status: todo, acceptance: db-url + signing key present}
+      - {id: S5-3, title: OIDC deploy bootstrap (SP + federated cred + secrets), status: done, acceptance: infra/scripts/azure-bootstrap.sh}
     deployments:
       - {id: D-rg,   component: Resource group Agentic-Automotives, built: false, deployed: false, tested: false}
       - {id: D-mi,   component: Managed identity id-zdw-warranty-agent, built: false, deployed: false, tested: false}
@@ -111,9 +112,10 @@ sprints:
     status: todo
     goal: Build images, deploy the apps, create the medallion schemas.
     stories:
-      - {id: S7-1, title: Dockerfiles for orchestrator + 2 MCP servers, status: todo, acceptance: images build}
+      - {id: S7-1, title: Dockerfiles for orchestrator + 2 MCP servers, status: done, acceptance: Dockerfile (multi-target) + clean pip-install build verified}
       - {id: S7-2, title: Container Apps in Bicep, status: done, acceptance: infra/modules/project.bicep}
       - {id: S7-3, title: Postgres medallion + audit DDL, status: done, acceptance: infra/scripts/postgres-schemas.sql}
+      - {id: S7-4, title: HTTP app server (orchestrator + MCP roles), status: done, acceptance: server.py + tests/test_server.py green}
     deployments:
       - {id: D-img,  component: "Container images (orchestrator, mcp-warranty, mcp-ledger)", built: false, deployed: false, tested: false}
       - {id: D-apps, component: Container Apps (ca-zdw-*), built: false, deployed: false, tested: false}

@@ -6,6 +6,15 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **Container apps + images** — `server.py` (stdlib HTTP app serving three roles:
+  orchestrator `/run`, mcp-warranty `/tools` + `/gold/summary`, mcp-ledger
+  `/tools` + `/verify`) and a multi-stage `Dockerfile` (targets `orchestrator`,
+  `mcp-warranty`, `mcp-ledger`) + `.dockerignore`. Clean `pip install .` build and
+  the server entrypoint verified locally; `tests/test_server.py` added.
+- **OIDC deploy bootstrap** — `infra/scripts/azure-bootstrap.sh` creates the
+  deployer Entra app + federated credentials (main + `production`) + subscription
+  role assignment + GitHub environment and secrets, so the gated `deploy.yml`
+  runs keyless. Backlog: S7-1/S7-4 done, S5-3 done.
 - **Data model doc** `docs/zero-day-warranty/data.md` — full ERD (Mermaid) + data
   dictionary: the four source entities, the Gold view, and the audit ledger with
   attributes/types/keys/relationships, medallion mapping, enums, and

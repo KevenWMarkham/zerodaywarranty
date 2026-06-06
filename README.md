@@ -107,7 +107,10 @@ src/zero_day_warranty/
   synthetic.py                      # synthetic reference dataset generator
   chain.py                          # the 24-step / 7-cluster agent chain
   manifest.py                       # scenario / agent manifest loaders
+  roadmap.py · scenarios.py         # sprint orchestrator · scenario library
+  server.py                         # stdlib HTTP app for the Container Apps (3 roles)
   cli.py                            # zdw CLI
+Dockerfile                          # multi-stage image (orchestrator · mcp-warranty · mcp-ledger)
 service/AXLE-WARRANTY-01/           # the service definition (APEX convention)
   scenario.yaml                     # the 24-step chain manifest
   agents/<role>/agent.yaml          # 7 agent manifests + prompts/

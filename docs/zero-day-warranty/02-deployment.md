@@ -96,10 +96,38 @@ psql "$(az keyvault secret show --vault-name kv-zero-day-warranty -n database-ur
 # 5. Smoke test -> expect 24 audit rows, chain VERIFIED
 ```
 
-CI/CD: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) (lint/type/
-test/validate) and [`.github/workflows/deploy.yml`](../../.github/workflows/deploy.yml)
-(what-if/validate → environment approval → deploy → schema → smoke test, keyless
-via Entra OIDC).
+### Recommended path · OIDC + GitHub Actions
+
+The supported way to provision is the gated workflow
+[`.github/workflows/deploy.yml`](../../.github/workflows/deploy.yml) — keyless via
+Entra OIDC — after a one-time bootstrap:
+
+```bash
+# one-time: create the deployer service principal + federated creds + repo secrets
+#   (run where you're logged into az AND gh)
+PG_ADMIN_PASSWORD='<strong-secret>' bash infra/scripts/azure-bootstrap.sh
+
+# then deploy: what-if first, then a real apply (approve 'production' when prompted)
+gh workflow run "Deploy (Agentic-Automotives)" -f confirm=what-if-only
+gh workflow run "Deploy (Agentic-Automotives)" -f confirm=DEPLOY -f image_tag=0.1.0
+```
+
+The workflow: what-if/validate → **production** environment approval → deploy
+(Bicep) → build & push the three images → apply schema → smoke test. The
+container images come from the multi-stage [`Dockerfile`](../../Dockerfile)
+(targets `orchestrator`, `mcp-warranty`, `mcp-ledger`), each running the
+stdlib HTTP app in [`server.py`](../../src/zero_day_warranty/server.py).
+
+CI: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)
+(lint/type/test/validate) runs on every push/PR.
+
+### Container app endpoints (post-deploy verification)
+
+| App | Endpoint | Returns |
+|---|---|---|
+| `ca-zdw-orchestrator` | `GET /health` · `GET /run` | config booleans · full chain result (24 audit rows, `chain_verified`) |
+| `ca-zdw-mcp-warranty` | `GET /tools` · `GET /gold/summary` | Gold-view tools · per-VIN summary |
+| `ca-zdw-mcp-ledger` | `GET /tools` · `GET /verify` | ledger tools · hash-chain verification |
 
 ## Hardening for stage / prod
 
