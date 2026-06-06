@@ -17,10 +17,12 @@ are reference-scenario figures (synthetic) — not Toyota baseline claims.
 ## Markdown set
 
 Prefer plain Markdown? The same content (overview · design · **data model** ·
-deployment · plan · experts panel) is in
+**capability swim lanes** · deployment · plan · experts panel) is in
 [`../zero-day-warranty/`](../zero-day-warranty/) — readable and diffable on
-GitHub. The full ERD + data dictionary is
-[`../zero-day-warranty/data.md`](../zero-day-warranty/data.md).
+GitHub: the full ERD is
+[`../zero-day-warranty/data.md`](../zero-day-warranty/data.md) and the capability
+catalog is
+[`../zero-day-warranty/capability-swim-lanes.md`](../zero-day-warranty/capability-swim-lanes.md).
 
 ## Reading order
 

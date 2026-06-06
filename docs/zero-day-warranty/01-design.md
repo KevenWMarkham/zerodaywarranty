@@ -91,7 +91,8 @@ over an always-on governance foundation:
 - **Day-0 prevention** — Metropolis + DeepStream + Jetson at the build station.
 
 Full capability catalog (30+ capabilities → component, step, persona) in
-[`../design/ZeroDayWarranty_Capability_SwimLanes.html`](../design/ZeroDayWarranty_Capability_SwimLanes.html).
+[`capability-swim-lanes.md`](capability-swim-lanes.md) (Markdown) and
+[`../design/ZeroDayWarranty_Capability_SwimLanes.html`](../design/ZeroDayWarranty_Capability_SwimLanes.html) (diagrams).
 
 ## 7. Persona views
 
