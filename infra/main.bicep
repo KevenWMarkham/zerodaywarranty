@@ -1,26 +1,22 @@
 // Zero Day Warranty — Azure deployment (reference IaC · design-as-code)
 //
 // Subscription-scoped: creates the project resource group `Agentic-Automotives`
-// and deploys the project resources into it, then grants the project managed
-// identity the roles it needs on the SHARED platform resources in
-// `rg-iot-visionkit` (ACR + Azure OpenAI).
+// and deploys EVERY project resource into it. Fully self-contained — no shared
+// dependencies on any other resource group.
 //
 // This template is present for review. It has not been applied.
 //
 //   az deployment sub create -l eastus2 \
 //     -f infra/main.bicep -p infra/main.parameters.json \
-//     -p databaseUrl='<from kv-home-agent/database-url>'
+//     -p pgAdminPassword='<strong-secret>'
 
 targetScope = 'subscription'
 
-@description('Region for the project RG and resources. Co-located with the shared platform.')
+@description('Region for the project RG and all resources.')
 param location string = 'eastus2'
 
-@description('Project resource group to CREATE.')
+@description('Project resource group to CREATE. Everything is deployed inside it.')
 param resourceGroupName string = 'Agentic-Automotives'
-
-@description('Shared platform resource group to REUSE (ACR, Container Apps env, AOAI, Postgres).')
-param sharedResourceGroupName string = 'rg-iot-visionkit'
 
 @description('Project Key Vault (created per APEX-M guide §3).')
 param keyVaultName string = 'kv-zero-day-warranty'
@@ -28,37 +24,46 @@ param keyVaultName string = 'kv-zero-day-warranty'
 @description('Project user-assigned managed identity (the per-agent identity).')
 param managedIdentityName string = 'id-zdw-warranty-agent'
 
-@description('Shared Azure Container Registry name.')
-param acrName string = 'acrvisionkit4459'
+@description('Container Apps environment name (created).')
+param containerAppsEnvName string = 'cae-zdw-agentic'
 
-@description('Shared ACR login server.')
-param acrLoginServer string = 'acrvisionkit4459.azurecr.io'
+@description('Azure OpenAI account name (created).')
+param aoaiName string = 'aoai-zdw-agentic'
 
-@description('Shared Container Apps environment to bind to.')
-param containerAppsEnvName string = 'cae-visionkit'
-
-@description('Shared Azure OpenAI account name.')
-param aoaiName string = 'aoai-apex-demo'
-
-@description('Shared Azure OpenAI endpoint.')
-param aoaiEndpoint string = 'https://aoai-apex-demo.openai.azure.com/'
-
-@description('AOAI chat deployment the agent uses (recommended: gpt-4.1-mini).')
+@description('AOAI chat deployment the agent uses.')
 param aoaiChatDeployment string = 'gpt-4.1-mini'
+
+@description('Model version for the chat deployment. Set to a version available in your region.')
+param aoaiChatModelVersion string = '2025-04-14'
 
 @description('AOAI embedding deployment for the RAG step.')
 param aoaiEmbedDeployment string = 'text-embedding-3-small'
 
+@description('Model version for the embedding deployment.')
+param aoaiEmbedModelVersion string = '1'
+
+@description('Log Analytics workspace name (created).')
+param logAnalyticsName string = 'log-zdw-agentic'
+
+@description('Application Insights name (created).')
+param appInsightsName string = 'appi-zdw-agentic'
+
+@description('Postgres flexible server admin login.')
+param pgAdminUser string = 'zdwadmin'
+
+@description('Postgres flexible server admin password. Pass at deploy time.')
+@secure()
+param pgAdminPassword string
+
 @description('Image tag for the zdw containers in ACR.')
 param imageTag string = '0.1.0'
-
-@description('Postgres connection string (source: kv-home-agent/database-url). Passed at deploy.')
-@secure()
-param databaseUrl string
 
 @description('HMAC key sealing each audit row. Defaults to a generated value for RnD.')
 @secure()
 param auditSigningKey string = base64(newGuid())
+
+// Deterministic 6-char suffix for globally-unique names (ACR, AOAI, Postgres).
+var suffix = take(uniqueString(subscription().subscriptionId, resourceGroupName), 6)
 
 resource rg 'Microsoft.Resources/resourceGroups@2023-07-01' = {
   name: resourceGroupName
@@ -70,31 +75,27 @@ module project 'modules/project.bicep' = {
   scope: rg
   params: {
     location: location
+    suffix: suffix
     keyVaultName: keyVaultName
     managedIdentityName: managedIdentityName
-    sharedResourceGroupName: sharedResourceGroupName
+    logAnalyticsName: logAnalyticsName
+    appInsightsName: appInsightsName
     containerAppsEnvName: containerAppsEnvName
-    acrLoginServer: acrLoginServer
-    aoaiEndpoint: aoaiEndpoint
+    aoaiName: aoaiName
     aoaiChatDeployment: aoaiChatDeployment
+    aoaiChatModelVersion: aoaiChatModelVersion
     aoaiEmbedDeployment: aoaiEmbedDeployment
+    aoaiEmbedModelVersion: aoaiEmbedModelVersion
+    pgAdminUser: pgAdminUser
+    pgAdminPassword: pgAdminPassword
     imageTag: imageTag
-    databaseUrl: databaseUrl
     auditSigningKey: auditSigningKey
   }
 }
 
-module rbacShared 'modules/rbac.bicep' = {
-  name: 'zdw-rbac-shared'
-  scope: resourceGroup(sharedResourceGroupName)
-  params: {
-    acrName: acrName
-    aoaiName: aoaiName
-    principalId: project.outputs.identityPrincipalId
-  }
-}
-
-output identityPrincipalId string = project.outputs.identityPrincipalId
-output identityClientId string = project.outputs.identityClientId
+output resourceGroup string = rg.name
+output acrLoginServer string = project.outputs.acrLoginServer
+output aoaiEndpoint string = project.outputs.aoaiEndpoint
 output keyVaultUri string = project.outputs.keyVaultUri
+output identityClientId string = project.outputs.identityClientId
 output orchestratorFqdn string = project.outputs.orchestratorFqdn

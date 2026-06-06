@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Day Warranty · Experts Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --navy: #1A2339; --navy-soft: #2A3349;
+    --ms-blue: #0078D4; --ms-blue-dark: #005A9E;
+    --nv-green: #76B900; --nv-green-dark: #5C9300;
+    --slate: #64748B; --slate-light: #94A3B8;
+    --amber: #D97706; --green: #047857; --rust: #B85450;
+    --bg: #ffffff; --bg-soft: #FAFAF7; --border: #E5E7EB;
+    --text: #1F2937; --code-bg: #F5F5F7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Source Serif 4", Charter, Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+
+  .classification { background: var(--amber); color: #fff; padding: 6px 24px; text-align: center; font-family: Aptos, sans-serif; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; }
+
+  header.cover { padding: 44px 56px 28px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%); color: #fff; border-bottom: 6px solid var(--ms-blue); }
+  header.cover .eyebrow { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ms-blue); font-weight: 700; }
+  header.cover h1 { font-family: Aptos, sans-serif; font-size: 36px; font-weight: 700; line-height: 1.12; margin: 12px 0 6px; color: #fff; }
+  header.cover .subtitle { font-family: Aptos, sans-serif; font-size: 18px; color: #cbd5e1; font-weight: 400; margin: 0 0 20px; }
+  header.cover .meta { display: flex; gap: 22px; flex-wrap: wrap; font-family: Aptos, sans-serif; font-size: 12.5px; color: #94A3B8; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.16); }
+  header.cover .meta strong { color: #cbd5e1; font-weight: 600; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 36px 32px 64px; }
+  section { margin: 0 0 40px; }
+  section.summary { margin-top: -28px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+
+  h2 { font-family: Aptos, sans-serif; color: var(--navy); font-size: 23px; margin: 0 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  h2 .num { display: inline-block; background: var(--ms-blue); color: #fff; font-size: 11px; letter-spacing: 0.16em; padding: 2px 9px; border-radius: 3px; vertical-align: 5px; margin-right: 12px; font-weight: 700; }
+  .lead { font-size: 16px; color: var(--slate); margin: 0 0 14px; max-width: 940px; }
+  code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; color: var(--navy); }
+
+  /* expert cards */
+  .experts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0; }
+  @media (max-width: 820px) { .experts { grid-template-columns: 1fr; } }
+  .expert { border: 1px solid var(--border); border-top: 3px solid var(--ms-blue); border-radius: 0 0 8px 8px; background: #fff; padding: 16px 18px; }
+  .expert .ehead { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .expert .av { width: 38px; height: 38px; border-radius: 50%; background: var(--ms-blue); color: #fff; font-family: Aptos, sans-serif; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+  .expert h3 { font-family: Aptos, sans-serif; margin: 0; font-size: 15.5px; color: var(--navy); }
+  .expert .role { font-family: Aptos, sans-serif; font-size: 11.5px; color: var(--slate); }
+  .expert .focus { font-size: 13px; color: var(--slate); margin: 0 0 8px; font-style: italic; }
+  .expert ul { margin: 6px 0 0; padding-left: 18px; font-size: 13.5px; }
+  .expert li { padding: 2px 0; }
+  .expert li.ok::marker { content: "✓  "; color: var(--green); }
+  .expert li.gap::marker { content: "⚠  "; color: var(--amber); }
+  .verdict { display:inline-block; margin-top: 10px; font-family: Aptos, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+  .verdict.sound { background:#DCFCE7; color:#15803D; }
+  .verdict.cond { background:#FEF3C7; color:#B45309; }
+
+  /* matrix */
+  .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: var(--navy); color: #fff; padding: 9px 12px; text-align: left; font-family: Aptos, sans-serif; font-weight: 600; font-size: 12px; }
+  td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg-soft); }
+  .st { font-family: Aptos, sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .st.cov { background:#DCFCE7; color:#15803D; } .st.par { background:#FEF3C7; color:#B45309; } .st.gap { background:#FEE2E2; color:#B91C1C; } .st.na { background:#F1F5F9; color:#64748B; }
+  .sev { font-family: Aptos, sans-serif; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+  .sev.h { background:#FEE2E2; color:#B91C1C; } .sev.m { background:#FEF3C7; color:#B45309; } .sev.l { background:#E0E7FF; color:#4338CA; }
+
+  .callout { margin: 18px 0; padding: 14px 20px; border-left: 4px solid; border-radius: 0 4px 4px 0; font-size: 14.5px; }
+  .callout.note { border-color: var(--ms-blue); background: #DBEAFE; } .callout.note .label { color: var(--ms-blue-dark); }
+  .callout.method { border-color: var(--amber); background: #FEF3C7; } .callout.method .label { color: var(--amber); }
+  .callout .label { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; display: block; }
+  .callout p:last-child { margin: 0; }
+
+  footer { margin-top: 56px; padding: 22px 32px; background: var(--bg-soft); border-top: 2px solid var(--border); font-family: Aptos, sans-serif; font-size: 12px; color: var(--slate); text-align: center; }
+  footer strong { color: var(--text); }
+
+  @media print {
+    .classification { background:#fff; color:#000; border-bottom:1px solid #000; }
+    header.cover { background:#fff; color:#000; border-bottom:2px solid #000; }
+    header.cover h1, header.cover .subtitle, header.cover .meta strong, header.cover .eyebrow { color:#000; }
+    section, .expert { page-break-inside: avoid; }
+  }
+  </style>
+</head>
+<body>
+
+<div class="classification">Reference document · Design review · Discovery-stage · Experts panel (illustrative reviewers) · Not Toyota claims</div>
+
+<header class="cover">
+  <div class="eyebrow">Pre-Conversation Reference · Design Validation</div>
+  <h1>Zero Day Warranty Agentic Scenario</h1>
+  <div class="subtitle">Experts panel — flush out the design &amp; validate nothing is missing</div>
+  <div class="meta">
+    <span><strong>From:</strong> Keven Markham · Deloitte's Microsoft Technology &amp; Services Practice</span>
+    <span><strong>Date:</strong> June 2026</span>
+    <span><strong>Reviews:</strong> Architecture · Swim Lanes · Persona Portals · Azure Deployment</span>
+    <span><strong>Scope:</strong> discovery-stage RnD pilot design</span>
+  </div>
+</header>
+
+<main>
+
+<section class="summary">
+  <div style="font-family:Aptos,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ms-blue-dark);font-weight:700;margin-bottom:8px;">Executive summary · the one paragraph</div>
+  <p style="font-size:16.5px;margin:0;">Ten domain experts reviewed the Zero Day Warranty design (architecture, capabilities, persona portals, and the self-contained Azure deployment). The consensus: the design is <strong>sound and complete enough to proceed with a discovery-stage RnD pilot</strong>. It carries the right spine — per-VIN medallion, a 24-step agent chain, a single HITL gate, and a hash-chained audit ledger. The panel raised <strong>12 items</strong> to close before a stage/production deployment, of which <strong>4 are High severity</strong>: a model-evaluation harness, multiple-testing correction on the cohort statistics, a CI/CD pipeline, and private networking + DR for the audit ledger. None are blockers for RnD; all are tracked in the gap log below.</p>
+</section>
+
+<section>
+  <h2><span class="num">01</span>How the panel works</h2>
+  <p class="lead">Each expert reviewed the design from one discipline, recorded what is <em>covered</em> and what is a <em>gap</em>, and gave a verdict. The findings roll up into a coverage matrix (§03) and a prioritized gap log (§04). Statuses:</p>
+  <p>
+    <span class="st cov">Covered</span> in the current design ·
+    <span class="st par">Partial</span> present but needs work ·
+    <span class="st gap">Gap</span> missing, needs adding ·
+    <span class="st na">RnD-scoped</span> deliberately deferred to stage/prod.
+  </p>
+</section>
+
+<section>
+  <h2><span class="num">02</span>The panel</h2>
+
+  <div class="experts">
+
+    <div class="expert">
+      <div class="ehead"><div class="av">LH</div><div><h3>Lena Hoffmann</h3><div class="role">Enterprise / Solution Architect</div></div></div>
+      <p class="focus">Does the whole thing hang together and stay portable?</p>
+      <ul>
+        <li class="ok">Four-domain medallion → 24-step chain → HITL → audit is coherent and maps cleanly to the capability swim lanes.</li>
+        <li class="ok">Postgres-to-Fabric portability preserved: schema names and the per-VIN Gold contract carry over.</li>
+        <li class="gap">Agent runtime is a container app calling AOAI, not Foundry Agent Service — confirm the Agent Framework hosting choice is intentional for RnD.</li>
+      </ul>
+      <span class="verdict sound">Verdict · sound</span>
+    </div>
+
+    <div class="expert">
+      <div class="ehead"><div class="av">RP</div><div><h3>Raj Patel</h3><div class="role">Cloud Platform / Infra Architect</div></div></div>
+      <p class="focus">Is the Azure footprint clean, isolated, and reproducible?</p>
+      <ul>
+        <li class="ok">Self-contained single-RG design — clean blast radius, single-delete teardown.</li>
+        <li class="ok">Subscription-scoped Bicep with deterministic unique-suffix naming; outputs wired.</li>
+        <li class="gap">No CI/CD: image build/push and <code>az deployment</code> are manual. Add a pipeline before stage.</li>
+        <li class="gap">No private networking yet (public endpoints + RBAC) — acceptable for RnD, harden for prod.</li>
+      </ul>
+      <span class="verdict cond">Verdict · conditional</span>
+    </div>
+
+    <div class="expert">
+      <div class="ehead"><div class="av">AB</div><div><h3>Aisha Bello</h3><div class="role">Security Architect</div></div></div>
+      <p class="focus">Least privilege, no standing secrets, tamper-evidence.</p>
+      <ul>
+        <li class="ok">Keyless throughout — managed identity + RBAC; AOAI local auth disabled; no keys in config.</li>
+        <li class="ok">KV with purge protection; audit ledger HMAC-signed and hash-chained.</li>
+        <li class="gap">DB still uses a password connection string — move to Entra DB auth for prod.</li>
+        <li class="gap">No secret-rotation policy on the signing key / db-url; add rotation + alerting.</li>
+      </ul>
+      <span class="verdict cond">Verdict · conditional</span>
+    </div>
+
+    <div class="expert">
+      <div class="ehead"><div class="av">MR</div><div><h3>Marco Rossi</h3><div class="role">Data Architect / Engineer</div></div></div>
+      <p class="focus">Is the per-VIN join trustworthy at plant scale?</p>
+      <ul>
+        <li class="ok">Medallion + per-VIN Gold view is the right shape; indexes on VIN/lot/week present.</li>
+        <li class="gap">PII/PHI tokenization at the Bronze→Silver boundary is named in the architecture but not yet in the SQL — add it.</li>
+        <li class="gap">Burstable B1ms Postgres won't hold 5,000 vehicles/week × 4 domains; size up or move to Fabric for scale.</li>
+        <li class="gap">No data-quality / freshness checks or dead-letter handling on ingestion.</li>
+      </ul>
+      <span class="verdict cond">Verdict · conditional</span>
+    </div>
+
+    <div class="expert">
+      <div class="ehead"><div class="av">WC</div><div><h3>Wei Chen</h3><div class="role">AI / MLOps Engineer</div></div></div>
+      <p class="focus">Will the agent's reasoning be reliable and measurable?</p>
+      <ul>
+        <li class="ok">Model tiering is sensible (gpt-4.1-mini chat + embeddings); prompts are versioned in manifests.</li>
+        <li class="ok">RAG grounding for the hypothesis step reduces free-form hallucination.</li>
+        <li class="gap">No evaluation harness — add an eval set + offline scoring; wire the audit-row feedback loop into eval cases (APEX pattern).</li>
+        <li class="gap">No prompt-injection / jailbreak guardrails on retrieved content or tool outputs.</li>
+      </ul>
+      <span class="verdict cond">Verdict · conditional</span>
+    </div>
+
+    <div class="expert">
+      <div class="ehead"><div class="av">EV</div><div><h3>Dr. Elena Vasquez</h3><div class="role">Responsible AI &amp; Compliance</div></div></div>
+      <p class="focus">Is every decision defensible to a regulator?</p>
+      <ul>
+        <li class="ok">Single HITL gate before any external effect; 14-field hash-chained audit row per step.</li>
+        <li class="ok">NHTSA EWR (49 CFR 579) check is an explicit chain step (21).</li>
+        <li class="gap">Audit ledger durability: Postgres-only with 7-day backup — add export to WORM storage + Purview echo for retention.</li>
+        <li class="gap">No documented model/decision card or human-override capture beyond approve/deny rationale.</li>
+      </ul>
+      <span class="verdict cond">Verdict · conditional</span>
+    </div>
+
+    <div class="expert">
+      <div class="ehead"><div class="av">SO</div><div><h3>Sam Okafor</h3><div class="role">FinOps / Capacity</div></div></div>
+      <p class="focus">Will it deploy within quota and stay cost-honest?</p>
+      <ul>
+        <li class="ok">Consumption Container Apps + Burstable Postgres + Basic ACR keep RnD cost low.</li>
+        <li class="ok">Reference ROI ($2.8M recovery / cluster) is clearly labelled synthetic, with parameterized inputs.</li>
+        <li class="gap">AOAI deployment depends on model quota in eastus2 — confirm capacity before deploy.</li>
+        <li class="gap">No per-run token budget / cost guardrail on the agent.</li>
+      </ul>
+      <span class="verdict cond">Verdict · conditional</span>
+    </div>
+
+    <div class="expert">
+      <div class="ehead"><div class="av">PM</div><div><h3>Priya Menon</h3><div class="role">SRE / Reliability</div></div></div>
+      <p class="focus">Observability, SLOs, and graceful failure.</p>
+      <ul>
+        <li class="ok">Log Analytics + Application Insights are in the deployment; connection string wired to apps.</li>
+        <li class="ok">HITL SLA (60 min) + escalation path defined in <code>hitl-thresholds.yaml</code>.</li>
+        <li class="gap">No idempotency / dedupe on repeat cluster signals; a re-fired signal could double-run.</li>
+        <li class="gap">No defined SLOs, retries/back-off on tool calls, or DR runbook.</li>
+      </ul>
+      <span class="verdict cond">Verdict · conditional</span>
+    </div>
+
+    <div class="expert">
+      <div class="ehead"><div class="av">YT</div><div><h3>Yuki Tanaka</h3><div class="role">Automotive Quality SME</div></div></div>
+      <p class="focus">Does the RCA hold up on the plant floor and at the negotiating table?</p>
+      <ul>
+        <li class="ok">Cohort × station × tool × supplier-lot logic mirrors real 8D / SCAR practice; jidoka Day-0 layer is culturally apt.</li>
+        <li class="ok">Build-to-claim cohorting and recall-scope precision are the right KPIs.</li>
+        <li class="gap">Multiple-testing risk: scanning many week×station×lot combinations inflates false positives — apply Bonferroni/FDR correction.</li>
+        <li class="gap">Chargeback recovery uplift (15%→67%) needs validation against the client's actual supplier-contract terms.</li>
+      </ul>
+      <span class="verdict cond">Verdict · conditional</span>
+    </div>
+
+    <div class="expert">
+      <div class="ehead"><div class="av">DS</div><div><h3>Diego Santos</h3><div class="role">Integration / Data Ingestion</div></div></div>
+      <p class="focus">Can the four domains actually land, reliably and on time?</p>
+      <ul>
+        <li class="ok">Four source systems (MES/ERP, Connected, QMS, SCADA) identified with batch + eventstream paths.</li>
+        <li class="gap">Source connectors are placeholders (<code>REPLACE_WITH_*</code>) — real adapters + auth not yet designed.</li>
+        <li class="gap">No schema-drift handling or late-arriving-data strategy between Bronze and Silver.</li>
+      </ul>
+      <span class="verdict cond">Verdict · conditional</span>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">03</span>Design coverage matrix</h2>
+  <p class="lead">Every design dimension the panel checked, with status. This is the "are we missing anything?" view at a glance.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th style="width:26%">Dimension</th><th style="width:14%">Status</th><th>Where / note</th></tr>
+    <tr><td>Identity &amp; access</td><td><span class="st cov">Covered</span></td><td>per-agent managed identity, RBAC, keyless AOAI</td></tr>
+    <tr><td>Secrets management</td><td><span class="st cov">Covered</span></td><td>Key Vault references; <em>rotation</em> still to add</td></tr>
+    <tr><td>Data plane / medallion</td><td><span class="st cov">Covered</span></td><td>Bronze/Silver/Gold + per-VIN view</td></tr>
+    <tr><td>Audit &amp; tamper-evidence</td><td><span class="st cov">Covered</span></td><td>14-field hash-chained ledger, append-only</td></tr>
+    <tr><td>Human-in-the-loop</td><td><span class="st cov">Covered</span></td><td>single gate at step 22, SLA + escalation</td></tr>
+    <tr><td>Regulatory (NHTSA EWR)</td><td><span class="st cov">Covered</span></td><td>chain step 21</td></tr>
+    <tr><td>Observability</td><td><span class="st cov">Covered</span></td><td>Log Analytics + App Insights in deployment</td></tr>
+    <tr><td>PII / data tokenization</td><td><span class="st par">Partial</span></td><td>named in architecture; not yet in SQL</td></tr>
+    <tr><td>Statistical rigor</td><td><span class="st par">Partial</span></td><td>tests present; needs multiple-testing correction</td></tr>
+    <tr><td>Reliability / DR</td><td><span class="st par">Partial</span></td><td>backups yes; SLOs, retries, runbook to add</td></tr>
+    <tr><td>Cost / capacity</td><td><span class="st par">Partial</span></td><td>cheap SKUs; AOAI quota dependency, token budget</td></tr>
+    <tr><td>Integration / ingestion</td><td><span class="st par">Partial</span></td><td>paths identified; real connectors pending</td></tr>
+    <tr><td>Scalability</td><td><span class="st par">Partial</span></td><td>Burstable PG for RnD; Fabric/larger SKU for scale</td></tr>
+    <tr><td>Model evaluation / RAI guardrails</td><td><span class="st gap">Gap</span></td><td>no eval harness or injection guardrails yet</td></tr>
+    <tr><td>CI/CD</td><td><span class="st gap">Gap</span></td><td>manual build/deploy; add pipeline</td></tr>
+    <tr><td>Private networking / CMK</td><td><span class="st na">RnD-scoped</span></td><td>deferred to stage/prod hardening</td></tr>
+    <tr><td>NVIDIA GPU acceleration</td><td><span class="st na">RnD-scoped</span></td><td>optional; stats run on CPU in this env</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="num">04</span>Gap log &amp; open items</h2>
+  <p class="lead">Prioritized actions to close before stage/production. None block the RnD pilot.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>#</th><th>Gap</th><th>Sev</th><th>Recommendation</th><th>Owner</th><th>Target</th></tr>
+    <tr><td>1</td><td>No model-evaluation harness</td><td><span class="sev h">High</span></td><td>Eval set + offline scoring; feed sampled audit rows back as eval cases</td><td>AI/MLOps</td><td>stage</td></tr>
+    <tr><td>2</td><td>Multiple-testing inflation in cohort scan</td><td><span class="sev h">High</span></td><td>Apply Bonferroni / Benjamini-Hochberg FDR before declaring attribution</td><td>Quality SME + Data</td><td>pilot</td></tr>
+    <tr><td>3</td><td>No CI/CD pipeline</td><td><span class="sev h">High</span></td><td>GitHub Actions: build/push images + <code>az deployment what-if/validate</code> gate</td><td>Platform</td><td>stage</td></tr>
+    <tr><td>4</td><td>Audit-ledger durability + private networking</td><td><span class="sev h">High</span></td><td>Export ledger to WORM storage + Purview echo; private endpoints on KV/ACR/AOAI/PG</td><td>Security + Compliance</td><td>prod</td></tr>
+    <tr><td>5</td><td>PII tokenization at Bronze→Silver</td><td><span class="sev m">Med</span></td><td>Add format-preserving tokenization; never land raw PII in Silver</td><td>Data</td><td>stage</td></tr>
+    <tr><td>6</td><td>DB password auth</td><td><span class="sev m">Med</span></td><td>Switch to Entra DB authentication via the managed identity</td><td>Security</td><td>stage</td></tr>
+    <tr><td>7</td><td>Secret rotation</td><td><span class="sev m">Med</span></td><td>Rotation policy + alerting on signing key and db-url</td><td>Security</td><td>stage</td></tr>
+    <tr><td>8</td><td>Signal idempotency / dedupe</td><td><span class="sev m">Med</span></td><td>Idempotency key per cluster signal; suppress duplicate runs</td><td>SRE</td><td>pilot</td></tr>
+    <tr><td>9</td><td>Real source connectors</td><td><span class="sev m">Med</span></td><td>Design MES/ERP/Connected/QMS/SCADA adapters + auth; drift handling</td><td>Integration</td><td>stage</td></tr>
+    <tr><td>10</td><td>Postgres scale ceiling</td><td><span class="sev m">Med</span></td><td>Size up PG or move data plane to Microsoft Fabric for plant volumes</td><td>Data</td><td>stage</td></tr>
+    <tr><td>11</td><td>Prompt-injection guardrails</td><td><span class="sev m">Med</span></td><td>Content filtering on retrieved docs + tool outputs; spotlighting</td><td>AI/MLOps</td><td>stage</td></tr>
+    <tr><td>12</td><td>Token budget / cost guardrail</td><td><span class="sev l">Low</span></td><td>Per-run token cap + cost alerting</td><td>FinOps</td><td>pilot</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="num">05</span>Round-table synthesis</h2>
+  <div class="callout note">
+    <span class="label">Consensus verdict</span>
+    <p><strong>Proceed with the discovery-stage RnD pilot.</strong> The design's spine — four-domain per-VIN medallion, 24-step chain, single HITL gate, hash-chained audit ledger, self-contained Azure footprint — is sound and internally consistent across all four design documents. The gaps are the expected maturity deltas between an RnD pilot and a production deployment, not flaws in the approach.</p>
+  </div>
+  <div class="callout method">
+    <span class="label">Before stage / production — close the four High items</span>
+    <p>(1) a model-evaluation harness, (2) multiple-testing correction on the cohort statistics, (3) a CI/CD pipeline, and (4) audit-ledger durability + private networking. Items 5–12 follow on the stage track. Each currency figure must also be re-derived against the client's actual baseline in a Business Value Assessment.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">06</span>Validated complete · the "not missing anything" checklist</h2>
+  <p class="lead">What the panel confirmed is present and coherent across the design pack:</p>
+  <ul style="font-size:14.5px;">
+    <li>The four data domains, the per-VIN Gold join, and the medallion mapping (laptop → Postgres → Fabric).</li>
+    <li>The 24-step / 7-cluster agent chain, each step owned by an agent and emitting an audit row.</li>
+    <li>A single, enforceable human-in-the-loop gate before any external effect, with SLA + escalation.</li>
+    <li>A 14-field, append-only, hash-chained audit ledger — one row per step, regulator-replayable.</li>
+    <li>The regulatory step (NHTSA EWR) and the supplier-chargeback evidence package.</li>
+    <li>Per-persona views (nine portals) and the full capability swim lanes.</li>
+    <li>A self-contained, reproducible Azure deployment (single RG, IaC, identity, secrets, observability).</li>
+    <li>Clear labelling of all currency figures as synthetic reference-scenario values, with parameterized inputs.</li>
+  </ul>
+  <p>The items <em>added</em> as a result of this review — observability in the deployment, and the gap log above — are now reflected in the Azure Deployment document and the IaC.</p>
+</section>
+
+</main>
+
+<footer>
+  <p style="margin:0 0 6px;"><strong>Keven Markham</strong> · Vice President · Deloitte's Microsoft Technology &amp; Services Practice</p>
+  <p style="margin:0;">Experts panel · design review &amp; validation · Companion to Architecture, Swim Lanes, Persona Portals, Azure Deployment</p>
+  <p style="margin:8px 0 0;font-size:11px;color:var(--slate-light);">Reference document · Discovery-stage · Reviewer personas are illustrative · All figures are reference-scenario figures · Not Toyota baseline claims</p>
+</footer>
+
+</body>
+</html>

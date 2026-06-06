@@ -1,32 +1,180 @@
-// Project-scoped resources for Zero Day Warranty, deployed into Agentic-Automotives.
-// Creates: managed identity, Key Vault (+ secrets), and three Container Apps bound
-// to the shared cae-visionkit environment, pulling images from the shared ACR and
-// calling the shared Azure OpenAI account — all via the project managed identity.
+// All project resources for Zero Day Warranty, created inside Agentic-Automotives.
+// Self-contained: ACR, Azure OpenAI (+ deployments), Postgres (+ db), Container
+// Apps environment, Key Vault (+ secrets), managed identity, observability, the
+// three Container Apps, and all (local) role assignments.
 
 param location string
+param suffix string
 param keyVaultName string
 param managedIdentityName string
-param sharedResourceGroupName string
+param logAnalyticsName string
+param appInsightsName string
 param containerAppsEnvName string
-param acrLoginServer string
-param aoaiEndpoint string
+param aoaiName string
 param aoaiChatDeployment string
+param aoaiChatModelVersion string
 param aoaiEmbedDeployment string
-param imageTag string
-
+param aoaiEmbedModelVersion string
+param pgAdminUser string
 @secure()
-param databaseUrl string
+param pgAdminPassword string
+param imageTag string
 @secure()
 param auditSigningKey string
 
-// Built-in role: Key Vault Secrets User
-var kvSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
+// Built-in role definition IDs
+var kvSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User
+var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'       // AcrPull
+var aoaiUserRoleId = '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'      // Cognitive Services OpenAI User
 
+var acrName = 'acrzdwagentic${suffix}'
+var pgServerName = 'pg-zdw-agentic${suffix}'
+
+// ---------------------------------------------------------------------------
+// Identity + observability
+// ---------------------------------------------------------------------------
 resource mi 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: managedIdentityName
   location: location
 }
 
+resource law 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: logAnalyticsName
+  location: location
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+  }
+}
+
+resource appi 'Microsoft.Insights/components@2020-02-02' = {
+  name: appInsightsName
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: law.id
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Container Registry (keyless — managed identity pull)
+// ---------------------------------------------------------------------------
+resource acr 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' = {
+  name: acrName
+  location: location
+  sku: {
+    name: 'Basic'
+  }
+  properties: {
+    adminUserEnabled: false
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Azure OpenAI + deployments (keyless — Entra only)
+// ---------------------------------------------------------------------------
+resource aoai 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
+  name: aoaiName
+  location: location
+  kind: 'OpenAI'
+  sku: {
+    name: 'S0'
+  }
+  properties: {
+    customSubDomainName: aoaiName
+    publicNetworkAccess: 'Enabled'
+    disableLocalAuth: true
+  }
+}
+
+resource aoaiChat 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = {
+  parent: aoai
+  name: aoaiChatDeployment
+  sku: {
+    name: 'Standard'
+    capacity: 30
+  }
+  properties: {
+    model: {
+      format: 'OpenAI'
+      name: aoaiChatDeployment
+      version: aoaiChatModelVersion
+    }
+  }
+}
+
+resource aoaiEmbed 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = {
+  parent: aoai
+  name: aoaiEmbedDeployment
+  sku: {
+    name: 'Standard'
+    capacity: 50
+  }
+  properties: {
+    model: {
+      format: 'OpenAI'
+      name: aoaiEmbedDeployment
+      version: aoaiEmbedModelVersion
+    }
+  }
+  // AOAI deployments on one account must be created serially.
+  dependsOn: [
+    aoaiChat
+  ]
+}
+
+// ---------------------------------------------------------------------------
+// Postgres flexible server + project database
+// ---------------------------------------------------------------------------
+resource pg 'Microsoft.DBforPostgreSQL/flexibleServers@2024-08-01' = {
+  name: pgServerName
+  location: location
+  sku: {
+    name: 'Standard_B1ms'
+    tier: 'Burstable'
+  }
+  properties: {
+    version: '16'
+    administratorLogin: pgAdminUser
+    administratorLoginPassword: pgAdminPassword
+    storage: {
+      storageSizeGB: 32
+    }
+    backup: {
+      backupRetentionDays: 7
+      geoRedundantBackup: 'Disabled'
+    }
+    highAvailability: {
+      mode: 'Disabled'
+    }
+    authConfig: {
+      activeDirectoryAuth: 'Enabled'
+      passwordAuth: 'Enabled'
+      tenantId: subscription().tenantId
+    }
+  }
+}
+
+resource pgDb 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2024-08-01' = {
+  parent: pg
+  name: 'zdw'
+}
+
+resource pgAllowAzure 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2024-08-01' = {
+  parent: pg
+  name: 'AllowAzureServices'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Key Vault + secrets
+// ---------------------------------------------------------------------------
 resource kv 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyVaultName
   location: location
@@ -44,22 +192,11 @@ resource kv 'Microsoft.KeyVault/vaults@2023-07-01' = {
   }
 }
 
-// Grant the managed identity read access to the project Key Vault.
-resource kvSecretsUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(kv.id, mi.id, kvSecretsUserRoleId)
-  scope: kv
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', kvSecretsUserRoleId)
-    principalId: mi.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
 resource secDatabaseUrl 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: kv
   name: 'database-url'
   properties: {
-    value: databaseUrl
+    value: 'postgresql://${pgAdminUser}:${pgAdminPassword}@${pg.properties.fullyQualifiedDomainName}:5432/zdw?sslmode=require'
   }
 }
 
@@ -75,30 +212,74 @@ resource secAoaiEndpoint 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: kv
   name: 'aoai-endpoint'
   properties: {
-    value: aoaiEndpoint
+    value: aoai.properties.endpoint
   }
 }
 
-// Reuse the shared Container Apps environment (cross-RG existing reference).
-resource cae 'Microsoft.App/managedEnvironments@2024-03-01' existing = {
+// ---------------------------------------------------------------------------
+// Local role assignments for the managed identity
+// ---------------------------------------------------------------------------
+resource raKvSecrets 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(kv.id, mi.id, kvSecretsUserRoleId)
+  scope: kv
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', kvSecretsUserRoleId)
+    principalId: mi.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource raAcrPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(acr.id, mi.id, acrPullRoleId)
+  scope: acr
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
+    principalId: mi.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource raAoaiUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(aoai.id, mi.id, aoaiUserRoleId)
+  scope: aoai
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', aoaiUserRoleId)
+    principalId: mi.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Container Apps environment + apps
+// ---------------------------------------------------------------------------
+resource cae 'Microsoft.App/managedEnvironments@2024-03-01' = {
   name: containerAppsEnvName
-  scope: resourceGroup(sharedResourceGroupName)
+  location: location
+  properties: {
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: law.properties.customerId
+        sharedKey: law.listKeys().primarySharedKey
+      }
+    }
+  }
 }
 
 var apps = [
   {
     name: 'ca-zdw-orchestrator'
-    image: '${acrLoginServer}/zdw/orchestrator:${imageTag}'
+    image: '${acr.properties.loginServer}/zdw/orchestrator:${imageTag}'
     external: true
   }
   {
     name: 'ca-zdw-mcp-warranty'
-    image: '${acrLoginServer}/zdw/mcp-warranty:${imageTag}'
+    image: '${acr.properties.loginServer}/zdw/mcp-warranty:${imageTag}'
     external: false
   }
   {
     name: 'ca-zdw-mcp-ledger'
-    image: '${acrLoginServer}/zdw/mcp-ledger:${imageTag}'
+    image: '${acr.properties.loginServer}/zdw/mcp-ledger:${imageTag}'
     external: false
   }
 ]
@@ -123,7 +304,7 @@ resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [for app in ap
       }
       registries: [
         {
-          server: acrLoginServer
+          server: acr.properties.loginServer
           identity: mi.id
         }
       ]
@@ -156,7 +337,7 @@ resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [for app in ap
             }
             {
               name: 'AOAI_ENDPOINT'
-              value: aoaiEndpoint
+              value: aoai.properties.endpoint
             }
             {
               name: 'AOAI_CHAT_DEPLOYMENT'
@@ -165,6 +346,10 @@ resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [for app in ap
             {
               name: 'AOAI_EMBED_DEPLOYMENT'
               value: aoaiEmbedDeployment
+            }
+            {
+              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+              value: appi.properties.ConnectionString
             }
             {
               name: 'DATABASE_URL'
@@ -185,12 +370,15 @@ resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [for app in ap
   }
   // KV access + secret values must exist before the app's KV references resolve.
   dependsOn: [
-    kvSecretsUser
+    raKvSecrets
+    raAcrPull
     secDatabaseUrl
     secSigningKey
   ]
 }]
 
+output acrLoginServer string = acr.properties.loginServer
+output aoaiEndpoint string = aoai.properties.endpoint
 output identityPrincipalId string = mi.properties.principalId
 output identityClientId string = mi.properties.clientId
 output keyVaultUri string = kv.properties.vaultUri

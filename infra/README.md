@@ -1,11 +1,14 @@
 # Zero Day Warranty — Azure deployment (reference IaC)
 
-Design-as-code for deploying the Zero Day Warranty solution into the
-**`Agentic-Automotives`** resource group in the **Global_RnD_Agentic_MERCH**
-subscription, reusing the shared RnD platform in `rg-iot-visionkit`.
+Design-as-code for deploying the Zero Day Warranty solution **self-contained**
+into the **`Agentic-Automotives`** resource group in the
+**Global_RnD_Agentic_MERCH** subscription. Every resource is project-owned and
+created fresh — **nothing is shared** with another resource group.
 
 > **Status: design only — not yet applied.** These templates encode the
 > deployment design in [`docs/design/ZeroDayWarranty_Azure_Deployment.html`](../docs/design/ZeroDayWarranty_Azure_Deployment.html).
+> The Experts Panel ([`docs/design/ZeroDayWarranty_Experts_Panel.html`](../docs/design/ZeroDayWarranty_Experts_Panel.html))
+> reviews this design and tracks the open gaps.
 
 ## Target environment
 
@@ -14,39 +17,40 @@ subscription, reusing the shared RnD platform in `rg-iot-visionkit`.
 | Subscription | `Global_RnD_Agentic_MERCH` · `3c8215d1-350c-4b83-bb7f-b5d26b4280f6` |
 | Tenant | `2da40318-46be-402c-ba75-cfb1f656567d` |
 | Resource group (create) | `Agentic-Automotives` · `eastus2` |
-| Shared platform (reuse) | `rg-iot-visionkit` · `eastus2` |
+| Sharing | none — all resources created in this RG |
 
-## Create vs. reuse
+## Resources created (all in Agentic-Automotives)
 
-**Created** in `Agentic-Automotives`: Key Vault `kv-zero-day-warranty`, managed
-identity `id-zdw-warranty-agent`, and three Container Apps
-(`ca-zdw-orchestrator`, `ca-zdw-mcp-warranty`, `ca-zdw-mcp-ledger`), plus the
-`zdw_bronze/silver/gold` Postgres schemas.
+Managed identity `id-zdw-warranty-agent` · Key Vault `kv-zero-day-warranty` ·
+Log Analytics `log-zdw-agentic` · Application Insights `appi-zdw-agentic` ·
+Container Registry `acrzdwagentic<uniq>` (Basic, keyless pull) · Azure OpenAI
+`aoai-zdw-agentic` (+ `gpt-4.1-mini`, `text-embedding-3-small`, keyless) ·
+Postgres flexible `pg-zdw-agentic<uniq>` (db `zdw`) · Container Apps env
+`cae-zdw-agentic` · Container Apps `ca-zdw-orchestrator`, `ca-zdw-mcp-warranty`,
+`ca-zdw-mcp-ledger` · Postgres schemas `zdw_bronze/silver/gold`.
 
-**Reused** from `rg-iot-visionkit`: ACR `acrvisionkit4459`, Container Apps env
-`cae-visionkit`, Azure OpenAI `aoai-apex-demo` (chat `gpt-4.1-mini`, embed
-`text-embedding-3-small`), Postgres `pg-visionkit-4459` (db `visionkit`).
+Globally-unique names (ACR, AOAI, Postgres) take a deterministic 6-char
+`uniqueString()` suffix.
 
 ## Files
 
 | File | Declares |
 |---|---|
-| `main.bicep` | subscription scope — creates the RG, invokes the project + shared-RBAC modules |
-| `modules/project.bicep` | managed identity, Key Vault (+ secrets), 3 Container Apps |
-| `modules/rbac.bicep` | AcrPull + Cognitive Services OpenAI User on the shared ACR / AOAI |
+| `main.bicep` | subscription scope — creates the RG, invokes the project module |
+| `modules/project.bicep` | identity · KV (+secrets) · Log Analytics · App Insights · ACR · Azure OpenAI (+deployments) · Postgres (+db) · Container Apps env · 3 Container Apps · local RBAC |
 | `main.parameters.json` | the environment values (no secrets) |
 | `scripts/postgres-schemas.sql` | medallion schemas + append-only audit ledger |
 
 ## Identity & RBAC
 
-One user-assigned managed identity is the principal for all three apps:
+One user-assigned managed identity is the principal for all three apps; every
+role assignment is **local to this RG**:
 
-- **AcrPull** on `acrvisionkit4459` — pull images
-- **Cognitive Services OpenAI User** on `aoai-apex-demo` — keyless model calls
+- **AcrPull** on `acrzdwagentic<uniq>` — pull images
+- **Cognitive Services OpenAI User** on `aoai-zdw-agentic` — keyless model calls
 - **Key Vault Secrets User** on `kv-zero-day-warranty` — read secrets
 
-No AOAI key is stored. App settings reference Key Vault secrets via managed
-identity.
+No AOAI key is stored (account has local auth disabled).
 
 ## Deploy (when authorized)
 
@@ -55,19 +59,20 @@ identity.
 az login --tenant 2da40318-46be-402c-ba75-cfb1f656567d
 az account set -s 3c8215d1-350c-4b83-bb7f-b5d26b4280f6
 
-# 2. Build + push images to the shared ACR
-az acr login -n acrvisionkit4459
-docker build -t acrvisionkit4459.azurecr.io/zdw/orchestrator:0.1.0 .   # + mcp-warranty, mcp-ledger
-docker push acrvisionkit4459.azurecr.io/zdw/orchestrator:0.1.0
-
-# 3. Deploy (creates RG + project resources + shared RBAC)
-DB_URL=$(az keyvault secret show --vault-name kv-home-agent -n database-url --query value -o tsv)
+# 2. Deploy everything (RG + ACR + AOAI + Postgres + CAE + KV + identity + apps + RBAC)
 az deployment sub create -l eastus2 \
   -f infra/main.bicep \
   -p infra/main.parameters.json \
-  -p databaseUrl="$DB_URL"
+  -p pgAdminPassword='<strong-secret>'
 
-# 4. Create the medallion schemas + append-only audit table
+# 3. Build + push images to the project ACR (login server from deployment output)
+ACR=$(az deployment sub show -n main --query properties.outputs.acrLoginServer.value -o tsv)
+az acr login -n "${ACR%%.*}"
+docker build -t "$ACR/zdw/orchestrator:0.1.0" .   # + mcp-warranty, mcp-ledger
+docker push "$ACR/zdw/orchestrator:0.1.0"
+
+# 4. Create medallion schemas + append-only audit table
+DB_URL=$(az keyvault secret show --vault-name kv-zero-day-warranty -n database-url --query value -o tsv)
 psql "$DB_URL" -f infra/scripts/postgres-schemas.sql
 ```
 
@@ -75,15 +80,19 @@ psql "$DB_URL" -f infra/scripts/postgres-schemas.sql
 
 ```bash
 az bicep build --file infra/main.bicep
-az deployment sub validate -l eastus2 -f infra/main.bicep -p infra/main.parameters.json -p databaseUrl=dummy
-az deployment sub what-if  -l eastus2 -f infra/main.bicep -p infra/main.parameters.json -p databaseUrl=dummy
+az deployment sub validate -l eastus2 -f infra/main.bicep -p infra/main.parameters.json -p pgAdminPassword=dummy
+az deployment sub what-if  -l eastus2 -f infra/main.bicep -p infra/main.parameters.json -p pgAdminPassword=dummy
 ```
 
-## Hardening for stage / prod
+## Deploy-time dependencies & hardening
 
-- Private endpoints on Key Vault, ACR, AOAI, and Postgres; internal-only
-  Container Apps ingress.
-- Replace the `database-url` password with Entra DB authentication (token via the
-  managed identity).
-- Customer-managed keys; Microsoft Purview audit echo; Defender for Cloud.
-- Production data plane on Microsoft Fabric OneLake instead of Postgres.
+- **AOAI quota.** Creating the account + deployments needs model quota for the
+  subscription in `eastus2`. Request an increase or pin to a region with capacity.
+- **Model versions.** `aoaiChatModelVersion` / `aoaiEmbedModelVersion` must be
+  versions available in the region; adjust the parameters if a deploy validation
+  reports an unavailable version.
+- **Hardening for stage/prod.** Private endpoints (KV, ACR, AOAI, Postgres) +
+  internal-only ingress; Entra DB auth instead of the password connection string;
+  customer-managed keys; Postgres HA/geo-redundant backup; Microsoft Purview
+  audit echo; production data plane on Microsoft Fabric OneLake. See the Experts
+  Panel gap log.

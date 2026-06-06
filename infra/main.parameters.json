@@ -1,20 +1,21 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
-  "_comment": "Zero Day Warranty · Azure deployment parameters. Subscription Global_RnD_Agentic_MERCH (3c8215d1-350c-4b83-bb7f-b5d26b4280f6), tenant 2da40318-46be-402c-ba75-cfb1f656567d. Pass databaseUrl at the CLI (sourced from kv-home-agent/database-url); do not store secrets here.",
+  "_comment": "Zero Day Warranty · self-contained Azure deployment. Subscription Global_RnD_Agentic_MERCH (3c8215d1-350c-4b83-bb7f-b5d26b4280f6), tenant 2da40318-46be-402c-ba75-cfb1f656567d. All resources are created in Agentic-Automotives; nothing is shared. Pass pgAdminPassword at the CLI; do not store secrets here.",
   "parameters": {
     "location": { "value": "eastus2" },
     "resourceGroupName": { "value": "Agentic-Automotives" },
-    "sharedResourceGroupName": { "value": "rg-iot-visionkit" },
     "keyVaultName": { "value": "kv-zero-day-warranty" },
     "managedIdentityName": { "value": "id-zdw-warranty-agent" },
-    "acrName": { "value": "acrvisionkit4459" },
-    "acrLoginServer": { "value": "acrvisionkit4459.azurecr.io" },
-    "containerAppsEnvName": { "value": "cae-visionkit" },
-    "aoaiName": { "value": "aoai-apex-demo" },
-    "aoaiEndpoint": { "value": "https://aoai-apex-demo.openai.azure.com/" },
+    "containerAppsEnvName": { "value": "cae-zdw-agentic" },
+    "aoaiName": { "value": "aoai-zdw-agentic" },
     "aoaiChatDeployment": { "value": "gpt-4.1-mini" },
+    "aoaiChatModelVersion": { "value": "2025-04-14" },
     "aoaiEmbedDeployment": { "value": "text-embedding-3-small" },
+    "aoaiEmbedModelVersion": { "value": "1" },
+    "logAnalyticsName": { "value": "log-zdw-agentic" },
+    "appInsightsName": { "value": "appi-zdw-agentic" },
+    "pgAdminUser": { "value": "zdwadmin" },
     "imageTag": { "value": "0.1.0" }
   }
 }

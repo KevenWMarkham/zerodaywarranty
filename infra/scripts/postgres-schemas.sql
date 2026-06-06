@@ -1,7 +1,7 @@
 -- Zero Day Warranty · medallion + audit ledger on the shared Postgres flexible server.
 --
---   Server : pg-visionkit-4459.postgres.database.azure.com
---   DB     : visionkit (shared) — this project owns the zdw_* schemas only.
+--   Server : pg-zdw-agentic<uniq>.postgres.database.azure.com  (project-owned)
+--   DB     : zdw  (project database in the Agentic-Automotives RG)
 --   Apply  : psql "$DATABASE_URL" -f infra/scripts/postgres-schemas.sql
 --
 -- The Postgres medallion is the RnD substrate; the production target is
