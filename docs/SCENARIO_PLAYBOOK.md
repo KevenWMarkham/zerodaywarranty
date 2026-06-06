@@ -20,6 +20,11 @@ DOMAIN:          <e.g. Quality & Compliance>                   # optional
 PERSONA (HITL):  <who approves at the gate>                    # optional
 KPI / OUTCOME:   <the measurable result>                       # optional
 DEVICE(S):       <edge/vision/none>                            # optional
+# --- deployment target (optional; only when you intend to deploy) ---
+RESOURCE GROUP:  <e.g. Agentic-Healthcare>                     # the new RG to create
+SUBSCRIPTION:    <name or GUID>                                # target subscription
+REGION:          <e.g. eastus2>
+NETWORKING:      <public | private>                            # private for governed tenants (see §9)
 ```
 
 If only the idea is given, Claude **infers** the rest from the taxonomy (§4) and
@@ -104,11 +109,24 @@ Architecture · Calculations & References · Capability Swim Lanes · Persona
 Portals · Azure Deployment · Experts Panel · Roadmap. Keep the
 classification banner and the "synthetic / not client claims" footer.
 
-### 3d. Infra — `infra/` (design-as-code; not applied)
-`main.bicep` (sub-scope, creates the RG) + `modules/project.bicep`
-(self-contained: identity, KV, observability, ACR, AOAI, Postgres, Container
-Apps env + apps, local RBAC) + `main.parameters.json` +
-`scripts/postgres-schemas.sql` (medallion + append-only audit) + `README.md`.
+### 3d. Infra — `infra/` (two deploy variants, both create their own RG)
+- **Public** (ungoverned subs): `main.bicep` + `modules/project.bicep` —
+  identity, KV, observability, ACR (Basic), AOAI, Postgres, Container Apps env +
+  apps, local data-role RBAC. `main.parameters.json`.
+- **Private / landing-zone-compliant** (governed subs that require private
+  endpoints — e.g. Deloitte RnD APEX-M): `main-private.bicep` +
+  `modules/network.bicep` + `modules/project-private.bicep` — VNet + private DNS,
+  KV/ACR(**Premium**)/AOAI with public access disabled + private endpoints,
+  Postgres VNet injection, VNet-integrated Container Apps env.
+  `main-private.parameters.json`.
+- Shared: `scripts/postgres-schemas.sql` (medallion + append-only audit),
+  `scripts/azure-bootstrap.sh` (OIDC setup — only for the GitHub Actions path),
+  `README.md`.
+- CI/CD: `.github/workflows/ci.yml`, `deploy.yml` (gated OIDC deploy),
+  `images.yml` (build → GHCR, for private-ACR import).
+
+**See §9 for which variant to use and the exact deploy runbook** — it captures
+hard-won lessons from deploying into a governed tenant.
 
 ### 3e. Plan — `backlog/roadmap.yaml`
 4 phases / ~12 sprints; fold the Experts-Panel gaps in as stories; add the P3
@@ -218,7 +236,120 @@ $4.2M/$2.8M/~340%. Read these as the template to copy:
 - **Synthetic only.** Never embed real client data or claims; label every figure
   a reference-scenario figure and keep the math parameterized for a later BVA.
 - **Self-contained deployment.** One project resource group owns its resources;
-  no shared dependencies; keyless identity; secrets in Key Vault.
-- **No secrets in the repo.** Pass passwords/keys at deploy time.
+  no shared dependencies; keyless identity; secrets in Key Vault. In governed
+  tenants use the **private** variant (§9) so it complies with deny policies.
+- **No secrets in the repo, or in chat.** Pass passwords/keys at deploy time.
+  Never paste a real token/password into a prompt — if you do, revoke it.
 - **Keep the invariants** in §4 — they are what make the solution auditable and
   deployable, not optional decoration.
+
+---
+
+## 9. Deploying to Azure — the runbook (lessons learned)
+
+This section is the distilled, battle-tested way to actually stand a scenario up
+in Azure, including the snags hit deploying Zero Day Warranty into a governed
+Deloitte RnD subscription. **Read it before deploying a new RG/scenario.**
+
+### 9.1 Choose the deploy *identity* (this is the big one)
+- **Recommended: deploy as *yourself* from Azure Cloud Shell.** Your user
+  account already has the rights to create resources (it's how you deploy other
+  projects). This sidesteps the service-principal machinery entirely.
+- **OIDC + GitHub Actions (`deploy.yml`) only works if you can create a service
+  principal *and* grant it Owner.** In many enterprise tenants an **ABAC
+  condition blocks assigning Owner/Contributor to a service principal**
+  (`AuthorizationFailed … roleAssignments/write … ABAC condition not fulfilled`).
+  If you hit that, **stop and use deploy-as-user** — don't fight it.
+
+### 9.2 Use **Azure Cloud Shell** (`https://shell.azure.com`, Bash)
+- Native, **pre-authenticated** `az`; has `az acr build` / `az acr import`; no
+  `sudo`, no device-code, no WSL quirks.
+- **Do not run `az` from the Windows CLI under WSL** — WSL invokes the Windows
+  `az.exe`, which returns empty Microsoft Graph responses and crashes
+  `az ad sp create` with `JSONDecodeError: Expecting value: line 1 column 1`.
+  Cloud Shell (Linux-native az) does not have this bug.
+- If you need `gh` in Cloud Shell (no sudo): download the tarball to `~/bin`, or
+  authenticate non-interactively with `export GH_TOKEN=<PAT repo+workflow>`.
+
+### 9.3 Pick the networking variant — check policy first
+```bash
+az policy assignment list --query "[?contains(displayName,'APEX')].displayName" -o tsv
+# (drop the filter to see all). Look for "Require private endpoint" /
+# "publicNetworkAccess Disabled" deny policies.
+```
+- **No such deny policies** → use the **public** variant (`infra/main.bicep`).
+- **Deny policies present** (governed landing zone) → use the **private** variant
+  (`infra/main-private.bicep`). Public-endpoint resources are rejected with
+  `RequestDisallowedByPolicy`.
+
+### 9.4 Parameterize for the new RG + scenario
+Edit the parameters file you'll use (`infra/main.parameters.json` or
+`infra/main-private.parameters.json`):
+- `resourceGroupName` → the new RG (e.g. `Agentic-Healthcare`)
+- `location` → region with AOAI quota
+- `keyVaultName`, `managedIdentityName`, `containerAppsEnvName`,
+  `logAnalyticsName`, `appInsightsName` → project-unique names (KV ≤ 24 chars)
+- `aoaiName`, `aoaiChatDeployment`/`aoaiChatModelVersion`,
+  `aoaiEmbedDeployment`/`…Version` → confirm the model **version exists in the
+  region** (`az cognitiveservices account list-models` after the account exists,
+  or check quota first)
+- ACR / Postgres names get a deterministic `uniqueString` suffix automatically.
+
+### 9.5 Run it (Cloud Shell, deploy-as-user)
+```bash
+git clone https://github.com/<owner>/<repo>.git && cd <repo>
+az account set -s <subscription>
+
+# 1) Provision (pick ONE template)
+az deployment sub create -n <name> --location <region> \
+  --template-file infra/main-private.bicep \           # or infra/main.bicep
+  --parameters infra/main-private.parameters.json \
+  --parameters pgAdminPassword='<strong-secret>'
+
+# 2) Images
+#   Public ACR:  az acr build --registry <acr> --image zdw/<svc>:<tag> --target <svc> .
+#   Private ACR: build on GitHub then import server-side (a private ACR can't be
+#   pushed from a public shell):
+gh workflow run "Build images (GHCR)" --repo <owner>/<repo> -f image_tag=<tag>
+ACR=$(az deployment sub show -n <name> --query properties.outputs.acrLoginServer.value -o tsv)
+for s in orchestrator mcp-warranty mcp-ledger; do
+  az acr import --name "${ACR%%.*}" --source ghcr.io/<owner-lower>/zdw-$s:<tag> --image zdw/$s:<tag>
+done
+
+# 3) Roll the apps to the images + smoke test
+for s in orchestrator mcp-warranty mcp-ledger; do
+  az containerapp update -g <RG> -n "ca-zdw-$s" --image "$ACR/zdw/$s:<tag>"
+done
+FQDN=$(az containerapp show -g <RG> -n ca-zdw-orchestrator --query properties.configuration.ingress.fqdn -o tsv)
+curl -s "https://$FQDN/run"        # expect: "ledger_rows": 24, "chain_verified": true
+
+# 4) (optional) data plane: apply the medallion + audit schema
+#    psql "$DATABASE_URL" -f infra/scripts/postgres-schemas.sql
+```
+The `/run` smoke test uses the built-in **synthetic** dataset, so it proves the
+app without the database. Then flip the `built/deployed/tested` flags in
+`backlog/roadmap.yaml` and confirm `python zdw.py checklist` shows green.
+
+### 9.6 Gotchas → fixes (the hard-won list)
+| Symptom | Cause | Fix |
+|---|---|---|
+| `az ad sp create` → `JSONDecodeError: Expecting value` | Windows `az.exe` under WSL | run in **Cloud Shell** |
+| `AuthorizationFailed … roleAssignments/write … ABAC` | tenant blocks granting Owner to an SP | **deploy as yourself**, skip OIDC |
+| `No subscriptions found for ***` in the OIDC run | the SP has no role on the subscription | admin grants the SP Owner, or deploy-as-user |
+| `RequestDisallowedByPolicy` (KV/ACR/AOAI public) | governed landing zone | use the **private** variant (§9.3) |
+| can't push image to ACR from Cloud Shell | private ACR (public disabled) | build on GitHub → `az acr import` (§9.5) |
+| ACR private endpoint won't create | ACR is Basic | ACR must be **Premium** for PE (the private module sets this) |
+| Bicep `BCP178` in the apps `for`-loop | iterated array referenced a runtime prop (`acr…loginServer`) | keep the array static; build the value in the loop body |
+| AOAI deploy fails on model version | version not available in region | set `aoaiChatModelVersion` to an available one |
+| container app revision won't start (private) | app reads KV secrets at startup; VNet→KV private link not resolving | verify KV private endpoint + DNS, or make those secrets optional for a synthetic-only smoke test |
+| `gh` device-code never arrives | it's terminal-based, not a phone push | type the `XXXX-XXXX` from the terminal, or use `GH_TOKEN` |
+
+### 9.7 New-deployment checklist
+- [ ] Cloud Shell open, `az account set -s <sub>`
+- [ ] policies checked → variant chosen (public / private)
+- [ ] parameters file updated (RG, names, region, model version)
+- [ ] `az deployment sub create` succeeded
+- [ ] images built (GHCR) + imported (or `az acr build` for public ACR)
+- [ ] apps rolled to the image; `curl /run` → `chain_verified: true`
+- [ ] backlog gates flipped; `zdw checklist` green
+- [ ] (prod) Postgres schema applied; secrets rotation + Purview audit export planned
