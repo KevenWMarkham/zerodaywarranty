@@ -269,17 +269,17 @@ resource cae 'Microsoft.App/managedEnvironments@2024-03-01' = {
 var apps = [
   {
     name: 'ca-zdw-orchestrator'
-    image: '${acr.properties.loginServer}/zdw/orchestrator:${imageTag}'
+    repo: 'orchestrator'
     external: true
   }
   {
     name: 'ca-zdw-mcp-warranty'
-    image: '${acr.properties.loginServer}/zdw/mcp-warranty:${imageTag}'
+    repo: 'mcp-warranty'
     external: false
   }
   {
     name: 'ca-zdw-mcp-ledger'
-    image: '${acr.properties.loginServer}/zdw/mcp-ledger:${imageTag}'
+    repo: 'mcp-ledger'
     external: false
   }
 ]
@@ -325,7 +325,7 @@ resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [for app in ap
       containers: [
         {
           name: app.name
-          image: app.image
+          image: '${acr.properties.loginServer}/zdw/${app.repo}:${imageTag}'
           resources: {
             cpu: json('0.5')
             memory: '1Gi'
