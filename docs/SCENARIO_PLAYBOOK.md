@@ -341,6 +341,9 @@ app without the database. Then flip the `built/deployed/tested` flags in
 | ACR private endpoint won't create | ACR is Basic | ACR must be **Premium** for PE (the private module sets this) |
 | Bicep `BCP178` in the apps `for`-loop | iterated array referenced a runtime prop (`acr…loginServer`) | keep the array static; build the value in the loop body |
 | AOAI deploy fails on model version | version not available in region | set `aoaiChatModelVersion` to an available one |
+| `MANIFEST_UNKNOWN: …:<tag> is not found` on the apps | apps are created in the same deploy that creates the ACR, before images exist | **two-phase**: deploy `-p deployApps=false`, build+import images, then redeploy (`deployApps` defaults true) |
+| AOAI `AccountProvisioningStateInvalid … state Accepted` | Cognitive Services provisioning race | re-run the deployment (idempotent) |
+| `az acr import` → 401 from ghcr | the GHCR package is private | make the 3 packages public, or `az acr import … --username <gh-user> --password <PAT read:packages>` |
 | container app revision won't start (private) | app reads KV secrets at startup; VNet→KV private link not resolving | verify KV private endpoint + DNS, or make those secrets optional for a synthetic-only smoke test |
 | `gh` device-code never arrives | it's terminal-based, not a phone push | type the `XXXX-XXXX` from the terminal, or use `GH_TOKEN` |
 
