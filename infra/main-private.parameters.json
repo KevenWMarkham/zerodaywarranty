@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "_comment": "Zero Day Warranty · private-networking (landing-zone-compliant) deployment. All data services are private (KV/ACR/AOAI private endpoints, Postgres VNet injection), VNet-integrated Container Apps env. Pass pgAdminPassword at the CLI.",
+  "parameters": {
+    "location": { "value": "eastus2" },
+    "resourceGroupName": { "value": "Agentic-Automotives" },
+    "keyVaultName": { "value": "kv-zero-day-warranty" },
+    "managedIdentityName": { "value": "id-zdw-warranty-agent" },
+    "containerAppsEnvName": { "value": "cae-zdw-agentic" },
+    "aoaiName": { "value": "aoai-zdw-agentic" },
+    "aoaiChatDeployment": { "value": "gpt-4.1-mini" },
+    "aoaiChatModelVersion": { "value": "2025-04-14" },
+    "aoaiEmbedDeployment": { "value": "text-embedding-3-small" },
+    "aoaiEmbedModelVersion": { "value": "1" },
+    "logAnalyticsName": { "value": "log-zdw-agentic" },
+    "appInsightsName": { "value": "appi-zdw-agentic" },
+    "pgAdminUser": { "value": "zdwadmin" },
+    "imageTag": { "value": "0.1.0" }
+  }
+}
