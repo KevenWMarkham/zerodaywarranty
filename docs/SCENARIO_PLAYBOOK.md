@@ -31,6 +31,12 @@ If only the idea is given, Claude **infers** the rest from the taxonomy (§4) an
 the scenario library (`docs/reference/scenario-library.csv`), states its
 assumptions in one short paragraph, then generates everything in §3.
 
+> **Non-technical teammates:** open **`docs/scenario-builder.html`** in a browser
+> — it's a form that produces this exact `intake` block as a downloadable
+> `scenario-request-*.md`. Hand that file to Claude Code with this playbook and
+> say "build this per the playbook." (Serve the page over http to enable the
+> library search; it works offline otherwise.)
+
 Search the library first to reuse a service code or avoid a duplicate:
 
 ```bash
@@ -343,7 +349,7 @@ app without the database. Then flip the `built/deployed/tested` flags in
 | AOAI deploy fails on model version | version not available in region | set `aoaiChatModelVersion` to an available one |
 | `MANIFEST_UNKNOWN: …:<tag> is not found` on the apps | apps are created in the same deploy that creates the ACR, before images exist | **two-phase**: deploy `-p deployApps=false`, build+import images, then redeploy (`deployApps` defaults true) |
 | AOAI `AccountProvisioningStateInvalid … state Accepted` | Cognitive Services provisioning race | re-run the deployment (idempotent) |
-| `az acr import` → 401 from ghcr | the GHCR package is private | make the 3 packages public, or `az acr import … --username <gh-user> --password <PAT read:packages>` |
+| `az acr import` → 401/403 `DENIED` from ghcr | the GHCR package is private | make the 3 packages public, or `az acr import … --username <gh-user> --password <PAT read:packages>` |
 | container app revision won't start (private) | app reads KV secrets at startup; VNet→KV private link not resolving | verify KV private endpoint + DNS, or make those secrets optional for a synthetic-only smoke test |
 | `gh` device-code never arrives | it's terminal-based, not a phone push | type the `XXXX-XXXX` from the terminal, or use `GH_TOKEN` |
 

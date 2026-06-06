@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APEX Scenario Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --navy:#1A2339; --navy-soft:#2A3349; --ms-blue:#0078D4; --ms-blue-dark:#005A9E;
+    --slate:#64748B; --slate-light:#94A3B8; --green:#047857; --amber:#D97706;
+    --bg:#fff; --bg-soft:#FAFAF7; --border:#E5E7EB; --text:#1F2937; --code-bg:#0f172a;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Source Serif 4",Georgia,serif; color:var(--text); background:var(--bg); }
+  .classification { background:var(--amber); color:#fff; padding:6px 24px; text-align:center; font-family:Aptos,sans-serif; font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; font-weight:700; }
+  header.cover { padding:28px 40px; background:linear-gradient(135deg,var(--navy),var(--navy-soft)); color:#fff; border-bottom:5px solid var(--ms-blue); }
+  header.cover .eyebrow { font-family:Aptos,sans-serif; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:var(--ms-blue); font-weight:700; }
+  header.cover h1 { font-family:Aptos,sans-serif; font-size:28px; margin:8px 0 4px; }
+  header.cover p { font-family:Aptos,sans-serif; font-size:13.5px; color:#cbd5e1; margin:0; }
+
+  main { max-width:1240px; margin:0 auto; padding:24px; display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media (max-width:920px){ main { grid-template-columns:1fr; } }
+  h2 { font-family:Aptos,sans-serif; color:var(--navy); font-size:15px; text-transform:uppercase; letter-spacing:.08em; border-bottom:1px solid var(--border); padding-bottom:6px; margin:0 0 14px; }
+  .group { margin-bottom:18px; }
+  label { display:block; font-family:Aptos,sans-serif; font-size:12px; font-weight:700; color:var(--navy); margin:0 0 4px; }
+  label .req { color:#B91C1C; }
+  label .hint { font-weight:400; color:var(--slate); text-transform:none; letter-spacing:0; font-size:11px; }
+  input, select, textarea { width:100%; font-family:"Source Serif 4",serif; font-size:14px; padding:8px 10px; border:1px solid var(--border); border-radius:6px; background:#fff; color:var(--text); }
+  input:focus, select:focus, textarea:focus { outline:2px solid var(--ms-blue); border-color:var(--ms-blue); }
+  textarea { resize:vertical; min-height:70px; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .radio { display:flex; gap:14px; font-family:Aptos,sans-serif; font-size:13px; }
+  .radio label { display:flex; gap:6px; align-items:center; font-weight:400; }
+  .radio input { width:auto; }
+
+  .panel { background:var(--bg-soft); border:1px solid var(--border); border-radius:10px; padding:18px 20px; }
+  .preview { position:sticky; top:16px; }
+  pre.md { background:var(--code-bg); color:#e2e8f0; border-radius:8px; padding:16px; font-family:"Cascadia Mono",monospace; font-size:12.5px; line-height:1.55; white-space:pre-wrap; word-break:break-word; max-height:60vh; overflow:auto; }
+  .btns { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  button.act { font-family:Aptos,sans-serif; font-size:13px; font-weight:700; padding:9px 16px; border-radius:7px; border:1px solid var(--ms-blue); background:var(--ms-blue); color:#fff; cursor:pointer; }
+  button.act.secondary { background:#fff; color:var(--ms-blue-dark); }
+  button.act:hover { filter:brightness(1.05); }
+  .toast { font-family:Aptos,sans-serif; font-size:12px; color:var(--green); margin-left:6px; align-self:center; }
+  .err { font-family:Aptos,sans-serif; font-size:12px; color:#B91C1C; margin-top:8px; min-height:16px; }
+
+  .lib { margin-top:16px; }
+  .lib input { margin-bottom:8px; }
+  .lib .hits { max-height:200px; overflow:auto; border:1px solid var(--border); border-radius:6px; background:#fff; }
+  .lib .hit { padding:7px 10px; border-bottom:1px dotted var(--border); cursor:pointer; font-size:13px; }
+  .lib .hit:hover { background:var(--bg-soft); }
+  .lib .hit .mono { font-family:"Cascadia Mono",monospace; font-size:11.5px; color:var(--ms-blue-dark); }
+  .lib .note { font-family:Aptos,sans-serif; font-size:11.5px; color:var(--slate); }
+  .how { font-family:Aptos,sans-serif; font-size:12.5px; color:var(--slate); background:#DBEAFE; border-left:4px solid var(--ms-blue); border-radius:0 6px 6px 0; padding:10px 14px; margin:0 0 16px; }
+  .how b { color:var(--ms-blue-dark); }
+  footer { padding:18px 40px; background:var(--bg-soft); border-top:2px solid var(--border); font-family:Aptos,sans-serif; font-size:11.5px; color:var(--slate); text-align:center; }
+  </style>
+</head>
+<body>
+<div class="classification">APEX Scenario Builder · fills the SCENARIO_PLAYBOOK intake · output drives Claude Code</div>
+<header class="cover">
+  <div class="eyebrow">Deloitte Microsoft Technology &amp; Services Practice</div>
+  <h1>Scenario Builder</h1>
+  <p>Describe a scenario → generate a request <code>.md</code> → hand it to Claude Code with <code>docs/SCENARIO_PLAYBOOK.md</code>.</p>
+</header>
+
+<main>
+  <!-- ===== form ===== -->
+  <section class="panel">
+    <h2>1 · Describe the scenario</h2>
+    <div class="how">
+      <b>How it works:</b> fill the fields (only <b>Scenario idea</b> is required — Claude infers the rest),
+      click <b>Generate</b>, then <b>Download</b> or <b>Copy</b> the <code>.md</code>. Give that file to Claude
+      Code together with <code>docs/SCENARIO_PLAYBOOK.md</code> and say <i>"Build this scenario per the playbook."</i>
+    </div>
+
+    <div class="group">
+      <label for="idea">Scenario idea <span class="req">*</span> <span class="hint">— the moment + the agentic solution, 1–2 sentences</span></label>
+      <textarea id="idea" placeholder="e.g. A grid-reliability agent that traces transformer failures back to load history and weather, then recommends predictive maintenance and routes a chargeback to the part supplier."></textarea>
+    </div>
+
+    <div class="group row2">
+      <div>
+        <label for="industry">Industry</label>
+        <select id="industry"></select>
+      </div>
+      <div>
+        <label for="domain">Domain</label>
+        <select id="domain"></select>
+      </div>
+    </div>
+
+    <div class="group row2">
+      <div>
+        <label for="service">Service code <span class="hint">— {IND}-{AREA}-NN</span></label>
+        <input id="service" placeholder="e.g. ER-OG-05 (blank = assign)">
+      </div>
+      <div>
+        <label for="device">Device(s)</label>
+        <input id="device" placeholder="edge / vision / none">
+      </div>
+    </div>
+
+    <div class="group">
+      <label for="persona">Persona (HITL approver)</label>
+      <input id="persona" placeholder="e.g. Reliability Director">
+    </div>
+    <div class="group">
+      <label for="kpi">KPI / outcome</label>
+      <input id="kpi" placeholder="e.g. unplanned outages −30% · recovery rate +25%">
+    </div>
+
+    <h2 style="margin-top:24px;">2 · Deployment target <span style="font-weight:400;color:var(--slate);text-transform:none;letter-spacing:0;">(optional — only if you'll deploy)</span></h2>
+    <div class="group row2">
+      <div>
+        <label for="rg">Resource group <span class="hint">— new RG to create</span></label>
+        <input id="rg" placeholder="e.g. Agentic-Energy">
+      </div>
+      <div>
+        <label for="region">Region</label>
+        <input id="region" placeholder="eastus2" value="eastus2">
+      </div>
+    </div>
+    <div class="group">
+      <label for="sub">Subscription <span class="hint">— name or GUID</span></label>
+      <input id="sub" placeholder="e.g. Global_RnD_Agentic_MERCH">
+    </div>
+    <div class="group">
+      <label>Networking</label>
+      <div class="radio">
+        <label><input type="radio" name="net" value="private" checked> private <span class="hint">(governed tenants — APEX-M)</span></label>
+        <label><input type="radio" name="net" value="public"> public</label>
+      </div>
+    </div>
+    <div class="group">
+      <label for="notes">Extra notes for Claude <span class="hint">— anything else</span></label>
+      <textarea id="notes" placeholder="e.g. reuse an existing service code; specific data sources; special compliance steps."></textarea>
+    </div>
+
+    <!-- library lookup (progressive: needs http serving) -->
+    <div class="lib group">
+      <h2>Reuse from the scenario library <span style="font-weight:400;color:var(--slate);text-transform:none;letter-spacing:0;">(optional)</span></h2>
+      <input id="libq" placeholder="search 700+ scenarios by id / title / KPI…">
+      <div class="hits" id="libhits" style="display:none"></div>
+      <div class="note" id="libnote">Serve this page over http (e.g. GitHub Pages) to enable library search from <code>reference/scenario-library.csv</code>.</div>
+    </div>
+  </section>
+
+  <!-- ===== preview ===== -->
+  <section class="panel preview">
+    <h2>3 · Request <code>.md</code> (live)</h2>
+    <pre class="md" id="out"></pre>
+    <div class="btns">
+      <button class="act" id="copy">Copy markdown</button>
+      <button class="act secondary" id="download">Download .md</button>
+      <span class="toast" id="toast"></span>
+    </div>
+    <div class="err" id="err"></div>
+    <div class="how" style="margin-top:14px;">
+      <b>Next:</b> commit the file to <code>intake/&lt;name&gt;.md</code> (or paste its contents to Claude Code) and ask:
+      <i>"Generate this Service-Scenario following docs/SCENARIO_PLAYBOOK.md, then deploy per §9."</i>
+    </div>
+  </section>
+</main>
+
+<footer>APEX Scenario Builder · companion to docs/SCENARIO_PLAYBOOK.md · all generated scenarios use synthetic reference data</footer>
+
+<script>
+(function(){
+  const INDUSTRIES = [
+    ["", "(infer)"],["rc","rc · Retail & Consumer"],["hls","hls · Health & Life Sciences"],
+    ["er","er · Energy & Resources"],["axle","axle · Automotive / Mobility"],
+    ["tmt","tmt · Tech / Media / Telecom"],["th","th · Travel & Hospitality"],
+    ["ice","ice · Industrial / Connected Equipment"]
+  ];
+  const DOMAINS = ["(infer)","Pricing & Revenue","Customer Experience","Operations & Workforce",
+    "Risk · Fraud · Security","Quality & Compliance","Marketing & Growth","Clinical Care",
+    "Network & Infrastructure","Asset Maintenance","Supply Chain","Engineering & R&D","Channel · Partner · Dealer"];
+
+  const $ = id => document.getElementById(id);
+  const ind = $("industry"), dom = $("domain");
+  INDUSTRIES.forEach(([v,l])=>ind.add(new Option(l,v)));
+  DOMAINS.forEach(d=>dom.add(new Option(d, d==="(infer)"?"":d)));
+
+  function slug(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,48); }
+
+  function val(id){ return ($(id).value||"").trim(); }
+  function net(){ const r=document.querySelector('input[name=net]:checked'); return r?r.value:"private"; }
+
+  function deriveScenarioId(){
+    const industry = ind.value || "<industry>";
+    const s = slug(val("idea").split(/[.\n]/)[0]) || "scenario";
+    return `${industry}-${s}`.slice(0,60);
+  }
+
+  function buildMd(){
+    const idea = val("idea");
+    const sid = deriveScenarioId();
+    const lines = [];
+    lines.push(`# Scenario Request — ${sid}`);
+    lines.push("");
+    lines.push("> Generated by the APEX Scenario Builder. Hand this file to Claude Code with");
+    lines.push("> `docs/SCENARIO_PLAYBOOK.md` and say: \"Build this Service-Scenario following the");
+    lines.push("> playbook, then deploy per §9.\"");
+    lines.push("");
+    lines.push("```intake");
+    lines.push(`SCENARIO IDEA:   ${idea || "<one or two sentences: the moment + the agentic solution>"}`);
+    lines.push(`INDUSTRY:        ${ind.value || "(infer)"}`);
+    lines.push(`SERVICE CODE:    ${val("service") || "(infer/assign)"}`);
+    lines.push(`DOMAIN:          ${dom.value || "(infer)"}`);
+    lines.push(`PERSONA (HITL):  ${val("persona") || "(infer)"}`);
+    lines.push(`KPI / OUTCOME:   ${val("kpi") || "(infer)"}`);
+    lines.push(`DEVICE(S):       ${val("device") || "none"}`);
+    lines.push(`RESOURCE GROUP:  ${val("rg") || "(none — design only)"}`);
+    lines.push(`SUBSCRIPTION:    ${val("sub") || "(none)"}`);
+    lines.push(`REGION:          ${val("region") || "eastus2"}`);
+    lines.push(`NETWORKING:      ${net()}`);
+    lines.push("```");
+    const notes = val("notes");
+    if (notes){ lines.push(""); lines.push("## Notes"); lines.push(notes); }
+    return lines.join("\n") + "\n";
+  }
+
+  function render(){ $("out").textContent = buildMd(); }
+  ["idea","industry","domain","service","device","persona","kpi","rg","region","sub","notes"]
+    .forEach(id=>$(id).addEventListener("input",render));
+  document.querySelectorAll('input[name=net]').forEach(r=>r.addEventListener("change",render));
+
+  $("copy").addEventListener("click",async()=>{
+    try{ await navigator.clipboard.writeText(buildMd()); flash("Copied ✓"); }
+    catch(e){ flash("Copy failed — select & copy manually", true); }
+  });
+  $("download").addEventListener("click",()=>{
+    const blob = new Blob([buildMd()],{type:"text/markdown"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `scenario-request-${deriveScenarioId()}.md`;
+    a.click(); URL.revokeObjectURL(a.href); flash("Downloaded ✓");
+  });
+  function flash(m,isErr){ const t=$("toast"); t.textContent=m; t.style.color=isErr?"#B91C1C":"var(--green)"; setTimeout(()=>t.textContent="",2500); }
+
+  // ---- optional library search (progressive enhancement) ----
+  let LIB=null;
+  function parseCsv(text){
+    const rows=[]; const lines=text.split(/\r?\n/);
+    const split=l=>{ const out=[]; let cur="",q=false; for(const c of l){ if(c=='"'){q=!q;} else if(c==',' && !q){out.push(cur);cur="";} else cur+=c; } out.push(cur); return out; };
+    const hdr=split(lines[0]);
+    for(let i=1;i<lines.length;i++){ if(!lines[i].trim())continue; const c=split(lines[i]); rows.push({id:c[1],title:c[2],code:c[3],domain:c[4],kpi:c[7]}); }
+    return rows;
+  }
+  fetch("reference/scenario-library.csv").then(r=>{ if(!r.ok) throw 0; return r.text(); })
+    .then(t=>{ LIB=parseCsv(t); $("libnote").textContent=`${LIB.length} scenarios loaded — type to search.`; })
+    .catch(()=>{ /* file:// — leave the note */ });
+
+  $("libq").addEventListener("input",()=>{
+    if(!LIB) return;
+    const q=val("libq").toLowerCase(); const box=$("libhits");
+    if(!q){ box.style.display="none"; return; }
+    const hits=LIB.filter(r=>(r.id+r.title+r.code+r.kpi).toLowerCase().includes(q)).slice(0,40);
+    box.innerHTML = hits.map((r,i)=>`<div class="hit" data-i="${i}"><b>${r.title}</b> <span class="mono">${r.code} · ${r.id}</span><br><span style="color:var(--slate)">${r.kpi||""}</span></div>`).join("");
+    box.style.display = hits.length? "block":"none";
+    box._hits = hits;
+    box.querySelectorAll(".hit").forEach(el=>el.addEventListener("click",()=>{
+      const r = box._hits[+el.dataset.i];
+      $("service").value=r.code||""; if(r.domain){ for(const o of dom.options){ if(o.value===r.domain) dom.value=r.domain; } }
+      const pfx=(r.code||"").split("-")[0].toLowerCase(); for(const o of ind.options){ if(o.value===pfx) ind.value=pfx; }
+      box.style.display="none"; render();
+    }));
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
