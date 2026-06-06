@@ -18,6 +18,8 @@ EXPOSE 8080
 # Non-root runtime.
 RUN useradd --create-home --uid 10001 appuser
 USER appuser
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD ["python", "-c", "import os,urllib.request;urllib.request.urlopen(f\"http://localhost:{os.getenv('PORT','8080')}/health\").read()"]
 CMD ["python", "-m", "zero_day_warranty.server"]
 
 FROM base AS orchestrator

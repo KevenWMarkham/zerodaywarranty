@@ -360,6 +360,38 @@ resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [for app in ap
               secretRef: 'audit-signing-key'
             }
           ]
+          probes: [
+            {
+              type: 'Liveness'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 10
+              periodSeconds: 30
+              failureThreshold: 3
+            }
+            {
+              type: 'Readiness'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              failureThreshold: 3
+            }
+            {
+              type: 'Startup'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 3
+              periodSeconds: 5
+              failureThreshold: 12
+            }
+          ]
         }
       ]
       scale: {

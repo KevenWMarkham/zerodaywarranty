@@ -11,6 +11,8 @@ All notable changes to the Zero Day Warranty solution are documented here.
   `/tools` + `/verify`) and a multi-stage `Dockerfile` (targets `orchestrator`,
   `mcp-warranty`, `mcp-ledger`) + `.dockerignore`. Clean `pip install .` build and
   the server entrypoint verified locally; `tests/test_server.py` added.
+- **Health probes** — liveness / readiness / startup probes on `/health:8080` for
+  all three Container Apps (Bicep) + a Docker `HEALTHCHECK`.
 - **OIDC deploy bootstrap** — `infra/scripts/azure-bootstrap.sh` creates the
   deployer Entra app + federated credentials (main + `production`) + subscription
   role assignment + GitHub environment and secrets, so the gated `deploy.yml`
