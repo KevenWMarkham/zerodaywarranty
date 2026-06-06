@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Day Warranty · Azure Deployment Design</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --navy: #1A2339; --navy-soft: #2A3349;
+    --ms-blue: #0078D4; --ms-blue-dark: #005A9E;
+    --nv-green: #76B900; --nv-green-dark: #5C9300;
+    --slate: #64748B; --slate-light: #94A3B8;
+    --amber: #D97706; --green: #047857; --rust: #B85450;
+    --bg: #ffffff; --bg-soft: #FAFAF7; --border: #E5E7EB;
+    --text: #1F2937; --code-bg: #F5F5F7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Source Serif 4", Charter, Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.62; font-size: 16px; }
+
+  .classification { background: var(--amber); color: #fff; padding: 6px 24px; text-align: center; font-family: Aptos, sans-serif; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; }
+
+  header.cover { padding: 44px 56px 28px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%); color: #fff; border-bottom: 6px solid var(--ms-blue); }
+  header.cover .eyebrow { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ms-blue); font-weight: 700; }
+  header.cover h1 { font-family: Aptos, sans-serif; font-size: 36px; font-weight: 700; line-height: 1.12; margin: 12px 0 6px; color: #fff; }
+  header.cover .subtitle { font-family: Aptos, sans-serif; font-size: 18px; color: #cbd5e1; font-weight: 400; margin: 0 0 20px; }
+  header.cover .meta { display: flex; gap: 22px; flex-wrap: wrap; font-family: Aptos, sans-serif; font-size: 12.5px; color: #94A3B8; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.16); }
+  header.cover .meta strong { color: #cbd5e1; font-weight: 600; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 36px 32px 64px; }
+  section { margin: 0 0 40px; }
+  section.summary { margin-top: -28px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+
+  h2 { font-family: Aptos, sans-serif; color: var(--navy); font-size: 23px; margin: 0 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  h2 .num { display: inline-block; background: var(--ms-blue); color: #fff; font-size: 11px; letter-spacing: 0.16em; padding: 2px 9px; border-radius: 3px; vertical-align: 5px; margin-right: 12px; font-weight: 700; }
+  h3 { font-family: Aptos, sans-serif; color: var(--navy); font-size: 17px; margin: 24px 0 8px; }
+  .lead { font-size: 16px; color: var(--slate); margin: 0 0 14px; max-width: 940px; }
+  code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; color: var(--navy); }
+
+  figure { border: 1px solid var(--border); border-left: 4px solid var(--ms-blue); padding: 18px 22px; background: #fff; border-radius: 0 6px 6px 0; margin: 18px 0; overflow-x: auto; }
+  figure .fig-label { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ms-blue-dark); font-weight: 700; margin-bottom: 10px; }
+  figure svg { display: block; width: 100%; height: auto; min-width: 980px; }
+  figcaption { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 13px; color: var(--slate); line-height: 1.55; }
+
+  .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: var(--navy); color: #fff; padding: 9px 12px; text-align: left; font-family: Aptos, sans-serif; font-weight: 600; font-size: 12px; letter-spacing: 0.02em; }
+  td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg-soft); }
+  td.mono, .mono { font-family: "Cascadia Mono", monospace; font-size: 12.5px; color: var(--navy); }
+
+  .pill { display:inline-block; font-family: Aptos, sans-serif; font-size: 10px; font-weight: 700; letter-spacing:0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; }
+  .pill.new { background:#DCFCE7; color:#15803D; } .pill.reuse { background:#DBEAFE; color:var(--ms-blue-dark); } .pill.ext { background:#F1F5F9; color:var(--slate); }
+
+  .callout { margin: 18px 0; padding: 14px 20px; border-left: 4px solid; border-radius: 0 4px 4px 0; font-size: 14.5px; }
+  .callout.method { border-color: var(--amber); background: #FEF3C7; } .callout.method .label { color: var(--amber); }
+  .callout.note { border-color: var(--ms-blue); background: #DBEAFE; } .callout.note .label { color: var(--ms-blue-dark); }
+  .callout .label { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; display: block; }
+  .callout p:last-child { margin: 0; }
+
+  .steps { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 14px 0; font-size: 14px; }
+  .step { background: var(--bg-soft); border: 1px solid var(--border); padding: 9px 14px; border-radius: 4px; display: flex; gap: 12px; align-items: flex-start; }
+  .step .n { font-family: "Cascadia Mono", monospace; font-size: 12px; color: var(--ms-blue); font-weight: 700; min-width: 24px; }
+  .step .cmd { font-family: "Cascadia Mono", monospace; font-size: 12px; color: var(--navy); display:block; margin-top:3px; }
+
+  footer { margin-top: 56px; padding: 22px 32px; background: var(--bg-soft); border-top: 2px solid var(--border); font-family: Aptos, sans-serif; font-size: 12px; color: var(--slate); text-align: center; }
+  footer strong { color: var(--text); }
+
+  @media print {
+    .classification { background:#fff; color:#000; border-bottom:1px solid #000; }
+    header.cover { background:#fff; color:#000; border-bottom:2px solid #000; }
+    header.cover h1, header.cover .subtitle, header.cover .meta strong, header.cover .eyebrow { color:#000; }
+    section, figure { page-break-inside: avoid; }
+  }
+  </style>
+</head>
+<body>
+
+<div class="classification">Reference document · Deployment design · Discovery-stage · RnD environment · Design-as-code (not yet applied)</div>
+
+<header class="cover">
+  <div class="eyebrow">Pre-Conversation Reference · Azure Deployment Pack</div>
+  <h1>Zero Day Warranty Agentic Scenario</h1>
+  <div class="subtitle">Azure deployment design — resource group <code style="background:rgba(255,255,255,.12);color:#fff">Agentic-Automotives</code></div>
+  <div class="meta">
+    <span><strong>From:</strong> Keven Markham · Deloitte's Microsoft Technology &amp; Services Practice</span>
+    <span><strong>Date:</strong> June 2026</span>
+    <span><strong>Substrate:</strong> dev / RnD (APEX-M)</span>
+    <span><strong>Companion to:</strong> Architecture · Swim Lanes · Persona Portals</span>
+  </div>
+</header>
+
+<main>
+
+<section class="summary">
+  <div style="font-family:Aptos,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ms-blue-dark);font-weight:700;margin-bottom:8px;">Executive summary · the one paragraph</div>
+  <p style="font-size:16.5px;margin:0;">The Zero Day Warranty solution deploys into a new resource group, <strong>Agentic-Automotives</strong> (eastus2), in the <strong>Global_RnD_Agentic_MERCH</strong> subscription. It <em>creates</em> only its own project-scoped resources — a Key Vault, a managed identity, and three Container Apps (orchestrator + two MCP servers) — and <em>reuses</em> the shared RnD platform already in <code>rg-iot-visionkit</code>: the ACR, the Container Apps environment, the Azure OpenAI account, and the Postgres flexible server. The agent runs on <strong>gpt-4.1-mini</strong>, the medallion lands in Postgres schemas <code>zdw_bronze / zdw_silver / zdw_gold</code>, and the hash-chained audit ledger is an append-only Postgres table signed by a key in the project Key Vault. This document is the deployment design; the matching reference Bicep lives under <code>infra/</code>.</p>
+</section>
+
+<section>
+  <h2><span class="num">01</span>Target environment</h2>
+  <p class="lead">The deployment targets the RnD subscription and a new, project-scoped resource group. Region is <code>eastus2</code> to co-locate with the shared platform resources.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th style="width:30%">Setting</th><th>Value</th></tr>
+    <tr><td>Subscription name</td><td class="mono">Global_RnD_Agentic_MERCH</td></tr>
+    <tr><td>Subscription ID</td><td class="mono">3c8215d1-350c-4b83-bb7f-b5d26b4280f6</td></tr>
+    <tr><td>Tenant ID</td><td class="mono">2da40318-46be-402c-ba75-cfb1f656567d</td></tr>
+    <tr><td>Target resource group <span class="pill new">create</span></td><td class="mono">Agentic-Automotives  ·  eastus2</td></tr>
+    <tr><td>Shared platform resource group <span class="pill reuse">reuse</span></td><td class="mono">rg-iot-visionkit  ·  eastus2</td></tr>
+    <tr><td>Deployment substrate</td><td>dev / RnD (APEX-M) — public endpoints + RBAC; private endpoints noted as hardening</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="num">02</span>Resource topology</h2>
+  <p class="lead">New project resources sit in <strong>Agentic-Automotives</strong>; they bind by resource-ID to the shared platform in <strong>rg-iot-visionkit</strong>. Nothing leaves the tenant.</p>
+
+  <figure>
+    <div class="fig-label">Figure 1 · Deployment topology · Agentic-Automotives + shared platform</div>
+    <svg viewBox="0 0 1180 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Azure deployment topology">
+      <defs>
+        <linearGradient id="ms" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#0078D4"/><stop offset="1" stop-color="#005A9E"/></linearGradient>
+        <linearGradient id="navy" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1A2339"/><stop offset="1" stop-color="#2A3349"/></linearGradient>
+        <linearGradient id="slate" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#64748B"/><stop offset="1" stop-color="#475569"/></linearGradient>
+        <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10" fill="#0078D4"/></marker>
+        <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10" fill="#64748B"/></marker>
+      </defs>
+      <style>
+        .cap { font-family: Aptos, sans-serif; font-size: 11px; fill:#64748B; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+        .rg { font-family: Aptos, sans-serif; font-size: 13px; fill:#1A2339; font-weight:700; }
+        .nm { font-family: Aptos, sans-serif; font-size: 11.5px; fill:#fff; font-weight:600; }
+        .sub { font-family:'Cascadia Mono',monospace; font-size: 9px; fill:#fff; opacity:.9; }
+        .lab { font-family:'Cascadia Mono',monospace; font-size: 9px; fill:#64748B; }
+      </style>
+
+      <text x="20" y="20" class="cap">Subscription · Global_RnD_Agentic_MERCH · Tenant 2da40318…</text>
+
+      <!-- New RG -->
+      <rect x="20" y="34" width="540" height="468" rx="10" fill="none" stroke="#0078D4" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="36" y="58" class="rg">Resource group · Agentic-Automotives (eastus2)</text>
+      <text x="430" y="58" class="cap" style="fill:#15803D;">NEW</text>
+
+      <rect x="40" y="74" width="240" height="60" rx="6" fill="url(#navy)"/>
+      <text x="54" y="96" class="nm">id-zdw-warranty-agent</text>
+      <text x="54" y="112" class="sub">user-assigned managed identity</text>
+      <text x="54" y="126" class="sub">Entra · per-agent · OBO</text>
+
+      <rect x="300" y="74" width="240" height="60" rx="6" fill="url(#ms)"/>
+      <text x="314" y="96" class="nm">kv-zero-day-warranty</text>
+      <text x="314" y="112" class="sub">Key Vault · RBAC · soft-delete</text>
+      <text x="314" y="126" class="sub">signing key · db-url · model cfg</text>
+
+      <text x="40" y="162" class="cap">Container Apps (in this RG, bound to shared env)</text>
+      <rect x="40" y="172" width="500" height="64" rx="6" fill="url(#ms)"/>
+      <text x="54" y="194" class="nm">ca-zdw-orchestrator</text>
+      <text x="54" y="210" class="sub">Agent Framework · 24-step chain · calls AOAI gpt-4.1-mini</text>
+      <text x="54" y="226" class="sub">HITL Adaptive Card → Teams · writes audit rows</text>
+
+      <rect x="40" y="246" width="245" height="64" rx="6" fill="url(#ms)"/>
+      <text x="54" y="268" class="nm">ca-zdw-mcp-warranty</text>
+      <text x="54" y="284" class="sub">MCP server · Gold-view tools</text>
+      <text x="54" y="300" class="sub">pull_vins · get_lot_trace …</text>
+
+      <rect x="295" y="246" width="245" height="64" rx="6" fill="url(#ms)"/>
+      <text x="309" y="268" class="nm">ca-zdw-mcp-ledger</text>
+      <text x="309" y="284" class="sub">MCP server · audit ledger</text>
+      <text x="309" y="300" class="sub">append_audit_row · verify_chain</text>
+
+      <rect x="40" y="324" width="500" height="62" rx="6" fill="none" stroke="#94A3B8" stroke-width="1.3"/>
+      <text x="54" y="346" class="rg" style="font-size:12px;">Postgres schemas (in shared pg · created by this project)</text>
+      <text x="54" y="364" class="lab">zdw_bronze · zdw_silver · zdw_gold · zdw_gold.audit_ledger (append-only)</text>
+      <text x="54" y="378" class="lab">grain: per-VIN Gold join across the four warranty domains</text>
+
+      <text x="40" y="412" class="cap">RBAC granted to the managed identity →</text>
+      <rect x="40" y="422" width="500" height="64" rx="6" fill="#F1F5F9" stroke="#E5E7EB"/>
+      <text x="54" y="444" class="lab" style="fill:#1A2339;">AcrPull (ACR) · Cognitive Services OpenAI User (AOAI)</text>
+      <text x="54" y="460" class="lab" style="fill:#1A2339;">Key Vault Secrets User (kv-zero-day-warranty)</text>
+      <text x="54" y="476" class="lab" style="fill:#1A2339;">Postgres: connects via db-url secret (Entra DB role = hardening)</text>
+
+      <!-- Shared platform RG -->
+      <rect x="600" y="34" width="560" height="468" rx="10" fill="none" stroke="#64748B" stroke-width="2"/>
+      <text x="616" y="58" class="rg">Resource group · rg-iot-visionkit (eastus2)</text>
+      <text x="1090" y="58" class="cap">REUSE</text>
+
+      <rect x="620" y="74" width="520" height="58" rx="6" fill="url(#slate)"/>
+      <text x="634" y="96" class="nm">acrvisionkit4459.azurecr.io</text>
+      <text x="634" y="112" class="sub">Azure Container Registry · Basic · admin-enabled</text>
+      <text x="634" y="126" class="sub">repos: zdw/orchestrator · zdw/mcp-warranty · zdw/mcp-ledger</text>
+
+      <rect x="620" y="144" width="520" height="58" rx="6" fill="url(#slate)"/>
+      <text x="634" y="166" class="nm">cae-visionkit</text>
+      <text x="634" y="182" class="sub">Container Apps environment · hosts sap-sim + MCP servers + CFMP</text>
+      <text x="634" y="196" class="sub">ZDW container apps bind here by resource ID (same region)</text>
+
+      <rect x="620" y="214" width="520" height="66" rx="6" fill="url(#ms)"/>
+      <text x="634" y="236" class="nm">aoai-apex-demo.openai.azure.com</text>
+      <text x="634" y="252" class="sub">Azure OpenAI · gpt-4.1-mini (chat) · text-embedding-3-small (embed)</text>
+      <text x="634" y="268" class="sub">also: gpt-5-mini · gpt-4o · gpt-4o-mini</text>
+
+      <rect x="620" y="292" width="520" height="66" rx="6" fill="url(#navy)"/>
+      <text x="634" y="314" class="nm">pg-visionkit-4459.postgres.database.azure.com</text>
+      <text x="634" y="330" class="sub">Postgres Flexible · db: visionkit (shared) · admin visionkit_admin</text>
+      <text x="634" y="346" class="sub">project creates schemas zdw_bronze / zdw_silver / zdw_gold</text>
+
+      <rect x="620" y="372" width="250" height="58" rx="6" fill="#F1F5F9" stroke="#E5E7EB"/>
+      <text x="634" y="394" class="rg" style="font-size:12px;">kv-home-agent</text>
+      <text x="634" y="410" class="lab">source of database-url secret</text>
+      <text x="634" y="424" class="lab">(rg-home-agent-identity)</text>
+
+      <rect x="888" y="372" width="252" height="58" rx="6" fill="#F1F5F9" stroke="#E5E7EB"/>
+      <text x="902" y="394" class="rg" style="font-size:12px;">Microsoft 365 · Teams</text>
+      <text x="902" y="410" class="lab">HITL Adaptive Card surface</text>
+      <text x="902" y="424" class="lab">Quality Director approval (step 22)</text>
+
+      <!-- arrows -->
+      <g fill="none">
+        <path d="M540 204 H620 V103 H618" stroke="#0078D4" stroke-width="1.6" marker-end="url(#a)"/>
+        <path d="M300 204 C 360 204 360 243 360 246" stroke="#0078D4" stroke-width="1.4" marker-end="url(#a)"/>
+        <path d="M285 246 C 285 222 540 245 618 247" stroke="#0078D4" stroke-width="1.2" opacity="0.5"/>
+        <path d="M290 310 V322" stroke="#94A3B8" stroke-width="1.4" marker-end="url(#ag)"/>
+        <path d="M540 296 C 580 296 600 322 618 325" stroke="#64748B" stroke-width="1.4" marker-end="url(#ag)"/>
+        <path d="M540 110 C 760 110 740 372 868 392" stroke="#64748B" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#ag)"/>
+        <path d="M540 188 C 880 150 1000 372 1010 370" stroke="#0078D4" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#a)"/>
+      </g>
+      <text x="556" y="96" class="lab">model</text>
+      <text x="556" y="250" class="lab">data</text>
+    </svg>
+    <figcaption>The new RG creates a managed identity, a Key Vault, and three Container Apps. The apps bind to the shared <code>cae-visionkit</code> environment, pull images from <code>acrvisionkit4459</code>, call <code>aoai-apex-demo</code> for the model, and read/write the per-VIN medallion in project schemas on the shared Postgres. The orchestrator surfaces the HITL gate to Teams. All access is via the project managed identity over Entra RBAC.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2><span class="num">03</span>Create vs. reuse</h2>
+  <p class="lead">Project-scoped resources are created in <code>Agentic-Automotives</code>; everything else is reused by resource-ID. This keeps the project self-contained and cheap, and follows the APEX-M guide (§3 — new project Key Vault).</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Resource</th><th>Name</th><th>Disposition</th><th>Notes</th></tr>
+    <tr><td>Resource group</td><td class="mono">Agentic-Automotives</td><td><span class="pill new">create</span></td><td>eastus2</td></tr>
+    <tr><td>Key Vault</td><td class="mono">kv-zero-day-warranty</td><td><span class="pill new">create</span></td><td>RBAC, soft-delete, purge protection · per APEX-M §3</td></tr>
+    <tr><td>Managed identity</td><td class="mono">id-zdw-warranty-agent</td><td><span class="pill new">create</span></td><td>user-assigned · per-agent identity</td></tr>
+    <tr><td>Container App · orchestrator</td><td class="mono">ca-zdw-orchestrator</td><td><span class="pill new">create</span></td><td>Agent Framework host · 24-step chain</td></tr>
+    <tr><td>Container App · MCP (warranty)</td><td class="mono">ca-zdw-mcp-warranty</td><td><span class="pill new">create</span></td><td>Gold-view tools</td></tr>
+    <tr><td>Container App · MCP (ledger)</td><td class="mono">ca-zdw-mcp-ledger</td><td><span class="pill new">create</span></td><td>append-only audit ledger</td></tr>
+    <tr><td>Postgres schemas</td><td class="mono">zdw_bronze / zdw_silver / zdw_gold</td><td><span class="pill new">create</span></td><td>in shared <code>visionkit</code> DB</td></tr>
+    <tr><td>Container Registry</td><td class="mono">acrvisionkit4459</td><td><span class="pill reuse">reuse</span></td><td>Basic · admin-enabled · push zdw/* repos</td></tr>
+    <tr><td>Container Apps environment</td><td class="mono">cae-visionkit</td><td><span class="pill reuse">reuse</span></td><td>same region; apps bind by ID</td></tr>
+    <tr><td>Azure OpenAI</td><td class="mono">aoai-apex-demo</td><td><span class="pill reuse">reuse</span></td><td>gpt-4.1-mini + text-embedding-3-small</td></tr>
+    <tr><td>Postgres flexible server</td><td class="mono">pg-visionkit-4459</td><td><span class="pill reuse">reuse</span></td><td>shared <code>visionkit</code> DB</td></tr>
+    <tr><td>Secret source</td><td class="mono">kv-home-agent/database-url</td><td><span class="pill ext">external</span></td><td>copy db-url into project KV at deploy</td></tr>
+    <tr><td>HITL surface</td><td class="mono">Microsoft Teams (M365)</td><td><span class="pill ext">external</span></td><td>existing tenant entitlement</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="num">04</span>Identity &amp; RBAC</h2>
+  <p class="lead">One user-assigned managed identity, <code>id-zdw-warranty-agent</code>, is the security principal for all three container apps — the per-agent identity from the architecture. No keys in app config; everything is RBAC and Key Vault references.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Assignee</th><th>Role</th><th>Scope</th><th>Why</th></tr>
+    <tr><td>id-zdw-warranty-agent</td><td>AcrPull</td><td class="mono">acrvisionkit4459</td><td>pull container images</td></tr>
+    <tr><td>id-zdw-warranty-agent</td><td>Cognitive Services OpenAI User</td><td class="mono">aoai-apex-demo</td><td>call gpt-4.1-mini / embeddings (keyless)</td></tr>
+    <tr><td>id-zdw-warranty-agent</td><td>Key Vault Secrets User</td><td class="mono">kv-zero-day-warranty</td><td>read db-url, signing key, Teams webhook</td></tr>
+    <tr><td>Deploying operator</td><td>Key Vault Secrets Officer</td><td class="mono">kv-zero-day-warranty</td><td>seed secrets at deploy time</td></tr>
+    <tr><td>id-zdw-warranty-agent <span class="pill ext">hardening</span></td><td>Entra DB role on Postgres</td><td class="mono">pg-visionkit-4459</td><td>replace db-url password auth with Entra token</td></tr>
+  </table></div>
+  <div class="callout note">
+    <span class="label">On-behalf-of (production)</span>
+    <p>In the RnD substrate the agent runs under its own managed identity. In a client production deployment the downstream tool calls run <em>on-behalf-of</em> the invoking Quality analyst (Entra OBO), so data access is scoped to the originating user — see the Architecture document, Agent Framework card.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">05</span>Data plane · medallion on Postgres</h2>
+  <p class="lead">This RnD environment uses the shared Postgres flexible server as the lakehouse substrate. The medallion maps to per-project schemas; the production target remains Microsoft Fabric OneLake (Architecture §02).</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Layer</th><th>Postgres object</th><th>Contents</th></tr>
+    <tr><td>Bronze</td><td class="mono">zdw_bronze.*</td><td>raw landing of the four domains (build, warranty, quality, telemetry)</td></tr>
+    <tr><td>Silver</td><td class="mono">zdw_silver.*</td><td>VIN-conformed, typed, deduplicated canonical tables</td></tr>
+    <tr><td>Gold</td><td class="mono">zdw_gold.g_vehicle_root_cause</td><td>per-VIN joinable view across all four domains</td></tr>
+    <tr><td>Audit</td><td class="mono">zdw_gold.audit_ledger</td><td>append-only 14-field decision rows · <code>prev_link</code> hash chain</td></tr>
+  </table></div>
+  <p>The audit table is created append-only: <code>UPDATE</code>/<code>DELETE</code> are revoked from the app role, mirroring a WORM policy. The HMAC signing key lives in <code>kv-zero-day-warranty/audit-ledger-signing-key</code>. DDL is in <code>infra/scripts/postgres-schemas.sql</code>.</p>
+</section>
+
+<section>
+  <h2><span class="num">06</span>Model mapping · Azure OpenAI</h2>
+  <p class="lead">The agent calls the shared <code>aoai-apex-demo</code> account. The recommended chat deployment is <strong>gpt-4.1-mini</strong> (matches the Sonepar pattern — balanced cost/quality); embeddings use <strong>text-embedding-3-small</strong> for the NeMo-Retriever-style RAG step.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Chain use</th><th>AOAI deployment</th><th>Cap</th><th>Cluster / steps</th></tr>
+    <tr><td>Orchestration + hypothesis reasoning</td><td class="mono">gpt-4.1-mini</td><td>30</td><td>all · cluster 6 (17–18)</td></tr>
+    <tr><td>RAG over service bulletins / specs</td><td class="mono">text-embedding-3-small</td><td>50</td><td>cluster 6 (18)</td></tr>
+    <tr><td>Optional heavier reasoning</td><td class="mono">gpt-4o</td><td>30</td><td>escalation only</td></tr>
+    <tr><td>Lightweight classification</td><td class="mono">gpt-4o-mini</td><td>10</td><td>cluster 1 (2)</td></tr>
+  </table></div>
+  <div class="callout method">
+    <span class="label">Manifest model pins</span>
+    <p>The agent manifests under <code>service/AXLE-WARRANTY-01/agents/*/agent.yaml</code> carry reference model pins. At deploy time the pin resolves to the AOAI <em>deployment name</em> via the <code>AOAI_CHAT_DEPLOYMENT=gpt-4.1-mini</code> app setting — the APEX pattern of binding the model at deployment, not in source.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">07</span>Secrets · kv-zero-day-warranty</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>Secret</th><th>Purpose</th><th>Source</th></tr>
+    <tr><td class="mono">database-url</td><td>Postgres connection (visionkit DB, zdw schemas)</td><td>copied from <code>kv-home-agent/database-url</code></td></tr>
+    <tr><td class="mono">audit-ledger-signing-key</td><td>HMAC-SHA256 key sealing each audit row</td><td>generated at deploy (32 random bytes)</td></tr>
+    <tr><td class="mono">aoai-endpoint</td><td>AOAI endpoint URL</td><td><code>https://aoai-apex-demo.openai.azure.com/</code></td></tr>
+    <tr><td class="mono">teams-webhook-url</td><td>HITL Adaptive Card delivery to Quality Director</td><td>provided per channel</td></tr>
+  </table></div>
+  <p>No AOAI API key is stored — the managed identity uses the <em>Cognitive Services OpenAI User</em> role (keyless). App settings reference secrets as <code>secretref:</code> Key Vault references.</p>
+</section>
+
+<section>
+  <h2><span class="num">08</span>Deploy sequence</h2>
+  <p class="lead">The reference Bicep is subscription-scoped: it creates the RG and the project resources in one pass. The data-plane and image steps are operator actions around it.</p>
+  <div class="steps">
+    <div class="step"><span class="n">1</span><div>Authenticate &amp; select subscription.<span class="cmd">az login --tenant 2da40318-46be-402c-ba75-cfb1f656567d &amp;&amp; az account set -s 3c8215d1-350c-4b83-bb7f-b5d26b4280f6</span></div></div>
+    <div class="step"><span class="n">2</span><div>Build &amp; push images to the shared ACR.<span class="cmd">az acr login -n acrvisionkit4459 ; docker push acrvisionkit4459.azurecr.io/zdw/orchestrator:0.1.0  (+ mcp-warranty, mcp-ledger)</span></div></div>
+    <div class="step"><span class="n">3</span><div>Deploy the project (creates RG, KV, identity, RBAC, container apps).<span class="cmd">az deployment sub create -l eastus2 -f infra/main.bicep -p infra/main.parameters.json</span></div></div>
+    <div class="step"><span class="n">4</span><div>Seed Key Vault secrets (db-url, signing key, AOAI endpoint, Teams webhook).<span class="cmd">az keyvault secret set --vault-name kv-zero-day-warranty -n database-url --value "$(az keyvault secret show --vault-name kv-home-agent -n database-url --query value -o tsv)"</span></div></div>
+    <div class="step"><span class="n">5</span><div>Create the medallion schemas + append-only audit table.<span class="cmd">psql "$DATABASE_URL" -f infra/scripts/postgres-schemas.sql</span></div></div>
+    <div class="step"><span class="n">6</span><div>Smoke test — run the chain, confirm 24 audit rows + verified hash chain in <code>zdw_gold.audit_ledger</code>.<span class="cmd">curl https://ca-zdw-orchestrator.&lt;env&gt;.eastus2.azurecontainerapps.io/run  →  expect 24 rows, chain VERIFIED</span></div></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">09</span>Infrastructure as code</h2>
+  <p class="lead">The design above is encoded as reference Bicep under <code>infra/</code> (design-as-code — present for review; not yet applied).</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>File</th><th>What it declares</th></tr>
+    <tr><td class="mono">infra/main.bicep</td><td>subscription-scope: creates the RG and invokes the project module</td></tr>
+    <tr><td class="mono">infra/modules/project.bicep</td><td>Key Vault, managed identity, Container Apps (orchestrator + 2 MCP)</td></tr>
+    <tr><td class="mono">infra/modules/rbac.bicep</td><td>role assignments on the reused ACR / AOAI / KV</td></tr>
+    <tr><td class="mono">infra/main.parameters.json</td><td>the environment values from this document</td></tr>
+    <tr><td class="mono">infra/scripts/postgres-schemas.sql</td><td>zdw_bronze/silver/gold schemas + append-only audit table</td></tr>
+    <tr><td class="mono">infra/README.md</td><td>deploy notes + the create/reuse contract</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="num">10</span>What this design is — and is not</h2>
+  <ul style="font-size:14.5px;">
+    <li><strong>RnD / dev substrate.</strong> Public endpoints + RBAC. Private endpoints, customer-managed keys, and Entra DB auth are noted as hardening for stage/prod.</li>
+    <li><strong>Cost-frugal by reuse.</strong> Only a Key Vault, an identity, and consumption-billed Container Apps are new; ACR (Basic), AOAI, the Container Apps env, and Postgres are shared.</li>
+    <li><strong>Fabric-portable.</strong> The Postgres medallion is the RnD substrate; the production target is Microsoft Fabric OneLake. The schema names and the per-VIN Gold contract carry over unchanged.</li>
+    <li><strong>Not yet applied.</strong> This is the deployment design and reference IaC for review — no resources have been created.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <p style="margin:0 0 6px;"><strong>Keven Markham</strong> · Vice President · Deloitte's Microsoft Technology &amp; Services Practice</p>
+  <p style="margin:0;">Azure deployment design · resource group Agentic-Automotives · Companion to the Architecture, Swim Lanes, and Persona Portals documents</p>
+  <p style="margin:8px 0 0;font-size:11px;color:var(--slate-light);">Reference document · Discovery-stage · Design-as-code (not yet applied) · All figures are reference-scenario figures · Not Toyota baseline claims</p>
+</footer>
+
+</body>
+</html>
