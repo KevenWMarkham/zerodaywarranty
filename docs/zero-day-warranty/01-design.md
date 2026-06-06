@@ -17,7 +17,9 @@ each already exists in a typical OEM estate; what's missing is the joinable view
 | **Quality events** | inspections, SPC measurements, defects, holds, rework (per station/VIN) | QMS · plant systems |
 | **Assembly telemetry** | tool torque/angle traces, calibration drift, cycle times, environment | SCADA · historian · IoT |
 
-VIN is the single conformed join key.
+VIN is the single conformed join key. The **full ERD + data dictionary**
+(attributes, types, keys, relationships, audit schema, classification) is in
+[`data.md`](data.md).
 
 ## 2. Medallion data plane
 

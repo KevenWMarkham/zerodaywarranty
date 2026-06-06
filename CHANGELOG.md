@@ -6,6 +6,11 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **Data model doc** `docs/zero-day-warranty/data.md` — full ERD (Mermaid) + data
+  dictionary: the four source entities, the Gold view, and the audit ledger with
+  attributes/types/keys/relationships, medallion mapping, enums, and
+  classification (derived from `domains.py` / `medallion.py` / `audit.py` /
+  `postgres-schemas.sql`).
 - **`zdw scenarios`** — search the scenario library (`--search` / `--industry` /
   `--domain` / `--show`) and register the repo's own `service/*/scenario.yaml`
   into the library (`--check` / `--sync`) when missing, updating both the CSV and

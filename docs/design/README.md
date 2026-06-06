@@ -16,9 +16,11 @@ are reference-scenario figures (synthetic) — not Toyota baseline claims.
 
 ## Markdown set
 
-Prefer plain Markdown? The same content (overview · design · deployment · plan ·
-experts panel) is in [`../zero-day-warranty/`](../zero-day-warranty/) — readable
-and diffable on GitHub.
+Prefer plain Markdown? The same content (overview · design · **data model** ·
+deployment · plan · experts panel) is in
+[`../zero-day-warranty/`](../zero-day-warranty/) — readable and diffable on
+GitHub. The full ERD + data dictionary is
+[`../zero-day-warranty/data.md`](../zero-day-warranty/data.md).
 
 ## Reading order
 
