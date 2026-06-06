@@ -35,6 +35,15 @@ echo "==> App          : $APP_NAME   (role: $ROLE)"
 command -v az >/dev/null || { echo "az CLI not found"; exit 1; }
 command -v gh >/dev/null || { echo "gh CLI not found"; exit 1; }
 
+# Preflight — fail fast with a clear message (these have bitten setups before).
+az account show >/dev/null 2>&1 || {
+  echo "ERROR: Azure CLI is not logged in. Run:  az login"; exit 1;
+}
+gh auth status >/dev/null 2>&1 || {
+  echo "ERROR: GitHub CLI is not authenticated. Run:  gh auth login"
+  echo "       (or:  export GH_TOKEN=<a PAT with repo + workflow scopes>)"; exit 1;
+}
+
 az account set --subscription "$SUBSCRIPTION_ID"
 
 # --- 1. App registration + service principal -------------------------------
@@ -45,7 +54,18 @@ if [[ -z "$APP_ID" ]]; then
 else
   echo "==> Reusing app $APP_NAME ($APP_ID)"
 fi
-az ad sp show --id "$APP_ID" >/dev/null 2>&1 || az ad sp create --id "$APP_ID" >/dev/null
+if ! az ad sp show --id "$APP_ID" >/dev/null 2>&1; then
+  echo "==> Creating service principal for $APP_ID"
+  if ! az ad sp create --id "$APP_ID" --only-show-errors; then
+    echo ""
+    echo "ERROR: could not create the service principal for app $APP_ID."
+    echo "  In many enterprise tenants this is blocked by policy (you can create an"
+    echo "  app registration but not its service principal / enterprise app)."
+    echo "  Ask an Entra admin to run:   az ad sp create --id $APP_ID"
+    echo "  (or to grant you rights to create service principals), then re-run this."
+    exit 1
+  fi
+fi
 SP_OBJECT_ID="$(az ad sp show --id "$APP_ID" --query id -o tsv)"
 
 # --- 2. Federated credentials (OIDC, no secrets) ---------------------------
