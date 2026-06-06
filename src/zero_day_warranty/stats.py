@@ -54,4 +54,60 @@ def two_proportion_z_test(
     return ProportionTest(rate_a, rate_b, ratio, z, _two_sided_p(z))
 
 
-__all__ = ["ProportionTest", "two_proportion_z_test"]
+# ---------------------------------------------------------------------------
+# Multiple-testing correction (Experts Panel gap #2)
+#
+# The chain screens many cohort × station × tool × supplier-lot combinations.
+# Testing each at alpha=0.05 inflates false positives, so an attribution claim
+# must survive a family-wise / false-discovery-rate correction.
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class MultipleTestResult:
+    """Outcome of a multiple-testing correction over a family of p-values."""
+
+    method: str
+    alpha: float
+    rejected: tuple[bool, ...]
+    adjusted: tuple[float, ...]
+
+    @property
+    def n_significant(self) -> int:
+        """How many hypotheses remain significant after correction."""
+        return sum(self.rejected)
+
+
+def bonferroni(pvalues: list[float], *, alpha: float = 0.05) -> MultipleTestResult:
+    """Bonferroni family-wise correction: multiply each p-value by the family size."""
+    n = len(pvalues)
+    adjusted = tuple(min(1.0, p * n) for p in pvalues)
+    rejected = tuple(p <= alpha for p in adjusted)
+    return MultipleTestResult("bonferroni", alpha, rejected, adjusted)
+
+
+def benjamini_hochberg(pvalues: list[float], *, alpha: float = 0.05) -> MultipleTestResult:
+    """Benjamini-Hochberg FDR correction (step-up); returns adjusted q-values."""
+    n = len(pvalues)
+    if n == 0:
+        return MultipleTestResult("benjamini-hochberg", alpha, (), ())
+    order = sorted(range(n), key=lambda i: pvalues[i])
+    adjusted = [0.0] * n
+    running_min = 1.0
+    # Walk ranks from largest p-value (rank n) down to smallest (rank 1).
+    for rank in range(n, 0, -1):
+        idx = order[rank - 1]
+        q = min(1.0, pvalues[idx] * n / rank)
+        running_min = min(running_min, q)
+        adjusted[idx] = running_min
+    rejected = tuple(adjusted[i] <= alpha for i in range(n))
+    return MultipleTestResult("benjamini-hochberg", alpha, rejected, tuple(adjusted))
+
+
+__all__ = [
+    "MultipleTestResult",
+    "ProportionTest",
+    "benjamini_hochberg",
+    "bonferroni",
+    "two_proportion_z_test",
+]

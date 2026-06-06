@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Day Warranty · Roadmap &amp; Sprint Orchestrator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --navy: #1A2339; --navy-soft: #2A3349;
+    --ms-blue: #0078D4; --ms-blue-dark: #005A9E;
+    --slate: #64748B; --slate-light: #94A3B8;
+    --amber: #D97706; --green: #047857; --rust: #B85450;
+    --bg: #ffffff; --bg-soft: #FAFAF7; --border: #E5E7EB;
+    --text: #1F2937; --code-bg: #F5F5F7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Source Serif 4", Charter, Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.62; font-size: 16px; }
+
+  .classification { background: var(--amber); color: #fff; padding: 6px 24px; text-align: center; font-family: Aptos, sans-serif; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; }
+
+  header.cover { padding: 44px 56px 28px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%); color: #fff; border-bottom: 6px solid var(--ms-blue); }
+  header.cover .eyebrow { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ms-blue); font-weight: 700; }
+  header.cover h1 { font-family: Aptos, sans-serif; font-size: 36px; font-weight: 700; line-height: 1.12; margin: 12px 0 6px; color: #fff; }
+  header.cover .subtitle { font-family: Aptos, sans-serif; font-size: 18px; color: #cbd5e1; font-weight: 400; margin: 0 0 20px; }
+  header.cover .meta { display: flex; gap: 22px; flex-wrap: wrap; font-family: Aptos, sans-serif; font-size: 12.5px; color: #94A3B8; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.16); }
+  header.cover .meta strong { color: #cbd5e1; font-weight: 600; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 36px 32px 64px; }
+  section { margin: 0 0 40px; }
+  section.summary { margin-top: -28px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+
+  h2 { font-family: Aptos, sans-serif; color: var(--navy); font-size: 23px; margin: 0 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  h2 .num { display: inline-block; background: var(--ms-blue); color: #fff; font-size: 11px; letter-spacing: 0.16em; padding: 2px 9px; border-radius: 3px; vertical-align: 5px; margin-right: 12px; font-weight: 700; }
+  h3 { font-family: Aptos, sans-serif; color: var(--navy); font-size: 17px; margin: 24px 0 8px; }
+  .lead { font-size: 16px; color: var(--slate); margin: 0 0 14px; max-width: 940px; }
+  code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; color: var(--navy); }
+
+  figure { border: 1px solid var(--border); border-left: 4px solid var(--ms-blue); padding: 18px 22px; background: #fff; border-radius: 0 6px 6px 0; margin: 18px 0; overflow-x: auto; }
+  figure .fig-label { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ms-blue-dark); font-weight: 700; margin-bottom: 10px; }
+  figure svg { display: block; width: 100%; height: auto; min-width: 960px; }
+  figcaption { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 13px; color: var(--slate); line-height: 1.55; }
+
+  .tbl-wrap { overflow-x: auto; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: var(--navy); color: #fff; padding: 9px 12px; text-align: left; font-family: Aptos, sans-serif; font-weight: 600; font-size: 12px; }
+  td { padding: 8px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--bg-soft); }
+  td.mono, .mono { font-family: "Cascadia Mono", monospace; font-size: 12.5px; color: var(--navy); }
+  td.c { text-align: center; font-size: 15px; }
+
+  .st { font-family: Aptos, sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .st.done { background:#DCFCE7; color:#15803D; } .st.prog { background:#FEF3C7; color:#B45309; } .st.todo { background:#F1F5F9; color:#64748B; }
+
+  .legend { display:flex; gap:18px; flex-wrap:wrap; margin:14px 0; font-family:Aptos,sans-serif; font-size:12.5px; }
+  .legend .key { display:inline-flex; align-items:center; gap:7px; }
+  .legend .sw { width:14px; height:14px; border-radius:3px; display:inline-block; }
+
+  .callout { margin: 18px 0; padding: 14px 20px; border-left: 4px solid; border-radius: 0 4px 4px 0; font-size: 14.5px; }
+  .callout.note { border-color: var(--ms-blue); background: #DBEAFE; } .callout.note .label { color: var(--ms-blue-dark); }
+  .callout .label { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; display: block; }
+  .callout p:last-child { margin: 0; }
+
+  pre.term { background: var(--navy); color: #e2e8f0; border-radius: 6px; padding: 14px 16px; overflow-x: auto; font-family: "Cascadia Mono", monospace; font-size: 12px; line-height: 1.5; }
+  pre.term .b { color: #7dd3fc; } pre.term .g { color: #86efac; } pre.term .a { color: #fcd34d; }
+
+  footer { margin-top: 56px; padding: 22px 32px; background: var(--bg-soft); border-top: 2px solid var(--border); font-family: Aptos, sans-serif; font-size: 12px; color: var(--slate); text-align: center; }
+  footer strong { color: var(--text); }
+
+  @media print {
+    .classification { background:#fff; color:#000; border-bottom:1px solid #000; }
+    header.cover { background:#fff; color:#000; border-bottom:2px solid #000; }
+    header.cover h1, header.cover .subtitle, header.cover .meta strong, header.cover .eyebrow { color:#000; }
+    section, figure { page-break-inside: avoid; }
+  }
+  </style>
+</head>
+<body>
+
+<div class="classification">Reference document · Delivery plan · Discovery-stage · Backlog-driven · Reference figures (synthetic)</div>
+
+<header class="cover">
+  <div class="eyebrow">Pre-Conversation Reference · Delivery Roadmap</div>
+  <h1>Zero Day Warranty Agentic Scenario</h1>
+  <div class="subtitle">Roadmap, sprint backlog &amp; orchestrator — with built / deployed / tested gates</div>
+  <div class="meta">
+    <span><strong>From:</strong> Keven Markham · Deloitte's Microsoft Technology &amp; Services Practice</span>
+    <span><strong>Date:</strong> June 2026</span>
+    <span><strong>Backlog:</strong> backlog/roadmap.yaml</span>
+    <span><strong>Orchestrator:</strong> zdw roadmap · sprints · checklist</span>
+  </div>
+</header>
+
+<main>
+
+<section class="summary">
+  <div style="font-family:Aptos,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ms-blue-dark);font-weight:700;margin-bottom:8px;">Executive summary · the one paragraph</div>
+  <p style="font-size:16.5px;margin:0;">Delivery is planned as <strong>four phases / twelve sprints</strong>, driven by a single backlog (<code>backlog/roadmap.yaml</code>) and a sprint <strong>orchestrator</strong> (<code>zdw roadmap · sprints · checklist</code>). Phases P1–P2 (the reference build, the design pack, and the design validation) are complete; P3 stands up the self-contained Azure deployment; P4 reaches pilot readiness. Every deployable component is governed by three gates — <strong>built → deployed → tested</strong> — and is only counted complete when all three are checked. The orchestrator renders these as a live checkbox matrix, so "done" is provable, not asserted.</p>
+</section>
+
+<section>
+  <h2><span class="num">01</span>How this plan is driven</h2>
+  <p class="lead">The backlog is the single source of truth. The orchestrator reads it and renders progress; the gap log from the Experts Panel is folded in as sprint stories. Nothing is "done" by narration — a deployment is done only when its three gates are checked.</p>
+  <div class="legend">
+    <span class="key"><span class="st done">done</span> story / sprint complete</span>
+    <span class="key"><span class="st prog">in&nbsp;progress</span> underway</span>
+    <span class="key"><span class="st todo">todo</span> not started</span>
+    <span class="key"><code>[x] built  [x] deployed  [x] tested</code> = a validated deployment</span>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">02</span>The roadmap</h2>
+  <p class="lead">Four phases, twelve sprints. Colour is status; the box shows the sprint and its story-completion.</p>
+
+  <figure>
+    <div class="fig-label">Figure 1 · Phase &amp; sprint roadmap</div>
+    <svg viewBox="0 0 1140 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Phase and sprint roadmap">
+      <defs>
+        <linearGradient id="done" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#059669"/><stop offset="1" stop-color="#047857"/></linearGradient>
+        <linearGradient id="prog" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F59E0B"/><stop offset="1" stop-color="#D97706"/></linearGradient>
+        <linearGradient id="todo" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#64748B"/><stop offset="1" stop-color="#475569"/></linearGradient>
+      </defs>
+      <style>
+        .pn { font-family: Aptos, sans-serif; font-size: 12.5px; fill:#1A2339; font-weight:700; }
+        .pg { font-family: Aptos, sans-serif; font-size: 9.5px; fill:#64748B; }
+        .sn { font-family: Aptos, sans-serif; font-size: 11.5px; fill:#fff; font-weight:700; }
+        .ss { font-family: Aptos, sans-serif; font-size: 9.5px; fill:#fff; opacity:.92; }
+        .sp { font-family:'Cascadia Mono',monospace; font-size: 9px; fill:#fff; opacity:.95; }
+      </style>
+
+      <!-- P1 -->
+      <rect x="0" y="34" width="1140" height="92" fill="#F8FAFC"/>
+      <text x="14" y="62" class="pn">P1 · Foundation &amp; Reference Build</text>
+      <text x="14" y="78" class="pg">runnable reference + design pack</text>
+      <text x="14" y="110" class="st done" style="font-size:9px;">100% · done</text>
+      <rect x="150" y="50" width="200" height="60" rx="6" fill="url(#done)"/><text x="164" y="74" class="sn">S1 · Core engine &amp; scenario</text><text x="164" y="90" class="ss">4 domains · ledger · chain · CLI</text><text x="164" y="104" class="sp">100%</text>
+      <rect x="370" y="50" width="200" height="60" rx="6" fill="url(#done)"/><text x="384" y="74" class="sn">S2 · Manifests &amp; design pack</text><text x="384" y="90" class="ss">scenario + 7 agents · portals</text><text x="384" y="104" class="sp">100%</text>
+
+      <!-- P2 -->
+      <rect x="0" y="130" width="1140" height="92" fill="#FFFFFF"/>
+      <text x="14" y="158" class="pn">P2 · Design Validation &amp; Hardening</text>
+      <text x="14" y="174" class="pg">review + gap log → work</text>
+      <rect x="150" y="146" width="200" height="60" rx="6" fill="url(#done)"/><text x="164" y="170" class="sn">S3 · Experts panel</text><text x="164" y="186" class="ss">10 experts · coverage · gaps</text><text x="164" y="200" class="sp">100%</text>
+      <rect x="370" y="146" width="200" height="60" rx="6" fill="url(#prog)"/><text x="384" y="170" class="sn">S4 · Hardening designs</text><text x="384" y="186" class="ss">CI · multi-test · eval · netsec</text><text x="384" y="200" class="sp">40%</text>
+
+      <!-- P3 -->
+      <rect x="0" y="226" width="1140" height="92" fill="#F8FAFC"/>
+      <text x="14" y="254" class="pn">P3 · Azure Deployment</text>
+      <text x="14" y="270" class="pg">Agentic-Automotives · self-contained</text>
+      <rect x="150" y="242" width="200" height="60" rx="6" fill="url(#todo)"/><text x="164" y="266" class="sn">S5 · Foundation</text><text x="164" y="282" class="ss">RG · identity · KV · obs</text><text x="164" y="296" class="sp">deploy 0/4</text>
+      <rect x="370" y="242" width="200" height="60" rx="6" fill="url(#todo)"/><text x="384" y="266" class="sn">S6 · Platform</text><text x="384" y="282" class="ss">ACR · AOAI · PG · CAE</text><text x="384" y="296" class="sp">deploy 0/4</text>
+      <rect x="590" y="242" width="200" height="60" rx="6" fill="url(#todo)"/><text x="604" y="266" class="sn">S7 · App &amp; data</text><text x="604" y="282" class="ss">images · apps · schemas</text><text x="604" y="296" class="sp">deploy 0/3</text>
+      <rect x="810" y="242" width="200" height="60" rx="6" fill="url(#todo)"/><text x="824" y="266" class="sn">S8 · E2E validation</text><text x="824" y="282" class="ss">smoke · HITL · audit chain</text><text x="824" y="296" class="sp">deploy 0/1</text>
+
+      <!-- P4 -->
+      <rect x="0" y="322" width="1140" height="100" fill="#FFFFFF"/>
+      <text x="14" y="350" class="pn">P4 · Pilot Readiness</text>
+      <text x="14" y="366" class="pg">connectors · eval · security · BVA</text>
+      <rect x="150" y="338" width="200" height="60" rx="6" fill="url(#todo)"/><text x="164" y="362" class="sn">S9 · Connectors</text><text x="164" y="378" class="ss">MES/ERP · Connected · QMS</text><text x="164" y="392" class="sp">todo</text>
+      <rect x="370" y="338" width="200" height="60" rx="6" fill="url(#todo)"/><text x="384" y="362" class="sn">S10 · Eval &amp; guardrails</text><text x="384" y="378" class="ss">eval set · feedback · filters</text><text x="384" y="392" class="sp">todo</text>
+      <rect x="590" y="338" width="200" height="60" rx="6" fill="url(#todo)"/><text x="604" y="362" class="sn">S11 · Security hardening</text><text x="604" y="378" class="ss">private net · Entra DB · WORM</text><text x="604" y="392" class="sp">todo</text>
+      <rect x="810" y="338" width="200" height="60" rx="6" fill="url(#todo)"/><text x="824" y="362" class="sn">S12 · BVA</text><text x="824" y="378" class="ss">re-baseline · KPI envelope</text><text x="824" y="392" class="sp">todo</text>
+
+      <line x1="0" y1="34" x2="1140" y2="34" stroke="#E5E7EB"/>
+      <text x="14" y="446" class="pg" style="font-style:italic;">Overall stories complete: 50% · P1–P2 deliver the design; P3 deploys; P4 reaches pilot readiness.</text>
+    </svg>
+    <figcaption>The orchestrator computes these percentages live from <code>backlog/roadmap.yaml</code>. P3 sprints additionally carry deployment gates (shown as <code>deploy n/total</code>) that only advance when components are built, deployed, and tested.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2><span class="num">03</span>Sprint backlog</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>Sprint</th><th>Phase</th><th>Goal</th><th>Status</th><th>Deployments</th></tr>
+    <tr><td class="mono">S1 Core engine</td><td>P1</td><td>Domains, medallion, ledger, chain, CLI</td><td><span class="st done">done</span></td><td>—</td></tr>
+    <tr><td class="mono">S2 Manifests &amp; design</td><td>P1</td><td>Service manifests + design pack</td><td><span class="st done">done</span></td><td>—</td></tr>
+    <tr><td class="mono">S3 Experts panel</td><td>P2</td><td>Design review + gap log</td><td><span class="st done">done</span></td><td>—</td></tr>
+    <tr><td class="mono">S4 Hardening designs</td><td>P2</td><td>Turn the 4 High gaps into work</td><td><span class="st prog">in progress</span></td><td>—</td></tr>
+    <tr><td class="mono">S5 Foundation</td><td>P3</td><td>RG, identity, Key Vault, observability</td><td><span class="st todo">todo</span></td><td>4</td></tr>
+    <tr><td class="mono">S6 Platform</td><td>P3</td><td>ACR, AOAI, Postgres, Container Apps env</td><td><span class="st todo">todo</span></td><td>4</td></tr>
+    <tr><td class="mono">S7 App &amp; data plane</td><td>P3</td><td>Images, apps, medallion schemas</td><td><span class="st todo">todo</span></td><td>3</td></tr>
+    <tr><td class="mono">S8 E2E validation</td><td>P3</td><td>Smoke test, HITL, audit chain</td><td><span class="st todo">todo</span></td><td>1</td></tr>
+    <tr><td class="mono">S9 Connectors</td><td>P4</td><td>Real source-system adapters</td><td><span class="st todo">todo</span></td><td>—</td></tr>
+    <tr><td class="mono">S10 Eval &amp; guardrails</td><td>P4</td><td>Eval harness, feedback, filters</td><td><span class="st todo">todo</span></td><td>—</td></tr>
+    <tr><td class="mono">S11 Security hardening</td><td>P4</td><td>Private net, Entra DB, rotation, WORM</td><td><span class="st todo">todo</span></td><td>—</td></tr>
+    <tr><td class="mono">S12 BVA</td><td>P4</td><td>Re-baseline figures + KPI envelope</td><td><span class="st todo">todo</span></td><td>—</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="num">04</span>The sprint orchestrator</h2>
+  <p class="lead">A small, tested module (<code>zero_day_warranty.roadmap</code>) loads and validates the backlog, computes progress, and renders three views. It mirrors the APEX <code>apex.py status</code> pattern.</p>
+  <pre class="term"><span class="b">$ python zdw.py roadmap</span>
+Zero Day Warranty · roadmap (Zero Day Warranty)
+Overall stories complete: 50%   ██████████··········
+----------------------------------------------------------------
+P1 · Foundation &amp; Reference Build  (2/2 sprints done)
+   <span class="g">[x]</span> S1 Core engine &amp; scenario        100% ████████████
+   <span class="g">[x]</span> S2 Service manifests &amp; design    100% ████████████
+P2 · Design Validation &amp; Hardening  (1/2 sprints done)
+   <span class="g">[x]</span> S3 Experts panel &amp; gap log       100% ████████████
+   <span class="a">[~]</span> S4 Hardening designs (High gaps)  40% █████·······
+P3 · Azure Deployment  (0/4 sprints done)
+   [ ] S5 Provision foundation            50% ██████······ · deploy 0/4
+   ...
+<span class="b">$ python zdw.py checklist</span>
+validated 0/12  ·  built 0  deployed 0  tested 0
+  Resource group Agentic-Automotives
+      [ ] built  [ ] deployed  [ ] tested
+  ...</pre>
+  <div class="callout note">
+    <span class="label">Commands</span>
+    <p><code>zdw roadmap</code> — phases + sprint progress · <code>zdw sprints [--phase P3]</code> — every story as a checkbox · <code>zdw checklist</code> — the deployment validation matrix (exits non-zero while any gate is open, so CI/CD can block on it).</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">05</span>Deployment validation matrix</h2>
+  <p class="lead">The twelve deployable components, each gated <strong>built → deployed → tested</strong>. A box is checked by flipping the flag in the backlog as the work lands; the orchestrator recomputes "validated" automatically. All gates are currently open — nothing has been deployed.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Sprint</th><th>Component</th><th class="c">Built</th><th class="c">Deployed</th><th class="c">Tested</th><th class="c">Validated</th></tr>
+    <tr><td>S5</td><td>Resource group Agentic-Automotives</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S5</td><td>Managed identity id-zdw-warranty-agent</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S5</td><td>Key Vault kv-zero-day-warranty</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S5</td><td>Log Analytics + Application Insights</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S6</td><td>Container Registry acrzdwagentic</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S6</td><td>Azure OpenAI aoai-zdw-agentic + deployments</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S6</td><td>Postgres pg-zdw-agentic + db zdw</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S6</td><td>Container Apps env cae-zdw-agentic</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S7</td><td>Container images (orchestrator + 2 MCP)</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S7</td><td>Container Apps (ca-zdw-*)</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S7</td><td>Medallion schemas + audit ledger</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+    <tr><td>S8</td><td>End-to-end run (signal → evidence → HITL → audit)</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td><td class="c">☐</td></tr>
+  </table></div>
+  <div class="callout note">
+    <span class="label">Definition of "validated"</span>
+    <p><strong>Built</strong> = the artifact exists (image pushed, Bicep what-if clean). <strong>Deployed</strong> = applied to Agentic-Automotives. <strong>Tested</strong> = the post-deploy check passed (e.g. <code>zdw validate</code> against the live resource, or the smoke test). A component is <em>validated</em> only when all three are true.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">06</span>High-gap closure (from the Experts Panel)</h2>
+  <p class="lead">The four High-severity gaps are scheduled as sprint stories; two are already closed in this pass.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Gap (High)</th><th>Sprint · story</th><th>Status</th><th>Artifact</th></tr>
+    <tr><td>CI pipeline</td><td class="mono">S4-1</td><td><span class="st done">done</span></td><td><code>.github/workflows/ci.yml</code></td></tr>
+    <tr><td>Multiple-testing correction</td><td class="mono">S4-2</td><td><span class="st done">done</span></td><td><code>stats.bonferroni / benjamini_hochberg</code> + tests</td></tr>
+    <tr><td>Model-evaluation harness</td><td class="mono">S4-3 → S10</td><td><span class="st prog">in progress</span></td><td>design below; build in S10</td></tr>
+    <tr><td>Audit durability + private networking</td><td class="mono">S4-4 → S11</td><td><span class="st todo">todo</span></td><td>design below; build in S11</td></tr>
+    <tr><td>CD pipeline (what-if gate)</td><td class="mono">S4-5</td><td><span class="st todo">todo</span></td><td>planned <code>.github/workflows/deploy.yml</code></td></tr>
+  </table></div>
+
+  <h3>Eval-harness design (S4-3 → S10)</h3>
+  <p>A golden-case eval set (<code>eval/cases/*.yaml</code>) pins expected outcomes for synthetic scenarios — suspect lot, hot station, significance, headline financials. An offline runner executes the chain per case and scores: attribution correctness, significance after multiple-testing correction, confidence calibration, and audit-chain integrity. Sampled production audit rows are promoted into new eval cases (the APEX feedback loop), so the eval set grows with real decisions. Gate: eval must pass before any prompt/model change merges.</p>
+
+  <h3>Audit durability + private networking (S4-4 → S11)</h3>
+  <p><strong>Durability:</strong> stream sealed audit rows from <code>zdw_gold.audit_ledger</code> to immutable (WORM) blob storage and echo to Microsoft Purview; verify the hash chain on export. <strong>Networking:</strong> private endpoints on Key Vault, ACR, Azure OpenAI, and Postgres; internal-only ingress on the MCP apps; the orchestrator reachable only through the front door. Replace the Postgres password connection string with Entra DB authentication via the managed identity.</p>
+</section>
+
+</main>
+
+<footer>
+  <p style="margin:0 0 6px;"><strong>Keven Markham</strong> · Vice President · Deloitte's Microsoft Technology &amp; Services Practice</p>
+  <p style="margin:0;">Delivery roadmap · backlog-driven · Companion to Architecture, Swim Lanes, Persona Portals, Azure Deployment, Experts Panel</p>
+  <p style="margin:8px 0 0;font-size:11px;color:var(--slate-light);">Reference document · Discovery-stage · Progress computed from backlog/roadmap.yaml · Not Toyota baseline claims</p>
+</footer>
+
+</body>
+</html>

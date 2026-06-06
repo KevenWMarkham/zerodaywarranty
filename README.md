@@ -27,7 +27,13 @@ python zdw.py run            # run the 24-step chain on the synthetic dataset
 python zdw.py run --json     # emit the evidence package + ledger as JSON
 python zdw.py calc           # print the reference-scenario calculations
 python zdw.py validate       # validate manifests + verify the hash chain
+python zdw.py roadmap        # phases + sprint progress (from the backlog)
+python zdw.py sprints        # every backlog story as a checkbox
+python zdw.py checklist      # deployment validation matrix (built/deployed/tested)
 ```
+
+Delivery is planned in `backlog/roadmap.yaml` (4 phases / 12 sprints) and driven
+by the sprint orchestrator above; see [`docs/design/ZeroDayWarranty_Roadmap.html`](docs/design/ZeroDayWarranty_Roadmap.html).
 
 `python zdw.py run` prints the discovered suspect supplier lot, the hot
 station/tool, the significance test, the root-cause hypothesis, the chargeback

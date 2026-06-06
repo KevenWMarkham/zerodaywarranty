@@ -23,9 +23,17 @@ from zero_day_warranty.calculations import (
 )
 from zero_day_warranty.chain import STEP_CATALOG, ChainConfig, WarrantyRootCauseChain
 from zero_day_warranty.manifest import load_agent, load_scenario
+from zero_day_warranty.roadmap import (
+    load_roadmap,
+    render_checklist,
+    render_roadmap,
+    render_sprints,
+)
 from zero_day_warranty.synthetic import generate
 
-SERVICE_DIR = Path(__file__).resolve().parents[2] / "service" / "AXLE-WARRANTY-01"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SERVICE_DIR = REPO_ROOT / "service" / "AXLE-WARRANTY-01"
+BACKLOG = REPO_ROOT / "backlog" / "roadmap.yaml"
 
 OVERVIEW = f"""\
 Zero Day Warranty · v{__version__}
@@ -50,9 +58,12 @@ Commands
   zdw run --json  emit the evidence package + ledger as JSON
   zdw calc        print the reference-scenario calculations
   zdw validate    validate manifests and verify the hash-chained ledger
+  zdw roadmap     phases + sprint progress (from the backlog)
+  zdw sprints     every backlog story as a checkbox
+  zdw checklist   deployment validation matrix (built/deployed/tested)
   zdw --help      argparse help
 
-Design pack: docs/design/  ·  Service: service/AXLE-WARRANTY-01/
+Design pack: docs/design/  ·  Service: service/AXLE-WARRANTY-01/  ·  Backlog: backlog/roadmap.yaml
 """
 
 
@@ -168,6 +179,26 @@ def cmd_validate(_args: argparse.Namespace) -> int:
     return 0 if ok else 1
 
 
+def cmd_roadmap(_args: argparse.Namespace) -> int:
+    """Print the phase + sprint roadmap overview."""
+    print(render_roadmap(load_roadmap(BACKLOG)))
+    return 0
+
+
+def cmd_sprints(args: argparse.Namespace) -> int:
+    """Print every backlog story as a checkbox, optionally filtered by phase."""
+    print(render_sprints(load_roadmap(BACKLOG), phase=args.phase))
+    return 0
+
+
+def cmd_checklist(_args: argparse.Namespace) -> int:
+    """Print the deployment validation matrix; non-zero exit if any gate is open."""
+    rm = load_roadmap(BACKLOG)
+    print(render_checklist(rm))
+    summary = rm.deployment_summary()
+    return 0 if summary["validated"] == summary["total"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point."""
     parser = argparse.ArgumentParser(prog="zdw", description="Zero Day Warranty CLI")
@@ -185,6 +216,13 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("calc", help="print reference calculations").set_defaults(func=cmd_calc)
     sub.add_parser("validate", help="validate manifests + verify ledger").set_defaults(
         func=cmd_validate
+    )
+    sub.add_parser("roadmap", help="phases + sprint progress").set_defaults(func=cmd_roadmap)
+    p_sprints = sub.add_parser("sprints", help="backlog stories as checkboxes")
+    p_sprints.add_argument("--phase", help="filter to one phase id (e.g. P3)")
+    p_sprints.set_defaults(func=cmd_sprints)
+    sub.add_parser("checklist", help="deployment validation matrix").set_defaults(
+        func=cmd_checklist
     )
 
     args = parser.parse_args(argv)

@@ -1,0 +1,170 @@
+# Zero Day Warranty · delivery roadmap and backlog.
+#
+# Single source of truth for the sprint orchestrator (zero_day_warranty.roadmap).
+# The orchestrator renders this as a checkbox board and gates each deployment on
+# built -> deployed -> tested. Status values: todo | in_progress | done | blocked.
+#
+#   python zdw.py roadmap     # phases + sprint progress
+#   python zdw.py sprints     # every story as a checkbox
+#   python zdw.py checklist   # deployment validation matrix (built/deployed/tested)
+
+meta:
+  product: Zero Day Warranty
+  service_code: AXLE-WARRANTY-01
+  version: 0.1.0
+  resource_group: Agentic-Automotives
+
+phases:
+  - id: P1
+    name: Foundation & Reference Build
+    goal: A runnable reference implementation and the design pack.
+  - id: P2
+    name: Design Validation & Hardening Plan
+    goal: Validate the design and turn the gap log into engineering work.
+  - id: P3
+    name: Azure Deployment (Agentic-Automotives)
+    goal: Stand up the self-contained deployment and validate it end-to-end.
+  - id: P4
+    name: Pilot Readiness
+    goal: Connectors, evaluation, security hardening, and KPI baselining.
+
+sprints:
+  # ---------------------------------------------------------------- P1
+  - id: S1
+    name: Core engine & reference scenario
+    phase: P1
+    status: done
+    goal: The four domains, medallion, audit ledger, chain, and CLI.
+    stories:
+      - {id: S1-1, title: Four-domain models + per-VIN medallion, status: done, acceptance: tests/test_domains_medallion.py green}
+      - {id: S1-2, title: 14-field hash-chained audit ledger, status: done, acceptance: tests/test_audit.py green}
+      - {id: S1-3, title: Reference calculations ($4.2M/$2.8M/340%), status: done, acceptance: tests/test_calculations.py green}
+      - {id: S1-4, title: Synthetic reference dataset with planted signal, status: done, acceptance: chain finds LOT-7743}
+      - {id: S1-5, title: 24-step / 7-cluster orchestrator chain, status: done, acceptance: tests/test_chain.py green}
+      - {id: S1-6, title: zdw CLI (run / calc / validate), status: done, acceptance: zdw validate passes}
+
+  - id: S2
+    name: Service manifests & design pack
+    phase: P1
+    status: done
+    goal: APEX-convention service definition and the discovery design documents.
+    stories:
+      - {id: S2-1, title: scenario.yaml + 7 agent manifests + prompts, status: done, acceptance: tests/test_manifests.py green}
+      - {id: S2-2, title: Architecture & Calculations design docs, status: done, acceptance: in docs/design}
+      - {id: S2-3, title: Capability swim lanes, status: done, acceptance: docs/design swim-lanes html}
+      - {id: S2-4, title: Persona portals (9 personas), status: done, acceptance: docs/design persona-portals html}
+
+  # ---------------------------------------------------------------- P2
+  - id: S3
+    name: Experts panel & gap log
+    phase: P2
+    status: done
+    goal: Independent design review and a prioritized gap log.
+    stories:
+      - {id: S3-1, title: Ten-expert design review, status: done, acceptance: docs/design experts-panel html}
+      - {id: S3-2, title: Coverage matrix + gap log (12 items), status: done, acceptance: gap log published}
+
+  - id: S4
+    name: Hardening designs (High gaps)
+    phase: P2
+    status: in_progress
+    goal: Turn the four High gaps into design artifacts and quick wins.
+    stories:
+      - {id: S4-1, title: CI pipeline (ruff/mypy/pytest), status: done, acceptance: .github/workflows/ci.yml}
+      - {id: S4-2, title: Multiple-testing correction (Bonferroni/BH), status: done, acceptance: tests/test_stats.py green}
+      - {id: S4-3, title: Model-evaluation harness design, status: in_progress, acceptance: roadmap doc §eval}
+      - {id: S4-4, title: Audit durability + private networking design, status: todo, acceptance: roadmap doc §hardening}
+      - {id: S4-5, title: CD pipeline (what-if/validate gate), status: todo, acceptance: .github/workflows/deploy.yml}
+
+  # ---------------------------------------------------------------- P3
+  - id: S5
+    name: Provision foundation
+    phase: P3
+    status: todo
+    goal: Resource group, identity, Key Vault, observability.
+    stories:
+      - {id: S5-1, title: Subscription-scoped Bicep (RG + module), status: done, acceptance: infra/main.bicep}
+      - {id: S5-2, title: Seed Key Vault secrets, status: todo, acceptance: db-url + signing key present}
+    deployments:
+      - {id: D-rg,   component: Resource group Agentic-Automotives, built: false, deployed: false, tested: false}
+      - {id: D-mi,   component: Managed identity id-zdw-warranty-agent, built: false, deployed: false, tested: false}
+      - {id: D-kv,   component: Key Vault kv-zero-day-warranty, built: false, deployed: false, tested: false}
+      - {id: D-obs,  component: Log Analytics + Application Insights, built: false, deployed: false, tested: false}
+
+  - id: S6
+    name: Provision platform resources
+    phase: P3
+    status: todo
+    goal: ACR, Azure OpenAI, Postgres, Container Apps environment.
+    stories:
+      - {id: S6-1, title: ACR + AOAI (+deployments) + Postgres + CAE in Bicep, status: done, acceptance: infra/modules/project.bicep}
+      - {id: S6-2, title: Confirm AOAI quota in eastus2, status: todo, acceptance: quota check}
+    deployments:
+      - {id: D-acr,  component: Container Registry acrzdwagentic, built: false, deployed: false, tested: false}
+      - {id: D-aoai, component: Azure OpenAI aoai-zdw-agentic + deployments, built: false, deployed: false, tested: false}
+      - {id: D-pg,   component: Postgres pg-zdw-agentic + db zdw, built: false, deployed: false, tested: false}
+      - {id: D-cae,  component: Container Apps env cae-zdw-agentic, built: false, deployed: false, tested: false}
+
+  - id: S7
+    name: Application & data plane
+    phase: P3
+    status: todo
+    goal: Build images, deploy the apps, create the medallion schemas.
+    stories:
+      - {id: S7-1, title: Dockerfiles for orchestrator + 2 MCP servers, status: todo, acceptance: images build}
+      - {id: S7-2, title: Container Apps in Bicep, status: done, acceptance: infra/modules/project.bicep}
+      - {id: S7-3, title: Postgres medallion + audit DDL, status: done, acceptance: infra/scripts/postgres-schemas.sql}
+    deployments:
+      - {id: D-img,  component: "Container images (orchestrator, mcp-warranty, mcp-ledger)", built: false, deployed: false, tested: false}
+      - {id: D-apps, component: Container Apps (ca-zdw-*), built: false, deployed: false, tested: false}
+      - {id: D-sql,  component: Medallion schemas + audit ledger, built: false, deployed: false, tested: false}
+
+  - id: S8
+    name: End-to-end validation
+    phase: P3
+    status: todo
+    goal: Prove the deployed chain works and the audit chain verifies.
+    stories:
+      - {id: S8-1, title: Smoke test the deployed orchestrator, status: todo, acceptance: "24 rows, chain VERIFIED"}
+      - {id: S8-2, title: HITL Adaptive Card to Teams, status: todo, acceptance: card delivered + decision sealed}
+    deployments:
+      - {id: D-e2e,  component: End-to-end run (signal -> evidence -> HITL -> audit), built: false, deployed: false, tested: false}
+
+  # ---------------------------------------------------------------- P4
+  - id: S9
+    name: Source connectors & ingestion
+    phase: P4
+    status: todo
+    goal: Replace placeholder adapters with real source connectors.
+    stories:
+      - {id: S9-1, title: MES/ERP + Connected + QMS + SCADA adapters, status: todo, acceptance: bronze landing live}
+      - {id: S9-2, title: Schema-drift + late-arriving-data handling, status: todo, acceptance: dead-letter + reconcile}
+
+  - id: S10
+    name: Evaluation & guardrails
+    phase: P4
+    status: todo
+    goal: Eval harness, prompt-injection guardrails, SLOs.
+    stories:
+      - {id: S10-1, title: Eval set + offline scoring, status: todo, acceptance: eval report}
+      - {id: S10-2, title: Audit-row feedback loop into eval cases, status: todo, acceptance: feedback wired}
+      - {id: S10-3, title: Prompt-injection / content guardrails, status: todo, acceptance: filters on RAG + tools}
+
+  - id: S11
+    name: Security hardening
+    phase: P4
+    status: todo
+    goal: Private networking, Entra DB auth, secret rotation, WORM export.
+    stories:
+      - {id: S11-1, title: Private endpoints (KV/ACR/AOAI/PG), status: todo, acceptance: no public data-plane}
+      - {id: S11-2, title: Entra DB auth (drop password), status: todo, acceptance: token auth}
+      - {id: S11-3, title: Secret rotation + WORM audit export, status: todo, acceptance: rotation policy + Purview echo}
+
+  - id: S12
+    name: Business Value Assessment
+    phase: P4
+    status: todo
+    goal: Re-baseline all currency figures against the client's actuals.
+    stories:
+      - {id: S12-1, title: Re-derive baseline / recovery with Finance, status: todo, acceptance: BVA signed}
+      - {id: S12-2, title: KPI envelope commitment, status: todo, acceptance: KPI targets agreed}

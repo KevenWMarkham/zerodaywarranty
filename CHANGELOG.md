@@ -2,6 +2,28 @@
 
 All notable changes to the Zero Day Warranty solution are documented here.
 
+## [Unreleased]
+
+### Added
+
+- **Sprint orchestrator** `roadmap.py` + `backlog/roadmap.yaml` (4 phases / 12
+  sprints) with the `zdw roadmap` / `sprints` / `checklist` commands. Deployments
+  are gated **built → deployed → tested**; `checklist` exits non-zero while any
+  gate is open.
+- **Multiple-testing correction** in `stats.py` (`bonferroni`,
+  `benjamini_hochberg`) — closes Experts-Panel High gap #2.
+- **CI workflow** `.github/workflows/ci.yml` (ruff · mypy · pytest · `zdw
+  validate`) — closes High gap #3.
+- **Roadmap design doc** `docs/design/ZeroDayWarranty_Roadmap.html` with the
+  phase/sprint roadmap, the orchestrator, and the deployment validation matrix.
+- Tests: `test_roadmap.py`, `test_stats.py` (now 62 tests).
+
+### Changed
+
+- Azure deployment made **fully self-contained** in `Agentic-Automotives`
+  (no shared resources); added Log Analytics + Application Insights.
+- Added the **Experts Panel** design review and gap log.
+
 ## [0.1.0] — 2026-06-06
 
 Initial reference implementation.
