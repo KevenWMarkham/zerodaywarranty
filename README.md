@@ -117,7 +117,10 @@ service/AXLE-WARRANTY-01/           # the service definition (APEX convention)
 catalog/agents/                     # reusable AgentSpec catalog entries
 docs/
   architecture.md                   # architecture & process writeup
-  design/                           # the original design pack (HTML)
+  zero-day-warranty/                # Markdown docs: overview · design · deployment · plan · experts
+  design/                           # the design pack (HTML)
+  SCENARIO_PLAYBOOK.md              # generate the next Service-Scenario from an idea
+  reference/                        # APEX scenario-chains workbook + CSV extract
 tests/                              # 50 tests (pytest)
 ```
 

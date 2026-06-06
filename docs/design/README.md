@@ -14,6 +14,12 @@ are reference-scenario figures (synthetic) — not Toyota baseline claims.
 | [`ZeroDayWarranty_Experts_Panel.html`](ZeroDayWarranty_Experts_Panel.html) | **Experts panel** — ten domain experts review the full design and validate completeness: per-expert findings, a design coverage matrix, a prioritized gap log (12 items, 4 High), and a round-table go/no-go for the RnD pilot. |
 | [`ZeroDayWarranty_Roadmap.html`](ZeroDayWarranty_Roadmap.html) | **Roadmap & sprint orchestrator** — 4 phases / 12 sprints driven by [`backlog/roadmap.yaml`](../../backlog/roadmap.yaml); the `zdw roadmap`/`sprints`/`checklist` orchestrator; and the **deployment validation matrix** (built → deployed → tested gates). Folds the Experts-Panel gaps into sprint stories. |
 
+## Markdown set
+
+Prefer plain Markdown? The same content (overview · design · deployment · plan ·
+experts panel) is in [`../zero-day-warranty/`](../zero-day-warranty/) — readable
+and diffable on GitHub.
+
 ## Reading order
 
 1. **Architecture** — what the components are and how the process flows.
