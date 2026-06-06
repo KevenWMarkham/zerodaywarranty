@@ -1,0 +1,42 @@
+# Gold layer · AXLE-WARRANTY-01 · per-VIN joinable warranty root-cause view.
+#
+# Declarative description of the Microsoft Fabric Gold views the agent reads.
+# In production these are Direct Lake views over OneLake Delta tables; here they
+# document the contract that zero_day_warranty.medallion.GoldVehicleView models.
+#
+# Grain: one row per VIN, with claims / quality events / telemetry hung off it.
+
+view: g_vehicle_root_cause
+grain: vin
+classification: supplier-confidential
+identity_scoped: true
+source_domains:
+  - Build.Records
+  - Warranty.Claims
+  - Quality.Events
+  - Assembly.Telemetry
+
+columns:
+  - {name: vin,               type: string, key: true,  description: Vehicle Identification Number — the conformed join key}
+  - {name: plant,             type: string,             description: Assembly plant code}
+  - {name: line,              type: string,             description: Assembly line}
+  - {name: station,           type: string,             description: Build station}
+  - {name: tool_id,           type: string,             description: Tool used at the station}
+  - {name: shift,             type: string,             description: Build shift}
+  - {name: supplier_lot,      type: string,             description: Supplier lot code for the installed part}
+  - {name: build_week,        type: int,                description: ISO build week}
+  - {name: claim_count,       type: int,                description: Number of warranty claims for this VIN}
+  - {name: total_claim_cost,  type: decimal,            description: Sum of warranty claim cost (USD)}
+  - {name: spc_anomaly_count, type: int,                description: SPC anomalies recorded for this VIN}
+  - {name: max_calibration_drift_pct, type: decimal,    description: Worst tool calibration drift observed}
+
+measures:
+  - {name: warranty_rate_by_lot,        agg: "claims / builds grouped by supplier_lot"}
+  - {name: warranty_rate_by_build_week, agg: "claims / builds grouped by build_week"}
+  - {name: warranty_rate_by_station,    agg: "claims / builds grouped by station"}
+  - {name: avg_build_to_claim_months,   agg: "mean(build_to_claim_months) by build_week cohort"}
+  - {name: chargeback_exposure_by_lot,  agg: "attributable warranty cost grouped by supplier_lot"}
+
+consumed_by:
+  - power_bi: warranty heatmaps · build-week cost · chargeback recovery dashboards
+  - agent: AXLE-WARRANTY-01 root-cause chain (steps 4-9, 13-14, 19)

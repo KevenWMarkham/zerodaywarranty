@@ -1,0 +1,15 @@
+# HITL thresholds for AXLE-WARRANTY-01.
+#
+# The Compliance & HITL agent (cluster 7) enforces these. Any condition that
+# matches routes the decision to the Quality Director as a Teams Adaptive Card
+# before any external effect (chargeback issuance, downstream notification).
+
+chargeback_usd_above: 100000      # any chargeback exposure over $100K requires approval
+nhtsa_ewr_applicable: any         # any potential EWR-reportable cluster requires approval
+supplier_attribution_required: true  # never issue a chargeback without significant attribution
+confidence_below: 0.95            # low-confidence hypotheses always require human review
+sla_minutes: 60                   # escalate if the director does not respond within an hour
+escalation_path:
+  - quality-director
+  - vp-quality
+  - plant-manager

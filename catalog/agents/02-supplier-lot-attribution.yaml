@@ -1,0 +1,27 @@
+kind: agent
+name: apex.axle.agents.warranty-supplier-lot-attribution
+version: 0.1.0
+practice: axle
+persona: Supplier Quality Engineer
+service_codes: [AXLE-WARRANTY-01]
+model_tier: standard
+model_pin: gpt-4o-2024-11-20
+description: >-
+  Attributes a warranty cluster to a specific supplier lot. Extracts lot codes
+  installed in the hot VIN population, computes the lot warranty rate vs.
+  baseline, and runs a two-proportion significance test (NVIDIA RAPIDS
+  cuGraph / cuML accelerated). Read-only; produces the attribution finding the
+  orchestrator turns into a chargeback.
+archetype_id: F-sequential
+primary_contact: axle-practice-lead@deloitte.com
+
+tools:
+  - {tool_id: axle_warranty.get_lot_trace, purpose: Extract supplier lot codes for the hot VINs}
+  - {tool_id: rapids.cugraph.lot_attribution, purpose: Build the VIN→Lot→Vendor attribution graph}
+  - {tool_id: rapids.cuml.proportion_test, purpose: Test lot warranty rate vs. baseline}
+
+hitl_gates: []
+oversight_modes: [HOTL]
+
+kpis:
+  - {name: root-cause-attribution-accuracy, direction: up, target_band: "significant at p < 0.05"}

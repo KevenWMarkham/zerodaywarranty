@@ -1,0 +1,30 @@
+role: hypothesis
+label: Hypothesis & Evidence
+cluster: 6
+scenario_id: axle-warranty-zero-day-root-cause
+service_code: AXLE-WARRANTY-01
+archetype: sequential-with-specialist-inference
+canonical_pattern: sequential
+model: gpt-4o-2024-11-20
+steps: [17, 18, 19, 20]
+tools:
+  - nim.rca_reasoner
+  - nemo.retriever
+  - axle_warranty.chargeback_exposure
+  - axle_warranty.generate_chargeback_doc
+schemas_read:
+  - Build.Records
+  - Warranty.Claims
+  - Quality.Events
+  - Assembly.Telemetry
+schemas_write:
+  - Warranty.ChargebackDraft
+hitl_gate: false
+audit_row_emit: true
+prompt_ref: prompts/hypothesis.md
+prompt_version: 1.0.0
+manifest_version: 1.0.0
+classification_propagation:
+  - internal
+  - supplier-confidential
+operator_obo_required: false

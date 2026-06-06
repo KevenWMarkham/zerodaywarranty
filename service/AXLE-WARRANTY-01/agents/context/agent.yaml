@@ -1,0 +1,23 @@
+role: context
+label: Build Context
+cluster: 2
+scenario_id: axle-warranty-zero-day-root-cause
+service_code: AXLE-WARRANTY-01
+archetype: sequential
+canonical_pattern: sequential
+model: gpt-4o-2024-11-20
+steps: [4, 5, 6, 7]
+tools:
+  - fabric.gold.per_vin_view
+schemas_read:
+  - Build.Records
+  - Warranty.Claims
+schemas_write: []
+hitl_gate: false
+audit_row_emit: true
+prompt_ref: prompts/context.md
+prompt_version: 1.0.0
+manifest_version: 1.0.0
+classification_propagation:
+  - internal
+operator_obo_required: false

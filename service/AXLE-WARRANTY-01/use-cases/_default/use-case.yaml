@@ -1,0 +1,93 @@
+use_case_id: axle-warranty-01--default
+service_code: AXLE-WARRANTY-01
+scenario_id: axle-warranty-zero-day-root-cause
+primary_variant: APEX-M
+client_segment: Default — Microsoft-first deployment, NVIDIA AI Enterprise optional
+substrate: laptop
+
+client_approved_architecture:
+  data_lake:
+    primary: {variant: APEX-M, target: fabric.onelake.axle-warranty-canonical}
+    bronze_sources:
+      - {source: build_records, adapter: REPLACE_WITH_CLIENT_MES_ERP_ADAPTER, dataset: REPLACE}
+      - {source: warranty_claims, adapter: REPLACE_WITH_TOYOTA_CONNECTED_ADAPTER, dataset: REPLACE}
+      - {source: quality_events, adapter: REPLACE_WITH_CLIENT_QMS_ADAPTER, dataset: REPLACE}
+      - {source: assembly_telemetry, adapter: REPLACE_WITH_CLIENT_SCADA_HISTORIAN_ADAPTER, dataset: REPLACE}
+  identity:
+    primary: {variant: APEX-M, source: entra-agent-id}
+  siem_audit:
+    primary: {variant: APEX-M, target: purview-audit}
+  hitl_channel:
+    primary: {variant: APEX-M, target: teams}
+  message_bus:
+    primary: {variant: APEX-M, target: eventstream}
+  acceleration:
+    optional: {variant: NVIDIA-AI-Enterprise-on-Azure, targets: [rapids, triton, nim, nemo-retriever]}
+
+personas_active:
+  - id: quality-director
+  - id: supplier-quality-engineer
+  - id: warranty-after-sales-analyst
+
+kpis_targeted:
+  - {id: time-to-evidence-package-min, target: 30, direction: down}
+  - {id: person-hours-per-rca, target: 50, direction: down}
+  - {id: chargeback-recovery-improvement-pct, target: 25, direction: up}
+  - {id: audit-ledger-completeness-pct, target: 100, direction: up}
+
+hitl_thresholds:
+  chargeback_usd_above: 100000
+  nhtsa_ewr_applicable: any
+  supplier_attribution_required: true
+
+agent_overrides:
+  hypothesis:
+    model: gpt-4o-2024-11-20
+    specialist_inference: nim.rca_reasoner
+    retrieval: nemo.retriever
+  compliance:
+    model: gpt-4o-2024-11-20
+    operator_obo_required: true
+
+orchestration_archetype: sequential
+orchestration_runtime: agent-framework
+
+chain_execution:
+  scenario_id: axle-warranty-zero-day-root-cause
+  clusters:
+    - {cluster: 1, label: Detect & Scope,        steps: [1, 2, 3],    executed_by: detect,     component: agent-framework}
+    - {cluster: 2, label: Build context,         steps: [4, 5, 6, 7], executed_by: context,    component: fabric-gold}
+    - {cluster: 3, label: Statistical tests,     steps: [8],          executed_by: stattest,   component: rapids-cuml}
+    - {cluster: 4, label: Quality + Telemetry,   steps: [9, 10, 11, 12], executed_by: quality, component: triton}
+    - {cluster: 5, label: Supplier attribution,  steps: [13, 14, 15, 16], executed_by: supplier, component: rapids-cugraph}
+    - {cluster: 6, label: Hypothesis + Evidence, steps: [17, 18, 19, 20], executed_by: hypothesis, component: nim-nemo}
+    - {cluster: 7, label: Compliance + HITL,     steps: [21, 22, 23, 24], executed_by: compliance, component: teams-purview}
+
+persona_kpi_attribution:
+  quality-director:
+    - kpi: chargeback-recovery-improvement-pct
+      mechanism: >-
+        Approves / amends / denies the chargeback at the HITL gate (step 22).
+        The recorded approval is what converts a statistically-defensible
+        evidence package into a recoverable supplier claim.
+      decision_steps: [22]
+      direction: increase
+  supplier-quality-engineer:
+    - kpi: time-to-evidence-package-min
+      mechanism: >-
+        Consumes the evidence package and opens the supplier corrective action,
+        replacing weeks of manual lot isolation with a minutes-old package.
+      decision_steps: [16, 18]
+      direction: decrease
+
+smoke_test:
+  description: >-
+    Generate the synthetic reference dataset, run the 24-step chain, and assert
+    the suspect lot is found at significance, the HITL gate fires, and the audit
+    chain verifies with 24 rows.
+  command: python zdw.py validate
+  expect:
+    - audit_rows: 24
+    - hash_chain_verified: true
+    - suspect_lot_significant: true
+    - hitl_gate_present: true

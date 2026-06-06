@@ -1,0 +1,34 @@
+kind: agent
+name: apex.axle.agents.warranty-root-cause-orchestrator
+version: 0.1.0
+practice: axle
+persona: Quality Director
+service_codes: [AXLE-WARRANTY-01]
+model_tier: reasoning
+model_pin: gpt-4o-2024-11-20
+description: >-
+  Orchestrates the 24-step Zero Day Warranty root-cause chain across seven
+  functional clusters. Joins connected-vehicle warranty claims to per-VIN build
+  history, runs accelerated cohort × station × tool × supplier-lot statistics,
+  and produces a chargeback evidence package gated by a Quality Director HITL.
+archetype_id: F-sequential-with-hitl-gate
+primary_contact: axle-practice-lead@deloitte.com
+
+tools:
+  - {tool_id: fabric.gold.per_vin_view, purpose: Read the per-VIN joined Gold view}
+  - {tool_id: axle_warranty.pull_vins, purpose: Resolve the claim cohort to a VIN list}
+  - {tool_id: axle_warranty.generate_chargeback_doc, purpose: Draft chargeback documentation, write: true}
+
+hitl_gates:
+  - name: chargeback_approval
+    description: Quality Director approves / amends / denies the supplier chargeback.
+    fires_when: A statistically-attributed chargeback exposure exceeds the threshold.
+    surface: teams_card
+    sla_minutes: 60
+
+oversight_modes: [HITL, HOTL]
+
+kpis:
+  - {name: time-to-evidence-package, direction: down, target_band: "< 30 min"}
+  - {name: chargeback-recovery-rate, direction: up, target_band: "+25% vs. baseline"}
+  - {name: audit-ledger-completeness, direction: up, target_band: "100%"}

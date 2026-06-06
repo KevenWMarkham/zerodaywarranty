@@ -1,0 +1,22 @@
+role: detect
+label: Detect & Scope
+cluster: 1
+scenario_id: axle-warranty-zero-day-root-cause
+service_code: AXLE-WARRANTY-01
+archetype: hierarchical-root + sequential
+canonical_pattern: sequential
+model: gpt-4o-2024-11-20
+steps: [1, 2, 3]
+tools:
+  - axle_warranty.pull_vins
+schemas_read:
+  - Warranty.Claims
+schemas_write: []
+hitl_gate: false
+audit_row_emit: true
+prompt_ref: prompts/detect.md
+prompt_version: 1.0.0
+manifest_version: 1.0.0
+classification_propagation:
+  - internal
+operator_obo_required: false

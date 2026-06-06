@@ -1,0 +1,73 @@
+scenario_id: axle-warranty-zero-day-root-cause
+title: Zero Day Warranty — warranty root-cause investigation
+service_code: AXLE-WARRANTY-01
+domain: Quality & Warranty
+featured: true
+moment: >-
+  A connected-vehicle warranty cluster breaches its volume threshold. Today a
+  manual root-cause investigation fires across six teams and takes 8-12 weeks,
+  dominated by cross-system data reconciliation and sequential handoff queues
+  (~440 person-hours · ~$88K per investigation).
+solution: >-
+  A single orchestrator agent joins warranty claims back to factory build
+  history per VIN, runs accelerated cohort × station × tool × supplier-lot
+  statistics, and produces a statistically-defensible supplier chargeback
+  evidence package in ~12 minutes, paused only for a Quality Director HITL gate.
+use_case: >-
+  Reads the per-VIN Gold view across the four warranty data domains (build
+  records, connected-vehicle warranty data, quality events, assembly telemetry)
+  and attributes the cluster to a supplier lot with confidence intervals.
+personas: >-
+  Primary Quality Director — receives the evidence package as a Teams Adaptive
+  Card and approves / amends / denies the chargeback in-line. Secondary Supplier
+  Quality, Warranty / After-Sales, Plant Operations.
+kpi: >-
+  Time-to-evidence-package < 30 min · person-hours per RCA < 50 · chargeback
+  recovery rate +25% · audit-ledger completeness 100%.
+waves:
+  w1_foundation: >-
+    SOR: MES/ERP + Toyota Connected + QMS + SCADA/historian · Real-Time Hub ·
+    Bronze raw landing · Tokenizer · Silver canonical (VIN-conformed) · Gold
+    per-VIN joinable views.
+  w2_pilot: >-
+    Zero Day Warranty root-cause chain · cluster signal fires · Agent Framework
+    orchestrator · 7 functional clusters · Quality Director HITL gate · chargeback
+    evidence package.
+  w3_scale_fuse: >-
+    Enterprise scale across plants · fuse Day-0 Metropolis prevention layer ·
+    Purview trust · audit-row feedback loop into eval cases.
+
+chain_24:
+  - {step: 1,  key: detect-signal,        cluster: 1, layer: integration, agent_role: detect,     gpu: false, title: "Receive warranty claim cluster signal"}
+  - {step: 2,  key: scope-cohort,         cluster: 1, layer: agent,       agent_role: detect,     gpu: false, title: "Scope the claim cohort by part, failure mode, severity"}
+  - {step: 3,  key: pull-vins,            cluster: 1, layer: data,        agent_role: detect,     gpu: false, title: "Pull VIN list for affected cohort"}
+  - {step: 4,  key: join-build,           cluster: 2, layer: schema,      agent_role: context,    gpu: false, title: "Join VIN list to build records"}
+  - {step: 5,  key: build-week-dist,      cluster: 2, layer: agent,       agent_role: context,    gpu: false, title: "Extract build-week distribution of affected VINs"}
+  - {step: 6,  key: hot-weeks,            cluster: 2, layer: agent,       agent_role: context,    gpu: false, title: "Identify over-represented build weeks vs. baseline"}
+  - {step: 7,  key: station-tool-dist,    cluster: 2, layer: agent,       agent_role: context,    gpu: false, title: "Extract station / tool / shift distribution"}
+  - {step: 8,  key: stat-interactions,    cluster: 3, layer: agent,       agent_role: stattest,   gpu: true,  title: "Statistical test: cohort x station x tool x shift"}
+  - {step: 9,  key: join-quality,         cluster: 4, layer: schema,      agent_role: quality,    gpu: false, title: "Join to quality event records"}
+  - {step: 10, key: spc-anomalies,        cluster: 4, layer: agent,       agent_role: quality,    gpu: true,  title: "Identify SPC anomalies preceding the hot build weeks"}
+  - {step: 11, key: join-telemetry,       cluster: 4, layer: schema,      agent_role: quality,    gpu: false, title: "Join to assembly telemetry"}
+  - {step: 12, key: tool-drift,           cluster: 4, layer: agent,       agent_role: quality,    gpu: true,  title: "Correlate tool calibration drift with hot-station defects"}
+  - {step: 13, key: lot-codes,            cluster: 5, layer: agent,       agent_role: supplier,   gpu: false, title: "Extract supplier lot codes installed in hot VIN population"}
+  - {step: 14, key: lot-rate,             cluster: 5, layer: agent,       agent_role: supplier,   gpu: true,  title: "Compute supplier-lot warranty rate vs. baseline"}
+  - {step: 15, key: lot-significance,     cluster: 5, layer: agent,       agent_role: supplier,   gpu: true,  title: "Statistical test: supplier-lot attribution significance"}
+  - {step: 16, key: rank-interactions,    cluster: 5, layer: agent,       agent_role: supplier,   gpu: false, title: "Rank cohort x station x supplier-lot interactions by significance"}
+  - {step: 17, key: hypothesis,           cluster: 6, layer: agent,       agent_role: hypothesis, gpu: false, title: "Generate root-cause hypothesis with confidence intervals"}
+  - {step: 18, key: evidence-package,     cluster: 6, layer: agent,       agent_role: hypothesis, gpu: false, title: "Build evidence package: cohort, statistical tests, raw data"}
+  - {step: 19, key: chargeback-exposure,  cluster: 6, layer: agent,       agent_role: hypothesis, gpu: false, title: "Compute chargeback dollar exposure per supplier lot"}
+  - {step: 20, key: chargeback-docs,      cluster: 6, layer: agent,       agent_role: hypothesis, gpu: false, title: "Generate supplier chargeback documentation"}
+  - {step: 21, key: nhtsa-ewr,            cluster: 7, layer: governance,  agent_role: compliance, gpu: false, title: "Trigger NHTSA Early Warning Reporting check (if applicable)"}
+  - {step: 22, key: hitl-review,          cluster: 7, layer: agent,       agent_role: compliance, gpu: false, title: "Route to Quality Director for human review and approval"}
+  - {step: 23, key: audit-write,          cluster: 7, layer: governance,  agent_role: compliance, gpu: false, title: "Write decision and rationale to audit ledger"}
+  - {step: 24, key: notify-downstream,    cluster: 7, layer: integration, agent_role: compliance, gpu: false, title: "Notify downstream owners (CAPA, dealer advisories)"}
+
+agents:
+  - {role: detect,     label: Detect & Scope,        cluster: 1, config: agents/detect/agent.yaml}
+  - {role: context,    label: Build Context,         cluster: 2, config: agents/context/agent.yaml}
+  - {role: stattest,   label: Statistical Tests,     cluster: 3, config: agents/stattest/agent.yaml}
+  - {role: quality,    label: Quality & Telemetry,   cluster: 4, config: agents/quality/agent.yaml}
+  - {role: supplier,   label: Supplier Attribution,  cluster: 5, config: agents/supplier/agent.yaml}
+  - {role: hypothesis, label: Hypothesis & Evidence, cluster: 6, config: agents/hypothesis/agent.yaml}
+  - {role: compliance, label: Compliance & HITL,     cluster: 7, config: agents/compliance/agent.yaml}

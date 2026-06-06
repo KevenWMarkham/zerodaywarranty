@@ -1,0 +1,26 @@
+role: quality
+label: Quality & Telemetry
+cluster: 4
+scenario_id: axle-warranty-zero-day-root-cause
+service_code: AXLE-WARRANTY-01
+archetype: sequential
+canonical_pattern: sequential
+model: gpt-4o-2024-11-20
+steps: [9, 10, 11, 12]
+tools:
+  - fabric.gold.quality_events
+  - fabric.gold.telemetry
+  - triton.spc_anomaly
+  - triton.drift_correlation
+schemas_read:
+  - Quality.Events
+  - Assembly.Telemetry
+schemas_write: []
+hitl_gate: false
+audit_row_emit: true
+prompt_ref: prompts/quality.md
+prompt_version: 1.0.0
+manifest_version: 1.0.0
+classification_propagation:
+  - internal
+operator_obo_required: false

@@ -1,0 +1,26 @@
+role: compliance
+label: Compliance & HITL
+cluster: 7
+scenario_id: axle-warranty-zero-day-root-cause
+service_code: AXLE-WARRANTY-01
+archetype: sequential-with-hitl-gate
+canonical_pattern: sequential
+model: gpt-4o-2024-11-20
+steps: [21, 22, 23, 24]
+tools:
+  - compliance.nhtsa_ewr
+  - teams.adaptive_card
+  - teams.channel_post
+schemas_read:
+  - Warranty.ChargebackDraft
+schemas_write:
+  - Warranty.ChargebackDecision
+hitl_gate: true
+audit_row_emit: true
+prompt_ref: prompts/compliance.md
+prompt_version: 1.0.0
+manifest_version: 1.0.0
+classification_propagation:
+  - internal
+  - supplier-confidential
+operator_obo_required: true

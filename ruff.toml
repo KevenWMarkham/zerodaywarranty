@@ -1,0 +1,48 @@
+target-version = "py311"
+line-length = 100
+extend-exclude = [
+    "node_modules",
+    ".venv",
+    "docs",
+]
+
+[lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "A",    # flake8-builtins
+    "C4",   # flake8-comprehensions
+    "PIE",  # flake8-pie
+    "SIM",  # flake8-simplify
+    "PTH",  # flake8-use-pathlib
+    "RUF",  # ruff-specific
+    "D",    # pydocstyle (Google conventions)
+]
+ignore = [
+    "E501",  # line length — handled by formatter
+    "D100",  # missing module docstring (allowed at package level)
+    "D104",  # missing package docstring in __init__
+    "D203",  # 1 blank line before class docstring (conflicts with D211)
+    "D213",  # multi-line docstring summary should start on second line (conflicts with D212)
+    "RUF001",  # ambiguous unicode in strings — en-dash / × are intentional domain typography
+    "RUF002",  # ambiguous unicode in docstrings — same
+    "RUF003",  # ambiguous unicode in comments — same
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.per-file-ignores]
+"tests/**" = ["D", "S101", "B017", "PT011"]
+"conftest.py" = ["D"]
+"zdw.py" = ["D", "E402"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
