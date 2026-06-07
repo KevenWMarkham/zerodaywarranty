@@ -322,7 +322,9 @@ ACRNAME=$(az acr list -g <RG> --query "[0].name" -o tsv)   # robust; deployment 
 for s in orchestrator mcp-warranty mcp-ledger; do
   az acr import --name "$ACRNAME" --source ghcr.io/<owner-lower>/zdw-$s:<tag> --image zdw/$s:<tag>
 done
-az acr repository list --name "$ACRNAME" -o tsv            # verify the 3 images landed
+# NOTE: `az acr repository list` needs the DATA plane and is blocked for a private
+# ACR from a public shell (it will hang on a Username: prompt). The import printing
+# success — or "Conflict: already exists" — is sufficient confirmation.
 
 # 3) Roll the apps to the images + smoke test
 for s in orchestrator mcp-warranty mcp-ledger; do
@@ -353,6 +355,8 @@ app without the database. Then flip the `built/deployed/tested` flags in
 | AOAI `AccountProvisioningStateInvalid … state Accepted` | Cognitive Services provisioning race | re-run the deployment (idempotent) |
 | `az acr import` → 401/403 `DENIED` from ghcr | the GHCR package is private | make the 3 packages public, or `az acr import … --username <gh-user> --password <PAT read:packages>` |
 | `Registry names may contain only alphanumeric…` on import | `acrLoginServer` deployment output came back empty | get the name directly: `ACRNAME=$(az acr list -g <RG> --query "[0].name" -o tsv)` |
+| `az acr import` → `Conflict: tag already exists` | image already imported (idempotent) | benign — the image is present, continue |
+| `az acr repository list` hangs at `Username:` / 403 | data-plane call blocked on a private ACR from a public shell | skip it; trust the import result, or list from inside the VNet |
 | container app revision won't start (private) | app reads KV secrets at startup; VNet→KV private link not resolving | verify KV private endpoint + DNS, or make those secrets optional for a synthetic-only smoke test |
 | `gh` device-code never arrives | it's terminal-based, not a phone push | type the `XXXX-XXXX` from the terminal, or use `GH_TOKEN` |
 
