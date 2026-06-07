@@ -6,6 +6,22 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **3D process fly-through (three.js)** — `process3d.py` lays out the 24-step
+  chain as a swim-lane grid in 3D (lanes as parallel rails, phases as frosted-
+  glass gates, governance as the reflective audit floor, steps as beveled nodes)
+  and a glowing **trace** flows through the steps in execution order, lighting
+  each lane as it passes. Real-to-life rendering: environment-mapped reflections
+  (RoomEnvironment + PMREM), soft shadows, ACES tone-mapping, and an UnrealBloom
+  glow. Self-contained HTML loading three.js via an ES-module import map (no build
+  step); the scene geometry + HUD figures are generated from a **live chain run**
+  (`build_process_graph`). Interactive HUD (play / pause / scrub / speed), camera
+  follows the trace with free-orbit, per-lane focus buttons, `#lane=<id>` deep
+  links, and a WebGL fallback to the flat portal. New CLI `zdw process3d
+  [--write]`; served live by the orchestrator at `GET /process-3d` (alias `/3d`)
+  and advertised on `/health`. Linked from the Swim Lane Views portal (a "Watch
+  the 3D process fly-through" button + a per-lane "view this lane in 3D" link).
+  `tests/test_process3d.py` (24-step layout, live meta, self-contained three.js,
+  generator/committed sync).
 - **Demo walk-through script** — `docs/DEMO_WALKTHROUGH.md`, a presenter's script
   for demoing the deployed solution end to end: pre-flight (warm the
   scale-to-zero app), the live `/run`, a tab-by-tab tour of the live `/portal`

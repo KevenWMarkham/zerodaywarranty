@@ -64,20 +64,26 @@ def _env_config() -> dict[str, bool]:
 
 #: Orchestrator paths that return the rendered Swim Lane Views portal (text/html).
 PORTAL_PATHS = ("/portal", "/lanes", "/swim-lanes", "/swimlanes")
+#: Orchestrator paths that return the 3D process fly-through (text/html).
+PROCESS_3D_PATHS = ("/process-3d", "/3d")
 
 
 def html_route(role: str, path: str) -> tuple[int, str] | None:
     """HTML router — returns ``(status, html)`` for portal paths, else ``None``.
 
-    The Swim Lane Views portal is rendered **live** from a fresh chain run on each
-    request, so the deployed app serves a self-documenting, always-truthful view
-    of the running solution. Non-HTML paths return ``None`` so the caller falls
-    back to the JSON :func:`route`.
+    The Swim Lane Views portal and the 3D process fly-through are rendered **live**
+    from a fresh chain run on each request, so the deployed app is
+    self-documenting and always truthful to the running solution. Non-HTML paths
+    return ``None`` so the caller falls back to the JSON :func:`route`.
     """
     if role == "orchestrator" and path in PORTAL_PATHS:
         from zero_day_warranty.lanes import render_swimlane_views_html
 
         return 200, render_swimlane_views_html()
+    if role == "orchestrator" and path in PROCESS_3D_PATHS:
+        from zero_day_warranty.process3d import render_process_3d_html
+
+        return 200, render_process_3d_html()
     return None
 
 
@@ -89,6 +95,7 @@ def route(role: str, path: str) -> tuple[int, dict[str, Any]]:
         body = {**base, "status": "ok", "config": _env_config()}
         if role == "orchestrator":
             body["portal"] = "/portal"
+            body["process3d"] = "/process-3d"
         return 200, body
 
     if role == "orchestrator" and path == "/hitl-card":

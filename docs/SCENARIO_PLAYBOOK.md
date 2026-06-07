@@ -112,8 +112,20 @@ Clone-and-adapt the Zero Day Warranty modules (they are the template):
 ### 3c. Design pack — `docs/design/` (HTML, shared visual system)
 Reuse the CSS/header/footer from the existing docs. Produce the set:
 Architecture · Calculations & References · Capability Swim Lanes · **Swim Lane
-Views** · Persona Portals · Azure Deployment · Experts Panel · Roadmap. Keep the
-classification banner and the "synthetic / not client claims" footer.
+Views** · **3D Process Fly-Through** · Persona Portals · Azure Deployment ·
+Experts Panel · Roadmap. Keep the classification banner and the "synthetic / not
+client claims" footer.
+
+The **3D Process Fly-Through** is an optional WebGL (three.js) artifact: the
+24-step chain as a swim-lane grid in 3D with a glowing trace flowing through the
+steps. Generate it from a **live chain run** (`<pkg>/process3d.py`:
+`build_process_graph` + `render_process_3d_html`) exposed as `zdw process3d
+--write`; load three.js via an ES-module import map (no build step), embed the
+graph JSON inline (self-contained + servable), and add a generator/committed sync
+test. Use real-to-life rendering (env reflections, soft shadows, bloom) on
+polygon/box geometry, a WebGL fallback to the flat portal, and cross-link it from
+the Swim Lane Views portal (`#lane=<id>` deep links). Serve it from the
+orchestrator at `/process-3d` alongside `/portal`.
 
 **Swim Lane Views** are the per-lane drill-down companion to the (whole-picture)
 Capability Swim Lanes: one tab per lane, each showing the *same* investigation as

@@ -24,6 +24,7 @@ from zero_day_warranty.calculations import (
 from zero_day_warranty.chain import STEP_CATALOG, ChainConfig, WarrantyRootCauseChain
 from zero_day_warranty.lanes import render_swimlane_views_html, render_swimlane_views_md
 from zero_day_warranty.manifest import load_agent, load_scenario
+from zero_day_warranty.process3d import render_process_3d_html
 from zero_day_warranty.roadmap import (
     load_roadmap,
     render_checklist,
@@ -74,6 +75,7 @@ Commands
   zdw checklist   deployment validation matrix (built/deployed/tested)
   zdw scenarios   search the scenario library (--sync registers repo scenarios)
   zdw lanes       render the per-swim-lane views (--write regenerates the design pack)
+  zdw process3d   render the 3D process fly-through (three.js; --write regenerates)
   zdw --help      argparse help
 
 Design pack: docs/design/  ·  Service: service/AXLE-WARRANTY-01/  ·  Backlog: backlog/roadmap.yaml
@@ -265,6 +267,7 @@ def cmd_scenarios(args: argparse.Namespace) -> int:
 
 HTML_LANE_VIEWS = REPO_ROOT / "docs" / "design" / "ZeroDayWarranty_SwimLane_Views.html"
 MD_LANE_VIEWS = REPO_ROOT / "docs" / "zero-day-warranty" / "swim-lane-views.md"
+HTML_PROCESS_3D = REPO_ROOT / "docs" / "design" / "ZeroDayWarranty_Process_3D.html"
 
 
 def cmd_lanes(args: argparse.Namespace) -> int:
@@ -278,6 +281,18 @@ def cmd_lanes(args: argparse.Namespace) -> int:
         print(f"[wrote] {MD_LANE_VIEWS.relative_to(REPO_ROOT)}")
         return 0
     print(render_swimlane_views_md(result))
+    return 0
+
+
+def cmd_process3d(args: argparse.Namespace) -> int:
+    """Render the 3D process fly-through (three.js) from a live chain run."""
+    dataset = generate()
+    result = WarrantyRootCauseChain(dataset.medallion).run()
+    if args.write:
+        HTML_PROCESS_3D.write_text(render_process_3d_html(result), encoding="utf-8")
+        print(f"[wrote] {HTML_PROCESS_3D.relative_to(REPO_ROOT)}")
+        return 0
+    print(render_process_3d_html(result))
     return 0
 
 
@@ -331,6 +346,12 @@ def main(argv: list[str] | None = None) -> int:
         help="regenerate the design-pack HTML + Markdown instead of printing",
     )
     p_lanes.set_defaults(func=cmd_lanes)
+
+    p_3d = sub.add_parser("process3d", help="render the 3D process fly-through (three.js)")
+    p_3d.add_argument(
+        "--write", action="store_true", help="regenerate the design-pack HTML instead of printing"
+    )
+    p_3d.set_defaults(func=cmd_process3d)
 
     args = parser.parse_args(argv)
     if not getattr(args, "command", None):
