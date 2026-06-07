@@ -6,6 +6,20 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **HITL Teams Adaptive Card (S8-2)** — `notify.py` builds the Quality-Director
+  approval Adaptive Card (schema 1.5) from the chargeback evidence package
+  (`build_adaptive_card`), wraps it in the Teams Incoming-Webhook envelope
+  (`teams_envelope`), and posts it best-effort (`post_to_teams`, never raises;
+  no-op when no webhook is configured). The card carries the suspect lot, hot
+  station/tool, affected weeks, warranty-rate ratio, significance, confidence,
+  attributable exposure, and recovery target, plus Approve/Amend/Deny
+  `Action.Submit` actions (each carrying `{decision, trace_id}`). Wired into
+  `chain.py` step 22 (`ChainConfig.teams_webhook_url`): the card is attached to
+  the evidence package and step 22 records `teams_card_generated` /
+  `teams_card_posted` in the sealed audit row. `server.py` exposes
+  `GET /hitl-card` (orchestrator) and reads `TEAMS_WEBHOOK_URL` from the env.
+  `tests/test_notify.py` + a `/hitl-card` server test added. Backlog: S8-2 done,
+  S8 done.
 - **Container apps + images** — `server.py` (stdlib HTTP app serving three roles:
   orchestrator `/run`, mcp-warranty `/tools` + `/gold/summary`, mcp-ledger
   `/tools` + `/verify`) and a multi-stage `Dockerfile` (targets `orchestrator`,

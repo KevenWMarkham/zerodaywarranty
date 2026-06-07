@@ -27,6 +27,7 @@ from zero_day_warranty.calculations import (
     chargeback_scenario,
 )
 from zero_day_warranty.medallion import GoldVehicleView, Medallion
+from zero_day_warranty.notify import build_adaptive_card, post_to_teams
 from zero_day_warranty.stats import ProportionTest, two_proportion_z_test
 
 # Default versions stamped onto every audit row (mirrors the three-version rule).
@@ -92,6 +93,7 @@ class ChainConfig:
     invoking_identity: str = "quality.analyst@toyota.example"
     approver_identity: str = "quality.director@toyota.example"
     auto_approve_hitl: bool = True
+    teams_webhook_url: str | None = None
     scenario_inputs: ScenarioInputs = field(default_factory=ScenarioInputs)
 
 
@@ -421,6 +423,11 @@ class WarrantyRootCauseChain:
         )
 
         hitl_status = HitlStatus.APPROVED if self._config.auto_approve_hitl else HitlStatus.PENDING
+        # Build the Quality-Director Teams Adaptive Card and (best-effort) deliver
+        # it. The card is always generated; posting needs a configured webhook.
+        hitl_card = build_adaptive_card(evidence_package, approver=self._config.approver_identity)
+        evidence_package["hitl_card"] = hitl_card
+        card_posted = post_to_teams(hitl_card, self._config.teams_webhook_url)
         self._emit(
             22,
             "compliance",
@@ -430,6 +437,8 @@ class WarrantyRootCauseChain:
                 else "awaiting_review",
                 "approver": self._config.approver_identity,
                 "recovery_target_usd": round(financials.agentic_recovery_usd, 2),
+                "teams_card_generated": True,
+                "teams_card_posted": card_posted,
             },
             tools=("teams.adaptive_card",),
             hitl=hitl_status,

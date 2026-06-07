@@ -27,7 +27,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
 from zero_day_warranty import __version__
-from zero_day_warranty.chain import WarrantyRootCauseChain
+from zero_day_warranty.chain import ChainConfig, WarrantyRootCauseChain
 from zero_day_warranty.synthetic import generate
 
 ROLES = ("orchestrator", "mcp-warranty", "mcp-ledger")
@@ -67,8 +67,15 @@ def route(role: str, path: str) -> tuple[int, dict[str, Any]]:
     if path in ("/health", "/", "/healthz"):
         return 200, {**base, "status": "ok", "config": _env_config()}
 
+    if role == "orchestrator" and path == "/hitl-card":
+        cfg = ChainConfig(teams_webhook_url=os.getenv("TEAMS_WEBHOOK_URL"))
+        result = WarrantyRootCauseChain(generate().medallion, cfg).run()
+        out = result.evidence_package.get("hitl_card")
+        return 200, {**base, "card": out}
+
     if role == "orchestrator" and path == "/run":
-        result = WarrantyRootCauseChain(generate().medallion).run()
+        cfg = ChainConfig(teams_webhook_url=os.getenv("TEAMS_WEBHOOK_URL"))
+        result = WarrantyRootCauseChain(generate().medallion, cfg).run()
         return 200, {
             **base,
             "trace_id": result.trace_id,

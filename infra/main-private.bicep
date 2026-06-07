@@ -31,6 +31,10 @@ param imageTag string = '0.1.0'
 @secure()
 param auditSigningKey string = base64(newGuid())
 
+@description('Teams Incoming-Webhook URL for the HITL Adaptive Card (optional).')
+@secure()
+param teamsWebhookUrl string = ''
+
 @description('Deploy the Container Apps. Phase 1: false (before images exist). Phase 2: true (after import).')
 param deployApps bool = true
 
@@ -67,6 +71,7 @@ module project 'modules/project-private.bicep' = {
     pgAdminPassword: pgAdminPassword
     imageTag: imageTag
     auditSigningKey: auditSigningKey
+    teamsWebhookUrl: teamsWebhookUrl
     deployApps: deployApps
     appsSubnetId: network.outputs.appsSubnetId
     peSubnetId: network.outputs.peSubnetId

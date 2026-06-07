@@ -62,6 +62,10 @@ param imageTag string = '0.1.0'
 @secure()
 param auditSigningKey string = base64(newGuid())
 
+@description('Teams Incoming-Webhook URL for the HITL Adaptive Card (optional).')
+@secure()
+param teamsWebhookUrl string = ''
+
 // Deterministic 6-char suffix for globally-unique names (ACR, AOAI, Postgres).
 var suffix = take(uniqueString(subscription().subscriptionId, resourceGroupName), 6)
 
@@ -90,6 +94,7 @@ module project 'modules/project.bicep' = {
     pgAdminPassword: pgAdminPassword
     imageTag: imageTag
     auditSigningKey: auditSigningKey
+    teamsWebhookUrl: teamsWebhookUrl
   }
 }
 

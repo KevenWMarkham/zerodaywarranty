@@ -21,6 +21,10 @@ param imageTag string
 @secure()
 param auditSigningKey string
 
+@description('Teams Incoming-Webhook URL for the HITL Adaptive Card (optional; empty = card generated but not delivered).')
+@secure()
+param teamsWebhookUrl string = ''
+
 @description('Deploy the Container Apps. Set false for phase 1 (before images exist), true after import.')
 param deployApps bool = true
 
@@ -461,6 +465,10 @@ resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [
               {
                 name: 'AUDIT_LEDGER_SIGNING_KEY'
                 secretRef: 'audit-signing-key'
+              }
+              {
+                name: 'TEAMS_WEBHOOK_URL'
+                value: teamsWebhookUrl
               }
             ]
             probes: [

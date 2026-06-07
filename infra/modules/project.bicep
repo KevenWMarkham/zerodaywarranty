@@ -22,6 +22,10 @@ param imageTag string
 @secure()
 param auditSigningKey string
 
+@description('Teams Incoming-Webhook URL for the HITL Adaptive Card (optional; empty = card generated but not delivered).')
+@secure()
+param teamsWebhookUrl string = ''
+
 // Built-in role definition IDs
 var kvSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User
 var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'       // AcrPull
@@ -358,6 +362,10 @@ resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [for app in ap
             {
               name: 'AUDIT_LEDGER_SIGNING_KEY'
               secretRef: 'audit-signing-key'
+            }
+            {
+              name: 'TEAMS_WEBHOOK_URL'
+              value: teamsWebhookUrl
             }
           ]
           probes: [

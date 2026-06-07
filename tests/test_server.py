@@ -52,3 +52,10 @@ def test_unknown_path_is_404() -> None:
 def test_role_isolation_run_only_on_orchestrator() -> None:
     # /run is not a route on the MCP roles
     assert route("mcp-warranty", "/run")[0] == 404
+
+
+def test_orchestrator_hitl_card() -> None:
+    status, body = route("orchestrator", "/hitl-card")
+    assert status == 200
+    assert body["card"]["type"] == "AdaptiveCard"
+    assert body["role"] == "orchestrator"

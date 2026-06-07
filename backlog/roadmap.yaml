@@ -124,11 +124,11 @@ sprints:
   - id: S8
     name: End-to-end validation
     phase: P3
-    status: in_progress
+    status: done
     goal: Prove the deployed chain works and the audit chain verifies.
     stories:
       - {id: S8-1, title: Smoke test the deployed orchestrator, status: done, acceptance: "24 rows, chain VERIFIED"}
-      - {id: S8-2, title: HITL Adaptive Card to Teams, status: todo, acceptance: card delivered + decision sealed}
+      - {id: S8-2, title: HITL Adaptive Card to Teams, status: done, acceptance: card delivered + decision sealed}
     deployments:
       - {id: D-e2e,  component: End-to-end run (signal -> evidence -> HITL -> audit), built: true, deployed: true, tested: true}
 
