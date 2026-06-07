@@ -4,7 +4,13 @@ from __future__ import annotations
 
 import pytest
 
-from zero_day_warranty.server import PORTAL_PATHS, ROLES, html_route, route
+from zero_day_warranty.server import (
+    PORTAL_PATHS,
+    ROLES,
+    html_route,
+    route,
+    static_asset,
+)
 
 
 @pytest.mark.parametrize("role", ROLES)
@@ -98,3 +104,20 @@ def test_design_serving_rejects_traversal_and_non_html() -> None:
     assert html_route("orchestrator", "/etc/passwd") is None
     assert html_route("orchestrator", "/nope.html") is None  # not in the pack
     assert html_route("mcp-warranty", "/ZeroDayWarranty_Persona_Portals.html") is None
+
+
+def test_serves_vendored_threejs_as_javascript() -> None:
+    # the 3D page's import map points here; it must be served (from Azure, no CDN)
+    result = static_asset("orchestrator", "/vendor/three@0.160.0/build/three.module.js")
+    assert result is not None
+    status, payload, ctype = result
+    assert status == 200
+    assert ctype.startswith("text/javascript")
+    assert len(payload) > 100_000  # the real three.js module
+
+
+def test_static_asset_is_safe_and_orchestrator_only() -> None:
+    assert static_asset("orchestrator", "/../pyproject.toml") is None
+    assert static_asset("orchestrator", "/vendor/../../pyproject.toml") is None
+    assert static_asset("orchestrator", "/vendor/nope.js") is None
+    assert static_asset("mcp-warranty", "/vendor/three@0.160.0/build/three.module.js") is None

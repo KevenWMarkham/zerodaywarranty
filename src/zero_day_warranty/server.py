@@ -101,6 +101,44 @@ def _serve_design(name: str) -> str | None:
     return f.read_text(encoding="utf-8") if f.is_file() else None
 
 
+#: Content types for the static assets served from the design pack (e.g. the
+#: vendored three.js modules, so the 3D demo needs no external CDN).
+_STATIC_TYPES = {
+    ".js": "text/javascript; charset=utf-8",
+    ".mjs": "text/javascript; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".json": "application/json",
+    ".map": "application/json",
+    ".svg": "image/svg+xml",
+    ".png": "image/png",
+    ".woff2": "font/woff2",
+}
+
+
+def _safe_under(base: Path, rel: str) -> Path | None:
+    """Resolve ``rel`` under ``base``, refusing empties, ``..``, or escapes."""
+    if not rel or any(part in ("", "..") for part in rel.split("/")):
+        return None
+    base_r = base.resolve()
+    p = (base_r / rel).resolve()
+    if p != base_r and base_r not in p.parents:
+        return None
+    return p if p.is_file() else None
+
+
+def static_asset(role: str, path: str) -> tuple[int, bytes, str] | None:
+    """Serve a static design-pack asset (vendored JS, css, …) as bytes, or ``None``."""
+    if role != "orchestrator":
+        return None
+    ddir = _design_dir()
+    if ddir is None:
+        return None
+    p = _safe_under(ddir, path.lstrip("/"))
+    if p is None:
+        return None
+    return 200, p.read_bytes(), _STATIC_TYPES.get(p.suffix.lower(), "application/octet-stream")
+
+
 def html_route(role: str, path: str) -> tuple[int, str] | None:
     """HTML router — returns ``(status, html)`` for portal paths, else ``None``.
 
@@ -193,6 +231,10 @@ class _Handler(BaseHTTPRequestHandler):
             html = html_route(self.role, path)
             if html is not None:
                 self._write(html[0], html[1].encode("utf-8"), "text/html; charset=utf-8")
+                return
+            asset = static_asset(self.role, path)
+            if asset is not None:
+                self._write(asset[0], asset[1], asset[2])
                 return
             status, body = route(self.role, path)
         except Exception as exc:  # return any error as JSON, keep serving

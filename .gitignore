@@ -24,3 +24,8 @@ htmlcov/
 
 # Node (build tooling, if any)
 node_modules/
+
+# Vendored three.js for the offline/Azure-served 3D demo — keep its build/ dir
+# (it would otherwise be caught by the build/ rule above).
+!docs/design/vendor/**/build/
+!docs/design/vendor/**/build/**

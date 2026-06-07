@@ -6,6 +6,17 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **Fully Azure-served demo (no CDN)** — three.js + its add-ons are now vendored
+  into `docs/design/vendor/three@0.160.0/` and the 3D page's import map points at
+  those local paths, so nothing is fetched from a public CDN at view time. The
+  orchestrator serves the static design pack and the vendored JS:
+  `static_asset` streams `*.js`/`*.css`/… from the design dir with correct MIME
+  types and a strict no-traversal guard; `server.py` tries live pages → static
+  assets → JSON. The design pack (incl. `vendor/`) is baked into the image
+  (`Dockerfile` `COPY docs/design`, `ZDW_DESIGN_DIR`). Result: `/portal`,
+  `/process-3d`, every cross-linked design page, and three.js itself are all
+  served from the Azure Container App. Tests cover vendored-JS serving + traversal
+  rejection.
 - **3D process fly-through (three.js)** — `process3d.py` lays out the 24-step
   chain as a swim-lane grid in 3D (lanes as parallel rails, phases as frosted-
   glass gates, governance as the reflective audit floor, steps as beveled nodes)

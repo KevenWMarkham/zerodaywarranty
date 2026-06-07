@@ -299,8 +299,8 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
 
 <script type="importmap">
 { "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@__THREE_VERSION__/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@__THREE_VERSION__/examples/jsm/"
+  "three": "vendor/three@__THREE_VERSION__/build/three.module.js",
+  "three/addons/": "vendor/three@__THREE_VERSION__/examples/jsm/"
 }}
 </script>
 
