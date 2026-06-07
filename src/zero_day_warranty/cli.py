@@ -22,6 +22,7 @@ from zero_day_warranty.calculations import (
     manual_rca_baseline,
 )
 from zero_day_warranty.chain import STEP_CATALOG, ChainConfig, WarrantyRootCauseChain
+from zero_day_warranty.consoles import render_agent_console_html, render_audit_ledger_html
 from zero_day_warranty.lanes import render_swimlane_views_html, render_swimlane_views_md
 from zero_day_warranty.manifest import load_agent, load_scenario
 from zero_day_warranty.process3d import render_process_3d_html
@@ -76,6 +77,7 @@ Commands
   zdw scenarios   search the scenario library (--sync registers repo scenarios)
   zdw lanes       render the per-swim-lane views (--write regenerates the design pack)
   zdw process3d   render the 3D process fly-through (three.js; --write regenerates)
+  zdw console     render the agent console + audit ledger (--write regenerates)
   zdw --help      argparse help
 
 Design pack: docs/design/  ·  Service: service/AXLE-WARRANTY-01/  ·  Backlog: backlog/roadmap.yaml
@@ -268,6 +270,8 @@ def cmd_scenarios(args: argparse.Namespace) -> int:
 HTML_LANE_VIEWS = REPO_ROOT / "docs" / "design" / "ZeroDayWarranty_SwimLane_Views.html"
 MD_LANE_VIEWS = REPO_ROOT / "docs" / "zero-day-warranty" / "swim-lane-views.md"
 HTML_PROCESS_3D = REPO_ROOT / "docs" / "design" / "ZeroDayWarranty_Process_3D.html"
+HTML_AGENT_CONSOLE = REPO_ROOT / "docs" / "design" / "ZeroDayWarranty_Agent_Console.html"
+HTML_AUDIT_LEDGER = REPO_ROOT / "docs" / "design" / "ZeroDayWarranty_Audit_Ledger.html"
 
 
 def cmd_lanes(args: argparse.Namespace) -> int:
@@ -293,6 +297,19 @@ def cmd_process3d(args: argparse.Namespace) -> int:
         print(f"[wrote] {HTML_PROCESS_3D.relative_to(REPO_ROOT)}")
         return 0
     print(render_process_3d_html(result))
+    return 0
+
+
+def cmd_console(args: argparse.Namespace) -> int:
+    """Render the agent console + audit ledger from a live chain run."""
+    result = WarrantyRootCauseChain(generate().medallion).run()
+    if args.write:
+        HTML_AGENT_CONSOLE.write_text(render_agent_console_html(result), encoding="utf-8")
+        HTML_AUDIT_LEDGER.write_text(render_audit_ledger_html(result), encoding="utf-8")
+        print(f"[wrote] {HTML_AGENT_CONSOLE.relative_to(REPO_ROOT)}")
+        print(f"[wrote] {HTML_AUDIT_LEDGER.relative_to(REPO_ROOT)}")
+        return 0
+    print(render_agent_console_html(result))
     return 0
 
 
@@ -352,6 +369,12 @@ def main(argv: list[str] | None = None) -> int:
         "--write", action="store_true", help="regenerate the design-pack HTML instead of printing"
     )
     p_3d.set_defaults(func=cmd_process3d)
+
+    p_con = sub.add_parser("console", help="render the agent console + audit ledger")
+    p_con.add_argument(
+        "--write", action="store_true", help="regenerate the design-pack HTML instead of printing"
+    )
+    p_con.set_defaults(func=cmd_console)
 
     args = parser.parse_args(argv)
     if not getattr(args, "command", None):

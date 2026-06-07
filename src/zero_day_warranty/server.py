@@ -68,6 +68,9 @@ def _env_config() -> dict[str, bool]:
 PORTAL_PATHS = ("/portal", "/lanes", "/swim-lanes", "/swimlanes")
 #: Orchestrator paths that return the 3D process fly-through (text/html).
 PROCESS_3D_PATHS = ("/process-3d", "/3d")
+#: Orchestrator paths for the agent console and the audit ledger (text/html).
+AGENT_CONSOLE_PATHS = ("/agents", "/console")
+AUDIT_LEDGER_PATHS = ("/ledger", "/audit")
 #: Safe design-pack filename (no slashes / traversal) — e.g. ``Foo_Bar.html``.
 _DESIGN_NAME = re.compile(r"^[A-Za-z0-9_-]+\.html$")
 
@@ -155,6 +158,14 @@ def html_route(role: str, path: str) -> tuple[int, str] | None:
         from zero_day_warranty.process3d import render_process_3d_html
 
         return 200, render_process_3d_html()
+    if role == "orchestrator" and path in AGENT_CONSOLE_PATHS:
+        from zero_day_warranty.consoles import render_agent_console_html
+
+        return 200, render_agent_console_html()
+    if role == "orchestrator" and path in AUDIT_LEDGER_PATHS:
+        from zero_day_warranty.consoles import render_audit_ledger_html
+
+        return 200, render_audit_ledger_html()
     if role == "orchestrator" and path.endswith(".html"):
         page = _serve_design(path.lstrip("/"))
         if page is not None:
@@ -171,6 +182,8 @@ def route(role: str, path: str) -> tuple[int, dict[str, Any]]:
         if role == "orchestrator":
             body["portal"] = "/portal"
             body["process3d"] = "/process-3d"
+            body["agents"] = "/agents"
+            body["ledger"] = "/ledger"
         return 200, body
 
     if role == "orchestrator" and path == "/hitl-card":

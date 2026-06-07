@@ -401,6 +401,8 @@ _SWIMLANES = "ZeroDayWarranty_Capability_SwimLanes.html"
 _PROCESS_3D = "ZeroDayWarranty_Process_3D.html"
 _ARCHITECTURE = "ZeroDayWarranty_Architecture_Diagrams.html"
 _AZURE_DEPLOY = "ZeroDayWarranty_Azure_Deployment.html"
+_AGENT_CONSOLE = "ZeroDayWarranty_Agent_Console.html"
+_AUDIT_LEDGER = "ZeroDayWarranty_Audit_Ledger.html"
 
 _HEAD = """<!DOCTYPE html>
 <html lang="en">
@@ -659,6 +661,8 @@ def render_swimlane_views_html(result: ChainResult | None = None) -> str:
         "(print shows all).</p>"
         '<div class="btnrow">'
         f'<a class="d3btn" href="{_PROCESS_3D}">▶ Watch the 3D process fly-through</a>'
+        f'<a class="navbtn" href="{_AGENT_CONSOLE}">Agent console ›</a>'
+        f'<a class="navbtn" href="{_AUDIT_LEDGER}">Audit ledger ›</a>'
         f'<a class="navbtn" href="{_ARCHITECTURE}">Architecture ›</a>'
         f'<a class="navbtn" href="{_AZURE_DEPLOY}">Deployment to Azure ›</a>'
         "</div>"

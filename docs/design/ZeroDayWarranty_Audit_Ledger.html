@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero Day Warranty · Audit Ledger</title>
+<link href="https://fonts.googleapis.com/css2?family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{ --navy:#1A2339; --navy2:#2A3349; --ms:#0078D4; --msd:#005A9E;
+    --slate:#94A3B8; --line:#E5E7EB; --bg:#0b1020; --card:#121a30; --ok:#34d399; }
+  *{box-sizing:border-box;} html,body{margin:0;}
+  body{background:var(--bg);color:#e5e7eb;font-family:Aptos,system-ui,sans-serif;font-size:14px;line-height:1.5;}
+  a{color:#7cc4ff;}
+  .classification{background:#D97706;color:#fff;padding:5px 16px;text-align:center;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;}
+  header.cover{padding:22px 28px;background:linear-gradient(135deg,var(--navy),var(--navy2));border-bottom:5px solid var(--ms);}
+  header .eyebrow{font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7cc4ff;font-weight:700;}
+  header h1{font-size:26px;margin:6px 0 2px;color:#fff;}
+  header .sub{color:#cbd5e1;font-size:14px;margin-bottom:12px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-family:"Cascadia Mono",monospace;font-size:11px;background:#16203a;border:1px solid var(--navy2);border-radius:999px;padding:4px 10px;color:#cbd5e1;}
+  .chip b{color:#fff;} .chip.ok b{color:var(--ok);}
+  main{max-width:1280px;margin:0 auto;padding:20px;}
+  .links{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+  .links a{font-weight:700;font-size:13px;text-decoration:none;padding:8px 14px;border-radius:8px;border:1px solid var(--ms);color:#7cc4ff;background:#0e1730;}
+  .links a:hover{background:#13203f;}
+
+  .verify{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--navy2);border-radius:10px;padding:12px 16px;margin:0 0 14px;}
+  .verify .dot{width:12px;height:12px;border-radius:50%;}
+  .verify.ok .dot{background:var(--ok);box-shadow:0 0 10px var(--ok);} .verify.bad .dot{background:#f87171;}
+  .verify .big{font-weight:700;font-size:16px;color:#fff;} .verify .note{color:var(--slate);font-size:12px;}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--navy2);border-radius:10px;overflow:hidden;}
+  thead th{background:#0e1730;color:#cbd5e1;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:9px 10px;border-bottom:1px solid var(--navy2);}
+  tbody td{padding:8px 10px;border-bottom:1px solid #18223c;vertical-align:top;font-size:12.5px;}
+  tr.row{cursor:pointer;} tr.row:hover{background:#16203a;}
+  .mono{font-family:"Cascadia Mono",monospace;font-size:11.5px;}
+  td.prev{color:#7c8db0;} td.sig{color:#7cc4ff;}
+  .hitl{font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:#1e2b4d;color:var(--slate);}
+  .hitl.approved{background:#0c3a2a;color:var(--ok);} .hitl.pending{background:#3a2f0c;color:#fbbf24;}
+  tr.detail{display:none;} tr.detail.open{display:table-row;}
+  tr.detail pre{margin:0;background:#070b16;border:1px solid var(--navy2);border-radius:8px;padding:12px;color:#bcd; font-family:"Cascadia Mono",monospace;font-size:11px;overflow:auto;max-height:340px;}
+  .hint{color:var(--slate);font-size:12px;margin:10px 2px;}
+</style></head><body>
+<div class="classification">Reference · Generated from a live chain run · Synthetic figures</div>
+<header class="cover">
+  <div class="eyebrow">Governance · Audit Ledger</div>
+  <h1>Zero Day Warranty — audit ledger</h1>
+  <div class="sub">Every agent decision sealed as a 14-field, hash-chained, signed row.</div>
+  <div class="chips">
+    <span class="chip">trace <b>zdw-trace-0001</b></span>
+    <span class="chip">suspect lot <b>LOT-7743</b></span>
+    <span class="chip">model <b>gpt-4o-2024-11-20</b></span>
+    <span class="chip">rows <b>24</b></span>
+    <span class="chip ok">chain <b>VERIFIED</b></span>
+    <span class="chip">algo <b>HMAC-SHA256</b></span><span class="chip">fields <b>14</b></span>
+  </div>
+</header>
+<main>
+<div class="links"><a href="ZeroDayWarranty_Agent_Console.html">Agent console</a><a href="ZeroDayWarranty_Audit_Ledger.html">Audit ledger</a><a href="ZeroDayWarranty_SwimLane_Views.html">Swim lane views</a><a href="ZeroDayWarranty_Process_3D.html">3D process</a></div>
+<div class="verify ok"><span class="dot"></span>
+  <div><div class="big">Hash chain VERIFIED</div>
+  <div class="note">HMAC-SHA256 · each row links to the prior row's signature · signing key: Key Vault (prod) · dev key (this reference run). Tamper any row and verification fails from that row forward.</div></div>
+</div>
+<p class="hint">Click any row to expand its full sealed 14-field record (the exact bytes APEX captures).</p>
+<table>
+  <thead><tr><th>Step</th><th>Decision</th><th>Agent</th><th>Tools</th><th>Conf</th><th>HITL</th><th>prev_link</th><th>signature</th></tr></thead>
+  <tbody>
+<tr class="row" data-i="0">
+  <td class="mono">1</td>
+  <td>Receive warranty claim cluster signal</td>
+  <td class="mono">apex.axle.agents.warranty-detect</td>
+  <td class="mono">—</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">000000000000…</td>
+  <td class="mono sig">483bd42f67c2…</td>
+</tr>
+<tr class="detail" data-i="0"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-01&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-detect&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#detect-signal&quot;,
+  &quot;tools_called&quot;: [],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-01-detect-signal&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 1,
+    &quot;cluster&quot;: 1,
+    &quot;title&quot;: &quot;Receive warranty claim cluster signal&quot;,
+    &quot;signal&quot;: &quot;warranty_cluster_threshold_breach&quot;,
+    &quot;total_claims&quot;: 117
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.202485+00:00&quot;,
+  &quot;prev_link&quot;: &quot;0000000000000000000000000000000000000000000000000000000000000000&quot;,
+  &quot;signature&quot;: &quot;483bd42f67c2adf0128cbe94be13973b7b72554fc1d957d9bfd80faf3baa40ab&quot;
+}</pre></td></tr>
+<tr class="row" data-i="1">
+  <td class="mono">2</td>
+  <td>Scope the claim cohort by part, failure mode, severity</td>
+  <td class="mono">apex.axle.agents.warranty-detect</td>
+  <td class="mono">—</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">483bd42f67c2…</td>
+  <td class="mono sig">c0fa757069ea…</td>
+</tr>
+<tr class="detail" data-i="1"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-02&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-detect&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#scope-cohort&quot;,
+  &quot;tools_called&quot;: [],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-02-scope-cohort&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 2,
+    &quot;cluster&quot;: 1,
+    &quot;title&quot;: &quot;Scope the claim cohort by part, failure mode, severity&quot;,
+    &quot;part_number&quot;: &quot;PN-48820-BRK&quot;,
+    &quot;failure_modes&quot;: [
+      &quot;brake_actuator_premature_wear&quot;
+    ]
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.202758+00:00&quot;,
+  &quot;prev_link&quot;: &quot;483bd42f67c2adf0128cbe94be13973b7b72554fc1d957d9bfd80faf3baa40ab&quot;,
+  &quot;signature&quot;: &quot;c0fa757069eada556ecd772510b190e2edf9dc06546767158206dd98b1bf6dc9&quot;
+}</pre></td></tr>
+<tr class="row" data-i="2">
+  <td class="mono">3</td>
+  <td>Pull VIN list for affected cohort</td>
+  <td class="mono">apex.axle.agents.warranty-detect</td>
+  <td class="mono">axle_warranty.pull_vins</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">c0fa757069ea…</td>
+  <td class="mono sig">a495de9929c7…</td>
+</tr>
+<tr class="detail" data-i="2"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-03&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-detect&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#pull-vins&quot;,
+  &quot;tools_called&quot;: [
+    &quot;axle_warranty.pull_vins&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-03-pull-vins&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 3,
+    &quot;cluster&quot;: 1,
+    &quot;title&quot;: &quot;Pull VIN list for affected cohort&quot;,
+    &quot;cohort_size&quot;: 117
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.202926+00:00&quot;,
+  &quot;prev_link&quot;: &quot;c0fa757069eada556ecd772510b190e2edf9dc06546767158206dd98b1bf6dc9&quot;,
+  &quot;signature&quot;: &quot;a495de9929c76867ed895d7c7128c221fc99604a0b8a4dcaabe8a6df99e2e48d&quot;
+}</pre></td></tr>
+<tr class="row" data-i="3">
+  <td class="mono">4</td>
+  <td>Join VIN list to build records</td>
+  <td class="mono">apex.axle.agents.warranty-context</td>
+  <td class="mono">fabric.gold.per_vin_view</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">a495de9929c7…</td>
+  <td class="mono sig">b98da1cb7a0f…</td>
+</tr>
+<tr class="detail" data-i="3"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-04&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-context&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#join-build&quot;,
+  &quot;tools_called&quot;: [
+    &quot;fabric.gold.per_vin_view&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-04-join-build&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 4,
+    &quot;cluster&quot;: 2,
+    &quot;title&quot;: &quot;Join VIN list to build records&quot;,
+    &quot;joined_vins&quot;: 117
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.203004+00:00&quot;,
+  &quot;prev_link&quot;: &quot;a495de9929c76867ed895d7c7128c221fc99604a0b8a4dcaabe8a6df99e2e48d&quot;,
+  &quot;signature&quot;: &quot;b98da1cb7a0f6aeab0edd798021725e21ba490c6236a71bc6be3063773d7ec03&quot;
+}</pre></td></tr>
+<tr class="row" data-i="4">
+  <td class="mono">5</td>
+  <td>Extract build-week distribution of affected VINs</td>
+  <td class="mono">apex.axle.agents.warranty-context</td>
+  <td class="mono">—</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">b98da1cb7a0f…</td>
+  <td class="mono sig">bab01db9b56c…</td>
+</tr>
+<tr class="detail" data-i="4"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-05&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-context&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#build-week-dist&quot;,
+  &quot;tools_called&quot;: [],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-05-build-week-dist&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 5,
+    &quot;cluster&quot;: 2,
+    &quot;title&quot;: &quot;Extract build-week distribution of affected VINs&quot;,
+    &quot;build_week_claim_counts&quot;: {
+      &quot;11&quot;: 12,
+      &quot;12&quot;: 26,
+      &quot;13&quot;: 29,
+      &quot;14&quot;: 20,
+      &quot;15&quot;: 16,
+      &quot;16&quot;: 14
+    }
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.204139+00:00&quot;,
+  &quot;prev_link&quot;: &quot;b98da1cb7a0f6aeab0edd798021725e21ba490c6236a71bc6be3063773d7ec03&quot;,
+  &quot;signature&quot;: &quot;bab01db9b56cc1a14924cbb351449789a4fcf55a5e8627ff34129d1388ffc762&quot;
+}</pre></td></tr>
+<tr class="row" data-i="5">
+  <td class="mono">6</td>
+  <td>Identify over-represented build weeks vs. baseline</td>
+  <td class="mono">apex.axle.agents.warranty-context</td>
+  <td class="mono">—</td>
+  <td class="mono">90%</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">bab01db9b56c…</td>
+  <td class="mono sig">68b7ecc07ed5…</td>
+</tr>
+<tr class="detail" data-i="5"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-06&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-context&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#hot-weeks&quot;,
+  &quot;tools_called&quot;: [],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-06-hot-weeks&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 6,
+    &quot;cluster&quot;: 2,
+    &quot;title&quot;: &quot;Identify over-represented build weeks vs. baseline&quot;,
+    &quot;hot_weeks&quot;: [
+      12,
+      13
+    ]
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: 0.9,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.204261+00:00&quot;,
+  &quot;prev_link&quot;: &quot;bab01db9b56cc1a14924cbb351449789a4fcf55a5e8627ff34129d1388ffc762&quot;,
+  &quot;signature&quot;: &quot;68b7ecc07ed539164b581599381f2c5eff0c48cc7d727a7a3064a240069f2de9&quot;
+}</pre></td></tr>
+<tr class="row" data-i="6">
+  <td class="mono">7</td>
+  <td>Extract station / tool / shift distribution</td>
+  <td class="mono">apex.axle.agents.warranty-context</td>
+  <td class="mono">—</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">68b7ecc07ed5…</td>
+  <td class="mono sig">f94b385c7583…</td>
+</tr>
+<tr class="detail" data-i="6"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-07&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-context&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#station-tool-dist&quot;,
+  &quot;tools_called&quot;: [],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-07-station-tool-dist&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 7,
+    &quot;cluster&quot;: 2,
+    &quot;title&quot;: &quot;Extract station / tool / shift distribution&quot;,
+    &quot;station_distribution&quot;: {
+      &quot;STATION-07&quot;: 36,
+      &quot;STATION-06&quot;: 2,
+      &quot;STATION-09&quot;: 2,
+      &quot;STATION-05&quot;: 3,
+      &quot;STATION-08&quot;: 2,
+      &quot;STATION-10&quot;: 4,
+      &quot;STATION-01&quot;: 2,
+      &quot;STATION-02&quot;: 3,
+      &quot;STATION-04&quot;: 1
+    },
+    &quot;tool_distribution&quot;: {
+      &quot;TOOL-TQ-07&quot;: 36,
+      &quot;TOOL-TQ-06&quot;: 2,
+      &quot;TOOL-TQ-09&quot;: 2,
+      &quot;TOOL-TQ-05&quot;: 3,
+      &quot;TOOL-TQ-08&quot;: 2,
+      &quot;TOOL-TQ-10&quot;: 4,
+      &quot;TOOL-TQ-01&quot;: 2,
+      &quot;TOOL-TQ-02&quot;: 3,
+      &quot;TOOL-TQ-04&quot;: 1
+    }
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.204411+00:00&quot;,
+  &quot;prev_link&quot;: &quot;68b7ecc07ed539164b581599381f2c5eff0c48cc7d727a7a3064a240069f2de9&quot;,
+  &quot;signature&quot;: &quot;f94b385c75834d6a97bf142c0fd346efd3c34492b5f8d1c447ed2098fffd951f&quot;
+}</pre></td></tr>
+<tr class="row" data-i="7">
+  <td class="mono">8</td>
+  <td>Statistical test: cohort × station × tool × shift</td>
+  <td class="mono">apex.axle.agents.warranty-stattest</td>
+  <td class="mono">rapids.cuml.proportion_test</td>
+  <td class="mono">99%</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">f94b385c7583…</td>
+  <td class="mono sig">5e3f600db681…</td>
+</tr>
+<tr class="detail" data-i="7"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-08&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-stattest&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#stat-interactions&quot;,
+  &quot;tools_called&quot;: [
+    &quot;rapids.cuml.proportion_test&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-08-stat-interactions&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 8,
+    &quot;cluster&quot;: 3,
+    &quot;title&quot;: &quot;Statistical test: cohort \u00d7 station \u00d7 tool \u00d7 shift&quot;,
+    &quot;hot_station&quot;: &quot;STATION-07&quot;,
+    &quot;hot_tool&quot;: &quot;TOOL-TQ-07&quot;,
+    &quot;station_rate&quot;: 0.0619,
+    &quot;rest_rate&quot;: 0.0307,
+    &quot;p_value&quot;: 0.010006
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: 0.9899937914575335,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.206019+00:00&quot;,
+  &quot;prev_link&quot;: &quot;f94b385c75834d6a97bf142c0fd346efd3c34492b5f8d1c447ed2098fffd951f&quot;,
+  &quot;signature&quot;: &quot;5e3f600db68165a8da5768be50da56f2989605d14c7f2cdf4baeb9e7a06d48e3&quot;
+}</pre></td></tr>
+<tr class="row" data-i="8">
+  <td class="mono">9</td>
+  <td>Join to quality event records</td>
+  <td class="mono">apex.axle.agents.warranty-quality</td>
+  <td class="mono">fabric.gold.quality_events</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">5e3f600db681…</td>
+  <td class="mono sig">9e356c4091d7…</td>
+</tr>
+<tr class="detail" data-i="8"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-09&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-quality&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#join-quality&quot;,
+  &quot;tools_called&quot;: [
+    &quot;fabric.gold.quality_events&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-09-join-quality&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 9,
+    &quot;cluster&quot;: 4,
+    &quot;title&quot;: &quot;Join to quality event records&quot;,
+    &quot;quality_events_joined&quot;: 1200
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.206225+00:00&quot;,
+  &quot;prev_link&quot;: &quot;5e3f600db68165a8da5768be50da56f2989605d14c7f2cdf4baeb9e7a06d48e3&quot;,
+  &quot;signature&quot;: &quot;9e356c4091d70e14492234cb357c508e0a0a5ff87a892b611524c7311a110c69&quot;
+}</pre></td></tr>
+<tr class="row" data-i="9">
+  <td class="mono">10</td>
+  <td>Identify SPC anomalies preceding the hot build weeks</td>
+  <td class="mono">apex.axle.agents.warranty-quality</td>
+  <td class="mono">triton.spc_anomaly</td>
+  <td class="mono">85%</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">9e356c4091d7…</td>
+  <td class="mono sig">55beabe55370…</td>
+</tr>
+<tr class="detail" data-i="9"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-10&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-quality&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#spc-anomalies&quot;,
+  &quot;tools_called&quot;: [
+    &quot;triton.spc_anomaly&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-10-spc-anomalies&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 10,
+    &quot;cluster&quot;: 4,
+    &quot;title&quot;: &quot;Identify SPC anomalies preceding the hot build weeks&quot;,
+    &quot;spc_anomalies_at_hot_station&quot;: 304
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: 0.85,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.206781+00:00&quot;,
+  &quot;prev_link&quot;: &quot;9e356c4091d70e14492234cb357c508e0a0a5ff87a892b611524c7311a110c69&quot;,
+  &quot;signature&quot;: &quot;55beabe553701be4a3bbd764ff6658daaccc16420b9839f4785ece501e01fb0a&quot;
+}</pre></td></tr>
+<tr class="row" data-i="10">
+  <td class="mono">11</td>
+  <td>Join to assembly telemetry</td>
+  <td class="mono">apex.axle.agents.warranty-quality</td>
+  <td class="mono">fabric.gold.telemetry</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">55beabe55370…</td>
+  <td class="mono sig">7e1c79ad1ef8…</td>
+</tr>
+<tr class="detail" data-i="10"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-11&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-quality&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#join-telemetry&quot;,
+  &quot;tools_called&quot;: [
+    &quot;fabric.gold.telemetry&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-11-join-telemetry&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 11,
+    &quot;cluster&quot;: 4,
+    &quot;title&quot;: &quot;Join to assembly telemetry&quot;,
+    &quot;telemetry_traces_joined&quot;: 1200
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.207017+00:00&quot;,
+  &quot;prev_link&quot;: &quot;55beabe553701be4a3bbd764ff6658daaccc16420b9839f4785ece501e01fb0a&quot;,
+  &quot;signature&quot;: &quot;7e1c79ad1ef88e1dc9064bb0aa75683d33704f3fa10f93ae13a116e5de56a9b6&quot;
+}</pre></td></tr>
+<tr class="row" data-i="11">
+  <td class="mono">12</td>
+  <td>Correlate tool calibration drift with hot-station defects</td>
+  <td class="mono">apex.axle.agents.warranty-quality</td>
+  <td class="mono">triton.drift_correlation</td>
+  <td class="mono">90%</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">7e1c79ad1ef8…</td>
+  <td class="mono sig">aa735d89d144…</td>
+</tr>
+<tr class="detail" data-i="11"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-12&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-quality&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#tool-drift&quot;,
+  &quot;tools_called&quot;: [
+    &quot;triton.drift_correlation&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-12-tool-drift&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 12,
+    &quot;cluster&quot;: 4,
+    &quot;title&quot;: &quot;Correlate tool calibration drift with hot-station defects&quot;,
+    &quot;hot_tool&quot;: &quot;TOOL-TQ-07&quot;,
+    &quot;avg_calibration_drift_pct&quot;: 8.93
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: 0.9,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.207520+00:00&quot;,
+  &quot;prev_link&quot;: &quot;7e1c79ad1ef88e1dc9064bb0aa75683d33704f3fa10f93ae13a116e5de56a9b6&quot;,
+  &quot;signature&quot;: &quot;aa735d89d1446737be78792894e4ea507c5c7df7c932a4fa1d13a713b7faa351&quot;
+}</pre></td></tr>
+<tr class="row" data-i="12">
+  <td class="mono">13</td>
+  <td>Extract supplier lot codes in hot VIN population</td>
+  <td class="mono">apex.axle.agents.warranty-supplier</td>
+  <td class="mono">axle_warranty.get_lot_trace</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">aa735d89d144…</td>
+  <td class="mono sig">7450363287c1…</td>
+</tr>
+<tr class="detail" data-i="12"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-13&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-supplier&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#lot-codes&quot;,
+  &quot;tools_called&quot;: [
+    &quot;axle_warranty.get_lot_trace&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-13-lot-codes&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 13,
+    &quot;cluster&quot;: 5,
+    &quot;title&quot;: &quot;Extract supplier lot codes in hot VIN population&quot;,
+    &quot;lot_codes_in_hot_population&quot;: {
+      &quot;LOT-7743&quot;: 32,
+      &quot;LOT-1386&quot;: 1,
+      &quot;LOT-1002&quot;: 1,
+      &quot;LOT-1303&quot;: 1,
+      &quot;LOT-1672&quot;: 1,
+      &quot;LOT-1624&quot;: 1,
+      &quot;LOT-1212&quot;: 1,
+      &quot;LOT-1957&quot;: 1,
+      &quot;LOT-1411&quot;: 2,
+      &quot;LOT-1309&quot;: 1,
+      &quot;LOT-1252&quot;: 1,
+      &quot;LOT-1332&quot;: 1,
+      &quot;LOT-1233&quot;: 1,
+      &quot;LOT-1390&quot;: 1,
+      &quot;LOT-1220&quot;: 1,
+      &quot;LOT-1757&quot;: 1,
+      &quot;LOT-1033&quot;: 1,
+      &quot;LOT-1690&quot;: 1,
+      &quot;LOT-1547&quot;: 1,
+      &quot;LOT-1284&quot;: 1,
+      &quot;LOT-1763&quot;: 1,
+      &quot;LOT-1069&quot;: 1,
+      &quot;LOT-1770&quot;: 1
+    }
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.207636+00:00&quot;,
+  &quot;prev_link&quot;: &quot;aa735d89d1446737be78792894e4ea507c5c7df7c932a4fa1d13a713b7faa351&quot;,
+  &quot;signature&quot;: &quot;7450363287c1ebb398b202148b617e3da07710630a5f8549c9098467413ed2a9&quot;
+}</pre></td></tr>
+<tr class="row" data-i="13">
+  <td class="mono">14</td>
+  <td>Compute supplier-lot warranty rate vs. baseline</td>
+  <td class="mono">apex.axle.agents.warranty-supplier</td>
+  <td class="mono">rapids.cugraph.lot_attribution</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">7450363287c1…</td>
+  <td class="mono sig">317f95a3d69d…</td>
+</tr>
+<tr class="detail" data-i="13"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-14&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-supplier&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#lot-rate&quot;,
+  &quot;tools_called&quot;: [
+    &quot;rapids.cugraph.lot_attribution&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-14-lot-rate&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 14,
+    &quot;cluster&quot;: 5,
+    &quot;title&quot;: &quot;Compute supplier-lot warranty rate vs. baseline&quot;,
+    &quot;suspect_lot&quot;: &quot;LOT-7743&quot;,
+    &quot;lot_warranty_rate&quot;: 0.0615,
+    &quot;baseline_warranty_rate&quot;: 0.0253,
+    &quot;rate_ratio&quot;: 2.43
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.210406+00:00&quot;,
+  &quot;prev_link&quot;: &quot;7450363287c1ebb398b202148b617e3da07710630a5f8549c9098467413ed2a9&quot;,
+  &quot;signature&quot;: &quot;317f95a3d69d0c6c8c10b21c291df92bce770e65adc0eda36bedb35c96032d96&quot;
+}</pre></td></tr>
+<tr class="row" data-i="14">
+  <td class="mono">15</td>
+  <td>Statistical test: supplier-lot attribution significance</td>
+  <td class="mono">apex.axle.agents.warranty-supplier</td>
+  <td class="mono">rapids.cuml.proportion_test</td>
+  <td class="mono">100%</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">317f95a3d69d…</td>
+  <td class="mono sig">f53e13534fb1…</td>
+</tr>
+<tr class="detail" data-i="14"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-15&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-supplier&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#lot-significance&quot;,
+  &quot;tools_called&quot;: [
+    &quot;rapids.cuml.proportion_test&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-15-lot-significance&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 15,
+    &quot;cluster&quot;: 5,
+    &quot;title&quot;: &quot;Statistical test: supplier-lot attribution significance&quot;,
+    &quot;z_score&quot;: 4.891,
+    &quot;p_value&quot;: 1e-06,
+    &quot;significant&quot;: true
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: 0.999998999052101,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.210483+00:00&quot;,
+  &quot;prev_link&quot;: &quot;317f95a3d69d0c6c8c10b21c291df92bce770e65adc0eda36bedb35c96032d96&quot;,
+  &quot;signature&quot;: &quot;f53e13534fb1d53bd2f84c8f4990cd3cd6e3785dabfdc3103667d59322b1b352&quot;
+}</pre></td></tr>
+<tr class="row" data-i="15">
+  <td class="mono">16</td>
+  <td>Rank cohort × station × supplier-lot interactions</td>
+  <td class="mono">apex.axle.agents.warranty-supplier</td>
+  <td class="mono">—</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">f53e13534fb1…</td>
+  <td class="mono sig">a4ba73f1b1af…</td>
+</tr>
+<tr class="detail" data-i="15"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-16&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-supplier&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#rank-interactions&quot;,
+  &quot;tools_called&quot;: [],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-16-rank-interactions&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 16,
+    &quot;cluster&quot;: 5,
+    &quot;title&quot;: &quot;Rank cohort \u00d7 station \u00d7 supplier-lot interactions&quot;,
+    &quot;ranked_interactions&quot;: [
+      {
+        &quot;interaction&quot;: &quot;week\u00d7STATION-07\u00d7LOT-7743&quot;,
+        &quot;rate_ratio&quot;: 2.43
+      }
+    ]
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.210540+00:00&quot;,
+  &quot;prev_link&quot;: &quot;f53e13534fb1d53bd2f84c8f4990cd3cd6e3785dabfdc3103667d59322b1b352&quot;,
+  &quot;signature&quot;: &quot;a4ba73f1b1af4951cedf4d06dc2cc6aba9a72d8324966386f83f7374f0a504a1&quot;
+}</pre></td></tr>
+<tr class="row" data-i="16">
+  <td class="mono">17</td>
+  <td>Generate root-cause hypothesis with confidence intervals</td>
+  <td class="mono">apex.axle.agents.warranty-hypothes…</td>
+  <td class="mono">nim.rca_reasoner, nemo.retriever</td>
+  <td class="mono">99%</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">a4ba73f1b1af…</td>
+  <td class="mono sig">adabcafdcfd1…</td>
+</tr>
+<tr class="detail" data-i="16"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-17&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-hypothesis&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#hypothesis&quot;,
+  &quot;tools_called&quot;: [
+    &quot;nim.rca_reasoner&quot;,
+    &quot;nemo.retriever&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-17-hypothesis&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 17,
+    &quot;cluster&quot;: 6,
+    &quot;title&quot;: &quot;Generate root-cause hypothesis with confidence intervals&quot;,
+    &quot;hypothesis&quot;: &quot;Supplier lot LOT-7743, installed at STATION-07 on TOOL-TQ-07 during build weeks [12, 13], drives a 2.4\u00d7 warranty rate (6.2% vs. 2.5% baseline). Hot-tool calibration drift averaged 8.9% with 304 SPC anomalies at the station.&quot;,
+    &quot;confidence&quot;: 0.99
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: 0.99,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.210609+00:00&quot;,
+  &quot;prev_link&quot;: &quot;a4ba73f1b1af4951cedf4d06dc2cc6aba9a72d8324966386f83f7374f0a504a1&quot;,
+  &quot;signature&quot;: &quot;adabcafdcfd1d9f3388e631f6baa5d67adbc64ff5828d36b3a3247ba82ff31ad&quot;
+}</pre></td></tr>
+<tr class="row" data-i="17">
+  <td class="mono">18</td>
+  <td>Build evidence package: cohort, tests, raw data</td>
+  <td class="mono">apex.axle.agents.warranty-hypothes…</td>
+  <td class="mono">—</td>
+  <td class="mono">99%</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">adabcafdcfd1…</td>
+  <td class="mono sig">b052b5c09dbf…</td>
+</tr>
+<tr class="detail" data-i="17"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-18&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-hypothesis&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#evidence-package&quot;,
+  &quot;tools_called&quot;: [],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-18-evidence-package&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 18,
+    &quot;cluster&quot;: 6,
+    &quot;title&quot;: &quot;Build evidence package: cohort, tests, raw data&quot;,
+    &quot;evidence_package_keys&quot;: [
+      &quot;confidence&quot;,
+      &quot;hot_station&quot;,
+      &quot;hot_tool&quot;,
+      &quot;hot_weeks&quot;,
+      &quot;root_cause_hypothesis&quot;,
+      &quot;statistics&quot;,
+      &quot;supporting&quot;,
+      &quot;suspect_lot&quot;,
+      &quot;trace_id&quot;
+    ]
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: 0.99,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.210680+00:00&quot;,
+  &quot;prev_link&quot;: &quot;adabcafdcfd1d9f3388e631f6baa5d67adbc64ff5828d36b3a3247ba82ff31ad&quot;,
+  &quot;signature&quot;: &quot;b052b5c09dbf9c44f133ec21e63239895f2b0f58c27bc5b7bc62c86b5d5c7261&quot;
+}</pre></td></tr>
+<tr class="row" data-i="18">
+  <td class="mono">19</td>
+  <td>Compute chargeback dollar exposure per supplier lot</td>
+  <td class="mono">apex.axle.agents.warranty-hypothes…</td>
+  <td class="mono">axle_warranty.chargeback_exposure</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">b052b5c09dbf…</td>
+  <td class="mono sig">b7cfdafb7eed…</td>
+</tr>
+<tr class="detail" data-i="18"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-19&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-hypothesis&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#chargeback-exposure&quot;,
+  &quot;tools_called&quot;: [
+    &quot;axle_warranty.chargeback_exposure&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-19-chargeback-exposure&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 19,
+    &quot;cluster&quot;: 6,
+    &quot;title&quot;: &quot;Compute chargeback dollar exposure per supplier lot&quot;,
+    &quot;attributable_usd&quot;: 4212000.0,
+    &quot;agentic_recovery_usd&quot;: 2822040.0,
+    &quot;manual_baseline_usd&quot;: 631800.0
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.210733+00:00&quot;,
+  &quot;prev_link&quot;: &quot;b052b5c09dbf9c44f133ec21e63239895f2b0f58c27bc5b7bc62c86b5d5c7261&quot;,
+  &quot;signature&quot;: &quot;b7cfdafb7eed8e542686ca7597adb4f976cdd32308ca34f8bee5150d12463b34&quot;
+}</pre></td></tr>
+<tr class="row" data-i="19">
+  <td class="mono">20</td>
+  <td>Generate supplier chargeback documentation</td>
+  <td class="mono">apex.axle.agents.warranty-hypothes…</td>
+  <td class="mono">axle_warranty.generate_chargeback_doc</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">b7cfdafb7eed…</td>
+  <td class="mono sig">cf05aa496415…</td>
+</tr>
+<tr class="detail" data-i="19"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-20&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-hypothesis&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#chargeback-docs&quot;,
+  &quot;tools_called&quot;: [
+    &quot;axle_warranty.generate_chargeback_doc&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-20-chargeback-docs&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 20,
+    &quot;cluster&quot;: 6,
+    &quot;title&quot;: &quot;Generate supplier chargeback documentation&quot;,
+    &quot;chargeback_documentation&quot;: &quot;drafted&quot;,
+    &quot;recovery_target_usd&quot;: 2822040.0
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.210783+00:00&quot;,
+  &quot;prev_link&quot;: &quot;b7cfdafb7eed8e542686ca7597adb4f976cdd32308ca34f8bee5150d12463b34&quot;,
+  &quot;signature&quot;: &quot;cf05aa496415f4b6b1724bdece8e5ad9c1f1180ab70a7cc0afa3c2b150e27426&quot;
+}</pre></td></tr>
+<tr class="row" data-i="20">
+  <td class="mono">21</td>
+  <td>Trigger NHTSA Early Warning Reporting check</td>
+  <td class="mono">apex.axle.agents.warranty-complian…</td>
+  <td class="mono">compliance.nhtsa_ewr</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">cf05aa496415…</td>
+  <td class="mono sig">4ea3f35cc7ce…</td>
+</tr>
+<tr class="detail" data-i="20"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-21&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-compliance&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#nhtsa-ewr&quot;,
+  &quot;tools_called&quot;: [
+    &quot;compliance.nhtsa_ewr&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-21-nhtsa-ewr&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 21,
+    &quot;cluster&quot;: 7,
+    &quot;title&quot;: &quot;Trigger NHTSA Early Warning Reporting check&quot;,
+    &quot;nhtsa_ewr_check&quot;: &quot;applicable&quot;
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.211382+00:00&quot;,
+  &quot;prev_link&quot;: &quot;cf05aa496415f4b6b1724bdece8e5ad9c1f1180ab70a7cc0afa3c2b150e27426&quot;,
+  &quot;signature&quot;: &quot;4ea3f35cc7cec0c135bdc4587729972954cffcdae9e0b916ff1619f44be0f913&quot;
+}</pre></td></tr>
+<tr class="row" data-i="21">
+  <td class="mono">22</td>
+  <td>Route to Quality Director for human review &amp; approval</td>
+  <td class="mono">apex.axle.agents.warranty-complian…</td>
+  <td class="mono">teams.adaptive_card</td>
+  <td class="mono">99%</td>
+  <td><span class="hitl approved">approved</span></td>
+  <td class="mono prev">4ea3f35cc7ce…</td>
+  <td class="mono sig">d642358bce51…</td>
+</tr>
+<tr class="detail" data-i="21"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-22&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-compliance&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#hitl-review&quot;,
+  &quot;tools_called&quot;: [
+    &quot;teams.adaptive_card&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-22-hitl-review&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 22,
+    &quot;cluster&quot;: 7,
+    &quot;title&quot;: &quot;Route to Quality Director for human review &amp; approval&quot;,
+    &quot;decision&quot;: &quot;approve_chargeback&quot;,
+    &quot;approver&quot;: &quot;quality.director@toyota.example&quot;,
+    &quot;recovery_target_usd&quot;: 2822040.0,
+    &quot;teams_card_generated&quot;: true,
+    &quot;teams_card_posted&quot;: false
+  },
+  &quot;hitl_status&quot;: &quot;approved&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: 0.99,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.211501+00:00&quot;,
+  &quot;prev_link&quot;: &quot;4ea3f35cc7cec0c135bdc4587729972954cffcdae9e0b916ff1619f44be0f913&quot;,
+  &quot;signature&quot;: &quot;d642358bce51e5b185c3f05c5618f5dd65ca85a6f30f210f0086237fa99a78f9&quot;
+}</pre></td></tr>
+<tr class="row" data-i="22">
+  <td class="mono">23</td>
+  <td>Write decision &amp; rationale to audit ledger</td>
+  <td class="mono">apex.axle.agents.warranty-complian…</td>
+  <td class="mono">—</td>
+  <td class="mono">—</td>
+  <td><span class="hitl none">none</span></td>
+  <td class="mono prev">d642358bce51…</td>
+  <td class="mono sig">bcf7c2289070…</td>
+</tr>
+<tr class="detail" data-i="22"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-23&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-compliance&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#audit-write&quot;,
+  &quot;tools_called&quot;: [],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-23-audit-write&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 23,
+    &quot;cluster&quot;: 7,
+    &quot;title&quot;: &quot;Write decision &amp; rationale to audit ledger&quot;,
+    &quot;ledger_rows_written&quot;: 23,
+    &quot;chain_verified&quot;: true
+  },
+  &quot;hitl_status&quot;: &quot;none&quot;,
+  &quot;downstream_effect_ref&quot;: null,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.211564+00:00&quot;,
+  &quot;prev_link&quot;: &quot;d642358bce51e5b185c3f05c5618f5dd65ca85a6f30f210f0086237fa99a78f9&quot;,
+  &quot;signature&quot;: &quot;bcf7c2289070a189cb6d6fa70e51b7ee0933a77485341d6d6a519258fd1e1ff4&quot;
+}</pre></td></tr>
+<tr class="row" data-i="23">
+  <td class="mono">24</td>
+  <td>Notify downstream owners (CAPA, dealer advisories)</td>
+  <td class="mono">apex.axle.agents.warranty-complian…</td>
+  <td class="mono">teams.channel_post</td>
+  <td class="mono">—</td>
+  <td><span class="hitl approved">approved</span></td>
+  <td class="mono prev">bcf7c2289070…</td>
+  <td class="mono sig">4eb69634fc00…</td>
+</tr>
+<tr class="detail" data-i="23"><td colspan="8"><pre>{
+  &quot;trace_id&quot;: &quot;zdw-trace-0001&quot;,
+  &quot;decision_id&quot;: &quot;zdw-trace-0001-step-24&quot;,
+  &quot;agent_id&quot;: &quot;apex.axle.agents.warranty-compliance&quot;,
+  &quot;invoking_identity&quot;: &quot;quality.analyst@toyota.example&quot;,
+  &quot;manifest_version&quot;: &quot;1.0.0&quot;,
+  &quot;policy_version&quot;: &quot;1.0.0&quot;,
+  &quot;model_version&quot;: &quot;gpt-4o-2024-11-20&quot;,
+  &quot;prompt_version&quot;: &quot;1.0.0&quot;,
+  &quot;inputs_ref&quot;: &quot;gold://axle-warranty/per-vin#notify-downstream&quot;,
+  &quot;tools_called&quot;: [
+    &quot;teams.channel_post&quot;
+  ],
+  &quot;reasoning_trace_ref&quot;: &quot;trace://zdw-trace-0001/step-24-notify-downstream&quot;,
+  &quot;decision_output&quot;: {
+    &quot;step&quot;: 24,
+    &quot;cluster&quot;: 7,
+    &quot;title&quot;: &quot;Notify downstream owners (CAPA, dealer advisories)&quot;,
+    &quot;downstream_notified&quot;: [
+      &quot;CAPA&quot;,
+      &quot;supplier_quality&quot;,
+      &quot;dealer_advisories&quot;
+    ]
+  },
+  &quot;hitl_status&quot;: &quot;approved&quot;,
+  &quot;downstream_effect_ref&quot;: &quot;capa://axle-warranty/zdw-trace-0001&quot;,
+  &quot;cost_attribution&quot;: null,
+  &quot;sensitivity_label_propagation&quot;: [
+    &quot;internal&quot;,
+    &quot;supplier-confidential&quot;
+  ],
+  &quot;confidence_score&quot;: null,
+  &quot;sealed_at&quot;: &quot;2026-06-07T02:48:10.211609+00:00&quot;,
+  &quot;prev_link&quot;: &quot;bcf7c2289070a189cb6d6fa70e51b7ee0933a77485341d6d6a519258fd1e1ff4&quot;,
+  &quot;signature&quot;: &quot;4eb69634fc0057ace8be9c0f4ec2344f958e90b5a8e68dfb5a361237826ae432&quot;
+}</pre></td></tr>
+  </tbody>
+</table>
+</main>
+<script>
+  document.querySelectorAll('tr.row').forEach(function(r){
+    r.addEventListener('click', function(){
+      var i=r.getAttribute('data-i');
+      var d=document.querySelector('tr.detail[data-i="'+i+'"]');
+      if(d) d.classList.toggle('open');
+    });
+  });
+</script>
+</body></html>

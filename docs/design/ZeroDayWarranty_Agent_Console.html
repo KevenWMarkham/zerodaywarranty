@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero Day Warranty · Agent Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{ --navy:#1A2339; --navy2:#2A3349; --ms:#0078D4; --msd:#005A9E;
+    --slate:#94A3B8; --line:#E5E7EB; --bg:#0b1020; --card:#121a30; --ok:#34d399; }
+  *{box-sizing:border-box;} html,body{margin:0;}
+  body{background:var(--bg);color:#e5e7eb;font-family:Aptos,system-ui,sans-serif;font-size:14px;line-height:1.5;}
+  a{color:#7cc4ff;}
+  .classification{background:#D97706;color:#fff;padding:5px 16px;text-align:center;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;}
+  header.cover{padding:22px 28px;background:linear-gradient(135deg,var(--navy),var(--navy2));border-bottom:5px solid var(--ms);}
+  header .eyebrow{font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7cc4ff;font-weight:700;}
+  header h1{font-size:26px;margin:6px 0 2px;color:#fff;}
+  header .sub{color:#cbd5e1;font-size:14px;margin-bottom:12px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-family:"Cascadia Mono",monospace;font-size:11px;background:#16203a;border:1px solid var(--navy2);border-radius:999px;padding:4px 10px;color:#cbd5e1;}
+  .chip b{color:#fff;} .chip.ok b{color:var(--ok);}
+  main{max-width:1280px;margin:0 auto;padding:20px;}
+  .links{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+  .links a{font-weight:700;font-size:13px;text-decoration:none;padding:8px 14px;border-radius:8px;border:1px solid var(--ms);color:#7cc4ff;background:#0e1730;}
+  .links a:hover{background:#13203f;}
+
+  .grid{display:grid;grid-template-columns:300px 1fr;gap:16px;}
+  @media(max-width:820px){.grid{grid-template-columns:1fr;}}
+  .roster{display:flex;flex-direction:column;gap:8px;}
+  .agent{background:var(--card);border:1px solid var(--navy2);border-left:4px solid var(--ms);border-radius:10px;padding:10px 12px;opacity:0.6;transition:all .2s;}
+  .agent.active{opacity:1;box-shadow:0 0 0 2px rgba(124,196,255,.4);}
+  .agent.done{opacity:0.85;}
+  .agent .nm{font-weight:700;color:#fff;font-size:14px;display:flex;justify-content:space-between;align-items:center;}
+  .agent .id{font-family:"Cascadia Mono",monospace;font-size:10.5px;color:var(--slate);margin-top:2px;word-break:break-all;}
+  .agent .st{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:999px;background:#1e2b4d;color:var(--slate);}
+  .agent.active .st{background:#0e3a5e;color:#7cc4ff;} .agent.done .st{background:#0c3a2a;color:var(--ok);}
+  .console{background:#070b16;border:1px solid var(--navy2);border-radius:10px;padding:14px;min-height:460px;font-family:"Cascadia Mono",monospace;font-size:12.5px;}
+  .ln{padding:5px 0;border-bottom:1px dotted #1b2540;display:grid;grid-template-columns:64px 1fr;gap:10px;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;}}
+  .ln .tm{color:#5b6a8c;}
+  .ln .ag{font-weight:700;}
+  .ln .ti{color:#e5e7eb;}
+  .ln .sm{color:#9fb3d1;}
+  .ln .meta{color:#5b6a8c;font-size:11px;}
+  .ln .hitl{color:#fbbf24;font-weight:700;}
+  .ctl{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+  .ctl button{background:#16203a;border:1px solid var(--navy2);color:#e5e7eb;border-radius:8px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;}
+  .ctl button.primary{background:var(--ms);border-color:var(--ms);color:#fff;}
+  .ctl .prog{flex:1;height:6px;background:#16203a;border-radius:999px;overflow:hidden;min-width:120px;}
+  .ctl .prog>div{height:100%;width:0;background:var(--ms);}
+</style></head><body>
+<div class="classification">Reference · Generated from a live chain run · Synthetic figures</div>
+<header class="cover">
+  <div class="eyebrow">Operations · Agent Console</div>
+  <h1>Zero Day Warranty — agent console</h1>
+  <div class="sub">The orchestrator and seven cluster agents, and the decisions they make.</div>
+  <div class="chips">
+    <span class="chip">trace <b>zdw-trace-0001</b></span>
+    <span class="chip">suspect lot <b>LOT-7743</b></span>
+    <span class="chip">model <b>gpt-4o-2024-11-20</b></span>
+    <span class="chip">rows <b>24</b></span>
+    <span class="chip ok">chain <b>VERIFIED</b></span>
+    
+  </div>
+</header>
+<main>
+<div class="links"><a href="ZeroDayWarranty_Agent_Console.html">Agent console</a><a href="ZeroDayWarranty_Audit_Ledger.html">Audit ledger</a><a href="ZeroDayWarranty_SwimLane_Views.html">Swim lane views</a><a href="ZeroDayWarranty_Process_3D.html">3D process</a></div>
+<div class="grid">
+  <div class="roster" id="roster"></div>
+  <div>
+    <div class="console" id="console"></div>
+    <div class="ctl">
+      <button id="play" class="primary">⏸ Pause</button>
+      <button id="step">Step ›</button>
+      <button id="restart">↺ Restart</button>
+      <button id="speed">1×</button>
+      <span class="prog"><div id="bar"></div></span>
+      <span id="count" class="meta">0/0</span>
+    </div>
+  </div>
+</div>
+</main>
+<script id="data" type="application/json">{"meta":{"trace_id":"zdw-trace-0001","suspect_lot":"LOT-7743","confidence":0.99,"model_version":"gpt-4o-2024-11-20","ledger_rows":24,"verified":true,"hitl_status":"approved"},"agents":[{"id":"apex.axle.agents.orchestrator","role":"orchestrator","name":"Orchestrator","platform":"Agent Framework \u00b7 Foundry","color":"#94A3B8","cluster":0,"steps":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]},{"id":"apex.axle.agents.warranty-detect","role":"detect","name":"Detect & Scope","platform":"cluster 1","color":"#2EA0E6","cluster":1,"steps":[1,2,3]},{"id":"apex.axle.agents.warranty-context","role":"context","name":"Build Context","platform":"cluster 2","color":"#0078D4","cluster":2,"steps":[4,5,6,7]},{"id":"apex.axle.agents.warranty-stattest","role":"stattest","name":"Statistical Test","platform":"cluster 3","color":"#76B900","cluster":3,"steps":[8]},{"id":"apex.axle.agents.warranty-quality","role":"quality","name":"Quality & Telemetry","platform":"cluster 4","color":"#5C9300","cluster":4,"steps":[9,10,11,12]},{"id":"apex.axle.agents.warranty-supplier","role":"supplier","name":"Supplier Attribution","platform":"cluster 5","color":"#7C3AED","cluster":5,"steps":[13,14,15,16]},{"id":"apex.axle.agents.warranty-hypothesis","role":"hypothesis","name":"Hypothesis & Evidence","platform":"cluster 6","color":"#0EA5E9","cluster":6,"steps":[17,18,19,20]},{"id":"apex.axle.agents.warranty-compliance","role":"compliance","name":"Compliance & HITL","platform":"cluster 7","color":"#B85450","cluster":7,"steps":[21,22,23,24]}],"events":[{"n":1,"role":"detect","agent_id":"apex.axle.agents.warranty-detect","cluster":1,"title":"Receive warranty claim cluster signal","tools":[],"summary":"signal: warranty_cluster_threshold_breach \u00b7 total claims: 117","confidence":null,"hitl":"none","time":"02:48:10","sig":"483bd42f67\u2026"},{"n":2,"role":"detect","agent_id":"apex.axle.agents.warranty-detect","cluster":1,"title":"Scope the claim cohort by part, failure mode, severity","tools":[],"summary":"part number: PN-48820-BRK \u00b7 failure modes: brake_actuator_premature_wear","confidence":null,"hitl":"none","time":"02:48:10","sig":"c0fa757069\u2026"},{"n":3,"role":"detect","agent_id":"apex.axle.agents.warranty-detect","cluster":1,"title":"Pull VIN list for affected cohort","tools":["axle_warranty.pull_vins"],"summary":"cohort size: 117","confidence":null,"hitl":"none","time":"02:48:10","sig":"a495de9929\u2026"},{"n":4,"role":"context","agent_id":"apex.axle.agents.warranty-context","cluster":2,"title":"Join VIN list to build records","tools":["fabric.gold.per_vin_view"],"summary":"joined vins: 117","confidence":null,"hitl":"none","time":"02:48:10","sig":"b98da1cb7a\u2026"},{"n":5,"role":"context","agent_id":"apex.axle.agents.warranty-context","cluster":2,"title":"Extract build-week distribution of affected VINs","tools":[],"summary":"build week claim counts: {11: 12, 12: 26, 13: 29}","confidence":null,"hitl":"none","time":"02:48:10","sig":"bab01db9b5\u2026"},{"n":6,"role":"context","agent_id":"apex.axle.agents.warranty-context","cluster":2,"title":"Identify over-represented build weeks vs. baseline","tools":[],"summary":"hot weeks: 12, 13","confidence":0.9,"hitl":"none","time":"02:48:10","sig":"68b7ecc07e\u2026"},{"n":7,"role":"context","agent_id":"apex.axle.agents.warranty-context","cluster":2,"title":"Extract station / tool / shift distribution","tools":[],"summary":"station distribution: {STATION-07: 36, STATION-06: 2, STATION-09: 2} \u00b7 tool distribution: {TOOL-TQ-07: 36, TOOL-TQ-06: 2, TOOL-TQ-09: 2}","confidence":null,"hitl":"none","time":"02:48:10","sig":"f94b385c75\u2026"},{"n":8,"role":"stattest","agent_id":"apex.axle.agents.warranty-stattest","cluster":3,"title":"Statistical test: cohort \u00d7 station \u00d7 tool \u00d7 shift","tools":["rapids.cuml.proportion_test"],"summary":"hot station: STATION-07 \u00b7 hot tool: TOOL-TQ-07 \u00b7 station rate: 0.0619","confidence":0.9899937914575335,"hitl":"none","time":"02:48:10","sig":"5e3f600db6\u2026"},{"n":9,"role":"quality","agent_id":"apex.axle.agents.warranty-quality","cluster":4,"title":"Join to quality event records","tools":["fabric.gold.quality_events"],"summary":"quality events joined: 1200","confidence":null,"hitl":"none","time":"02:48:10","sig":"9e356c4091\u2026"},{"n":10,"role":"quality","agent_id":"apex.axle.agents.warranty-quality","cluster":4,"title":"Identify SPC anomalies preceding the hot build weeks","tools":["triton.spc_anomaly"],"summary":"spc anomalies at hot station: 304","confidence":0.85,"hitl":"none","time":"02:48:10","sig":"55beabe553\u2026"},{"n":11,"role":"quality","agent_id":"apex.axle.agents.warranty-quality","cluster":4,"title":"Join to assembly telemetry","tools":["fabric.gold.telemetry"],"summary":"telemetry traces joined: 1200","confidence":null,"hitl":"none","time":"02:48:10","sig":"7e1c79ad1e\u2026"},{"n":12,"role":"quality","agent_id":"apex.axle.agents.warranty-quality","cluster":4,"title":"Correlate tool calibration drift with hot-station defects","tools":["triton.drift_correlation"],"summary":"hot tool: TOOL-TQ-07 \u00b7 avg calibration drift pct: 8.93","confidence":0.9,"hitl":"none","time":"02:48:10","sig":"aa735d89d1\u2026"},{"n":13,"role":"supplier","agent_id":"apex.axle.agents.warranty-supplier","cluster":5,"title":"Extract supplier lot codes in hot VIN population","tools":["axle_warranty.get_lot_trace"],"summary":"lot codes in hot population: {LOT-7743: 32, LOT-1386: 1, LOT-1002: 1}","confidence":null,"hitl":"none","time":"02:48:10","sig":"7450363287\u2026"},{"n":14,"role":"supplier","agent_id":"apex.axle.agents.warranty-supplier","cluster":5,"title":"Compute supplier-lot warranty rate vs. baseline","tools":["rapids.cugraph.lot_attribution"],"summary":"suspect lot: LOT-7743 \u00b7 lot warranty rate: 0.0615 \u00b7 baseline warranty rate: 0.0253","confidence":null,"hitl":"none","time":"02:48:10","sig":"317f95a3d6\u2026"},{"n":15,"role":"supplier","agent_id":"apex.axle.agents.warranty-supplier","cluster":5,"title":"Statistical test: supplier-lot attribution significance","tools":["rapids.cuml.proportion_test"],"summary":"z score: 4.891 \u00b7 p value: 1e-06 \u00b7 significant: True","confidence":0.999998999052101,"hitl":"none","time":"02:48:10","sig":"f53e13534f\u2026"},{"n":16,"role":"supplier","agent_id":"apex.axle.agents.warranty-supplier","cluster":5,"title":"Rank cohort \u00d7 station \u00d7 supplier-lot interactions","tools":[],"summary":"ranked interactions: {'interaction': 'week\u00d7STATION-07\u00d7LOT-7743', 'rate_ratio': 2.43}","confidence":null,"hitl":"none","time":"02:48:10","sig":"a4ba73f1b1\u2026"},{"n":17,"role":"hypothesis","agent_id":"apex.axle.agents.warranty-hypothesis","cluster":6,"title":"Generate root-cause hypothesis with confidence intervals","tools":["nim.rca_reasoner","nemo.retriever"],"summary":"hypothesis: Supplier lot LOT-7743, installed at STATION-07 on TOOL-TQ-07 \u2026 \u00b7 confidence: 0.99","confidence":0.99,"hitl":"none","time":"02:48:10","sig":"adabcafdcf\u2026"},{"n":18,"role":"hypothesis","agent_id":"apex.axle.agents.warranty-hypothesis","cluster":6,"title":"Build evidence package: cohort, tests, raw data","tools":[],"summary":"evidence package keys: confidence, hot_station, hot_tool, hot_weeks, root_cause_hypo\u2026","confidence":0.99,"hitl":"none","time":"02:48:10","sig":"b052b5c09d\u2026"},{"n":19,"role":"hypothesis","agent_id":"apex.axle.agents.warranty-hypothesis","cluster":6,"title":"Compute chargeback dollar exposure per supplier lot","tools":["axle_warranty.chargeback_exposure"],"summary":"attributable usd: 4212000.0 \u00b7 agentic recovery usd: 2822040.0 \u00b7 manual baseline usd: 631800.0","confidence":null,"hitl":"none","time":"02:48:10","sig":"b7cfdafb7e\u2026"},{"n":20,"role":"hypothesis","agent_id":"apex.axle.agents.warranty-hypothesis","cluster":6,"title":"Generate supplier chargeback documentation","tools":["axle_warranty.generate_chargeback_doc"],"summary":"chargeback documentation: drafted \u00b7 recovery target usd: 2822040.0","confidence":null,"hitl":"none","time":"02:48:10","sig":"cf05aa4964\u2026"},{"n":21,"role":"compliance","agent_id":"apex.axle.agents.warranty-compliance","cluster":7,"title":"Trigger NHTSA Early Warning Reporting check","tools":["compliance.nhtsa_ewr"],"summary":"nhtsa ewr check: applicable","confidence":null,"hitl":"none","time":"02:48:10","sig":"4ea3f35cc7\u2026"},{"n":22,"role":"compliance","agent_id":"apex.axle.agents.warranty-compliance","cluster":7,"title":"Route to Quality Director for human review & approval","tools":["teams.adaptive_card"],"summary":"decision: approve_chargeback \u00b7 approver: quality.director@toyota.example \u00b7 recovery target usd: 2822040.0","confidence":0.99,"hitl":"approved","time":"02:48:10","sig":"d642358bce\u2026"},{"n":23,"role":"compliance","agent_id":"apex.axle.agents.warranty-compliance","cluster":7,"title":"Write decision & rationale to audit ledger","tools":[],"summary":"ledger rows written: 23 \u00b7 chain verified: True","confidence":null,"hitl":"none","time":"02:48:10","sig":"bcf7c22890\u2026"},{"n":24,"role":"compliance","agent_id":"apex.axle.agents.warranty-compliance","cluster":7,"title":"Notify downstream owners (CAPA, dealer advisories)","tools":["teams.channel_post"],"summary":"downstream notified: CAPA, supplier_quality, dealer_advisories","confidence":null,"hitl":"approved","time":"02:48:10","sig":"4eb69634fc\u2026"}]}</script>
+<script>
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const AGENTS = DATA.agents, EVENTS = DATA.events, N = EVENTS.length;
+const roster = document.getElementById('roster');
+const cards = {};
+AGENTS.forEach(a=>{
+  const d=document.createElement('div'); d.className='agent'; d.style.borderLeftColor=a.color;
+  d.innerHTML='<div class="nm">'+a.name+' <span class="st">idle</span></div>'+
+    '<div class="id">'+a.id+'</div>';
+  roster.appendChild(d); cards[a.role]=d;
+});
+const consoleEl=document.getElementById('console');
+const bar=document.getElementById('bar'), count=document.getElementById('count');
+let idx=0, playing=true, speed=1, acc=0, last=performance.now();
+const SPEEDS=[0.5,1,2,4];
+function color(role){ const a=AGENTS.find(x=>x.role===role); return a?a.color:'#7cc4ff'; }
+function reveal(){
+  if(idx>=N) return false;
+  const e=EVENTS[idx++];
+  const ln=document.createElement('div'); ln.className='ln';
+  const conf = e.confidence!=null ? ' · conf '+Math.round(e.confidence*100)+'%' : '';
+  const hitl = (e.hitl && e.hitl!=='none') ? ' <span class="hitl">HITL: '+e.hitl+'</span>' : '';
+  const tools = e.tools.length ? ' · '+e.tools.join(', ') : '';
+  ln.innerHTML='<span class="tm">'+(e.time||('#'+e.n))+'</span>'+
+    '<span><span class="ag" style="color:'+color(e.role)+'">'+e.agent_id.split(".").pop()+'</span> '+
+    '<span class="meta">▸ step '+e.n+'</span> <span class="ti">'+e.title+'</span>'+hitl+
+    '<div class="sm">'+(e.summary||'…')+'</div>'+
+    '<div class="meta">'+e.sig+conf+tools+'</div></span>';
+  consoleEl.appendChild(ln); consoleEl.scrollTop=consoleEl.scrollHeight;
+  // agent status
+  AGENTS.forEach(a=>{ cards[a.role].classList.remove('active'); });
+  const c=cards[e.role]; if(c){ c.classList.add('active'); c.querySelector('.st').textContent='running'; }
+  // mark agents whose steps are all done
+  AGENTS.forEach(a=>{
+    if(a.role==='orchestrator') return;
+    const done = a.steps.every(s=> EVENTS.slice(0,idx).some(x=>x.n===s));
+    if(done && a.role!==e.role){ cards[a.role].classList.add('done'); cards[a.role].classList.remove('active'); cards[a.role].querySelector('.st').textContent='done'; }
+  });
+  cards['orchestrator'].classList.add('active'); cards['orchestrator'].querySelector('.st').textContent='running';
+  bar.style.width=(idx/N*100)+'%'; count.textContent=idx+'/'+N;
+  if(idx>=N){ playing=false; setPlay(); cards['orchestrator'].classList.remove('active'); cards['orchestrator'].classList.add('done'); cards['orchestrator'].querySelector('.st').textContent='done'; }
+  return true;
+}
+const playBtn=document.getElementById('play');
+function setPlay(){ playBtn.textContent=playing?'⏸ Pause':'▶ Play'; playBtn.classList.toggle('primary',playing); }
+playBtn.onclick=()=>{ if(idx>=N){ restart(); return;} playing=!playing; setPlay(); };
+document.getElementById('step').onclick=()=>{ playing=false; setPlay(); reveal(); };
+function restart(){ idx=0; consoleEl.innerHTML=''; playing=true; setPlay();
+  AGENTS.forEach(a=>{ cards[a.role].className='agent'; cards[a.role].style.borderLeftColor=a.color; cards[a.role].querySelector('.st').textContent='idle'; }); }
+document.getElementById('restart').onclick=restart;
+document.getElementById('speed').onclick=e=>{ speed=SPEEDS[(SPEEDS.indexOf(speed)+1)%SPEEDS.length]; e.target.textContent=speed+'×'; };
+setPlay();
+function loop(now){ const dt=(now-last)/1000; last=now; if(playing){ acc+=dt*speed; while(acc>=0.7){ acc-=0.7; if(!reveal())break; } } requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+</script>
+</body></html>

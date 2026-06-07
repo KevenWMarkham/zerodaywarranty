@@ -6,6 +6,19 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **Agent console + audit ledger** — two operator pages generated live from a
+  chain run (`consoles.py`). The **agent console** (`/agents`,
+  `ZeroDayWarranty_Agent_Console.html`) shows the orchestrator + the seven
+  cluster agents as a roster and plays back the decision stream step by step
+  (which agent is running, its decision summary, tools, confidence, the HITL
+  gate) with play / pause / step / speed. The **audit ledger** (`/ledger`,
+  `ZeroDayWarranty_Audit_Ledger.html`) renders every sealed 14-field row with its
+  `prev_link` hash-chain link and HMAC-SHA256 signature, the live `verify_chain`
+  result, and a click-to-expand full record per row — the regulator-replayable
+  trail APEX captures. New CLI `zdw console [--write]`; served by the orchestrator
+  at `/agents` (alias `/console`) and `/ledger` (alias `/audit`), advertised on
+  `/health`, and linked from the Swim Lane Views portal.
+
 - **3D steps as real equipment** — the fly-through nodes are no longer plain
   cubes; each step renders a recognizable PBR model built from primitives,
   matched to what the step does: dashboard **monitor** (detect / notify),
