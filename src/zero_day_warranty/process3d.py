@@ -101,6 +101,34 @@ STEP_EQUIPMENT: dict[int, str] = {
     24: "monitor",  # notify downstream / KPI rollup
 }
 
+#: A plain-language description of what happens at each step (shown in the HUD).
+STEP_DETAIL: dict[int, str] = {
+    1: "A warranty-cost dashboard trips a cluster-threshold alert — a brake-actuator failure mode is trending across connected vehicles.",
+    2: "The agent scopes the claim cohort by part number, failure mode, and severity to define exactly which claims to investigate.",
+    3: "It resolves the cohort to a concrete VIN list through the warranty MCP tool.",
+    4: "Each VIN is joined to its factory build record in the Fabric Gold view — the per-VIN spine of the whole investigation.",
+    5: "The build-week distribution of the affected VINs is extracted to see when the suspect cars were made.",
+    6: "Build weeks that are over-represented versus baseline production are flagged as the 'hot' weeks.",
+    7: "Within the hot weeks the cohort is broken down by assembly station, tool, and shift.",
+    8: "A two-proportion z-test checks whether the claim rate at the hot station is significantly above the rest.",
+    9: "Quality-event records (inline inspection results) are joined in for the hot population.",
+    10: "SPC anomalies at the hot station preceding the hot build weeks are counted.",
+    11: "Assembly telemetry traces are joined to bring in the tool readings.",
+    12: "The agent correlates tool calibration drift with the defects at the hot station.",
+    13: "Supplier lot codes present in the hot VIN population are extracted.",
+    14: "The warranty rate for the suspect supplier lot is computed against the baseline rate.",
+    15: "A significance test confirms the supplier-lot attribution is real, not noise.",
+    16: "Cohort × station × supplier-lot interactions are ranked to isolate the strongest signal.",
+    17: "A root-cause hypothesis is generated with a confidence interval.",
+    18: "The full evidence package is assembled — cohort, statistical tests, and raw supporting data.",
+    19: "Chargeback dollar exposure attributable to the supplier lot is computed.",
+    20: "Supplier chargeback documentation is drafted from the evidence.",
+    21: "A compliance check evaluates NHTSA Early Warning Reporting (49 CFR 579) applicability.",
+    22: "The evidence package is routed to the Quality Director as a Teams Adaptive Card — the single human approval gate.",
+    23: "The decision and rationale are sealed to the hash-chained audit ledger.",
+    24: "Downstream owners — CAPA, supplier quality, dealer advisories — are notified and the KPIs roll up.",
+}
+
 
 def _x(step: int) -> float:
     return round((step - 1) * _STEP_DX - (23 * _STEP_DX) / 2, 3)
@@ -183,6 +211,8 @@ def build_process_graph(result: ChainResult) -> dict[str, Any]:
                 "tools": list(row["tools_called"]) if row else [],
                 "sealed": row is not None,
                 "equip": STEP_EQUIPMENT.get(n, "monitor"),
+                "detail": STEP_DETAIL.get(n, ""),
+                "confidence": row.get("confidence_score") if row else None,
                 "x": x,
                 "z": z,
             }
@@ -280,6 +310,23 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
   #lanes .all{justify-content:center;}
   .credit{position:fixed;right:14px;bottom:16px;z-index:20;font-size:10px;color:#64748b;}
   .credit a{color:#94A3B8;}
+  /* bottom step-detail box */
+  #detail{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;z-index:21;width:min(940px,94vw);
+    background:rgba(11,16,32,0.92);border:1px solid var(--border);border-left:5px solid var(--ms);
+    border-radius:12px;padding:13px 18px;backdrop-filter:blur(10px);box-shadow:0 10px 34px rgba(0,0,0,0.5);}
+  #detail .dt-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+  #detail .ph{font-family:Aptos,sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#7cc4ff;}
+  #detail .lane{font-family:Aptos,sans-serif;font-size:11px;font-weight:700;color:var(--slate);}
+  #detail h2{font-family:Aptos,sans-serif;font-size:18px;color:#fff;margin:4px 0 6px;}
+  #detail .desc{font-size:13.5px;color:#dbe4f0;line-height:1.55;margin:0;}
+  #detail .facts{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;align-items:center;}
+  #detail .f{font-family:"Cascadia Mono",monospace;font-size:11px;background:#16203a;border:1px solid var(--border);
+    border-radius:999px;padding:3px 9px;color:#cbd5e1;}
+  #detail .f:empty{display:none;}
+  #detail .f.seal{color:#34d399;border-color:#1f5c43;}
+  #detail .toportal{margin-left:auto;font-family:Aptos,sans-serif;font-size:12px;font-weight:700;color:#fff;
+    text-decoration:none;background:var(--ms);padding:7px 12px;border-radius:8px;}
+  #detail .toportal:hover{background:#0a63ad;}
   #fallback{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;
     background:#0b1020;text-align:center;padding:40px;}
   #fallback div{max-width:520px;color:#cbd5e1;}
@@ -301,16 +348,25 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
     <span class="chip">recovery <b id="m-rec">—</b></span>
     <span class="chip">audit <b id="m-rows">—</b></span>
   </div>
-  <div class="now">
-    <div class="ph"><span id="n-phase">Detect</span> · step <span id="n-step">1</span>/24</div>
-    <div class="st" id="n-title">—</div>
-    <div class="sm" id="n-sum">—</div>
-    <div class="seal" id="n-seal"></div>
-    <a class="toportal" id="n-portal" href="ZeroDayWarranty_SwimLane_Views.html">Open this lane in the portal ›</a>
-  </div>
 </div>
 
 <div id="lanes"></div>
+
+<div id="detail">
+  <div class="dt-top">
+    <span class="ph"><span id="n-phase">Detect</span> · step <span id="n-step">1</span>/24</span>
+    <span class="lane" id="n-lane">—</span>
+  </div>
+  <h2 id="n-title">—</h2>
+  <p class="desc" id="n-desc">—</p>
+  <div class="facts">
+    <span class="f" id="n-sum"></span>
+    <span class="f" id="n-conf"></span>
+    <span class="f" id="n-tools"></span>
+    <span class="f seal" id="n-seal"></span>
+    <a class="toportal" id="n-portal" href="ZeroDayWarranty_SwimLane_Views.html">Open lane in portal ›</a>
+  </div>
+</div>
 
 <div id="ctl">
   <button id="play" class="primary">⏸ Pause</button>
@@ -558,6 +614,12 @@ const orb = new THREE.Mesh(new THREE.SphereGeometry(0.26, 24, 24),
 orb.castShadow = true; scene.add(orb);
 const orbLight = new THREE.PointLight('#9bd0ff', 3, 16, 2); scene.add(orbLight);
 
+// pulsing ground ring that marks the equipment currently being worked
+const ringMat = new THREE.MeshBasicMaterial({ color:'#7cc4ff', transparent:true, opacity:0.5,
+  side:THREE.DoubleSide });
+const activeRing = new THREE.Mesh(new THREE.RingGeometry(0.85,1.15,48), ringMat);
+activeRing.rotation.x = -Math.PI/2; activeRing.position.y = 0.04; scene.add(activeRing);
+
 // ---- post-processing: bloom for the glow ---------------------------------
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
@@ -603,16 +665,21 @@ scrub.oninput=()=>{ progress=(scrub.value/1000)*(N-1); playing=false; setPlay();
 
 let curStep=-1;
 function updateNow(s){
+  const lane = GRAPH.lanes.find(l=>l.id===s.primaryLane);
+  const col = lane?lane.color:'#0078D4';
   document.getElementById('n-phase').textContent=s.phase;
   document.getElementById('n-step').textContent=s.n;
+  const ln=document.getElementById('n-lane'); ln.textContent=lane?lane.name:''; ln.style.color=col;
   document.getElementById('n-title').textContent=s.title;
-  document.getElementById('n-sum').textContent=s.summary||'…';
+  document.getElementById('n-desc').textContent=s.detail||s.summary||'';
+  document.getElementById('n-sum').textContent=s.summary||'';
+  document.getElementById('n-conf').textContent=(s.confidence!=null)?('confidence '+Math.round(s.confidence*100)+'%'):'';
+  document.getElementById('n-tools').textContent=(s.tools&&s.tools.length)?('tools: '+s.tools.join(', ')):'';
   document.getElementById('n-seal').textContent=s.sealed?'● sealed to audit ledger':'';
-  // hand off to the flat portal at this step's lane (live with the trace)
-  const lane = GRAPH.lanes.find(l=>l.id===s.primaryLane);
-  const a = document.getElementById('n-portal');
-  a.href = 'ZeroDayWarranty_SwimLane_Views.html#lane=' + s.primaryLane;
-  a.textContent = 'Open ' + (lane?lane.name:'this lane') + ' in the portal ›';
+  document.getElementById('detail').style.borderLeftColor=col;
+  const a=document.getElementById('n-portal');
+  a.href='ZeroDayWarranty_SwimLane_Views.html#lane='+s.primaryLane;
+  a.textContent='Open '+(lane?lane.name:'this lane')+' ›';
 }
 
 function emphasize(stepN){
@@ -648,6 +715,15 @@ function tick(){
   const stepN = Math.min(N, Math.floor(progress)+1);
   if(stepN!==curStep){ curStep=stepN; updateNow(GRAPH.steps[stepN-1]); }
   emphasize(stepN);
+
+  // move + pulse the ground ring under the equipment being worked
+  const cs = GRAPH.steps[stepN-1];
+  if(cs){
+    activeRing.position.set(cs.x, 0.04, cs.z);
+    ringMat.color.set(colorOf(cs.primaryLane));
+    ringMat.opacity = 0.3 + 0.45*strobe;
+    activeRing.scale.setScalar(1 + 0.18*strobe);
+  }
 
   // governance slab pulses around the audit-write step (23)
   const dAudit = Math.abs(progress-(22));

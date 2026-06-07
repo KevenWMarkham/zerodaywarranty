@@ -37,6 +37,7 @@ def test_graph_has_24_steps_on_valid_lanes() -> None:
         assert s["primaryLane"] in rail_ids
         assert s["phase"] != "—"
         assert s["equip"] in equip_kinds  # each step renders as a real equipment model
+        assert s["detail"]  # a plain-language description for the bottom detail box
         for lane in s["lanes"]:
             assert lane in rail_ids  # governance is the floor, never a rail
     assert len(graph["path"]) == 24
