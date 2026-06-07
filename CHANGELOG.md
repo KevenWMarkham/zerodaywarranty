@@ -6,6 +6,13 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **Swim Lane Views served live by the orchestrator** — the orchestrator
+  Container App now serves the Swim Lane Views portal as HTML at `GET /portal`
+  (aliases `/lanes`, `/swim-lanes`, `/swimlanes`), rendered from a fresh chain run
+  on each request so the deployed app is self-documenting. The handler returns
+  `text/html`; `/health` on the orchestrator advertises `"portal": "/portal"`.
+  No new Azure resources — reuses the existing external ingress. `server.py`
+  `html_route` + tests in `tests/test_server.py`.
 - **Swim Lane Views** — per-lane drill-down companion to the (whole-picture)
   Capability Swim Lanes. `lanes.py` builds one view per lane (Consumption &
   Detection, Data Plane, Agent Orchestration, Accelerated Analytics,

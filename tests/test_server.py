@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from zero_day_warranty.server import ROLES, route
+from zero_day_warranty.server import PORTAL_PATHS, ROLES, html_route, route
 
 
 @pytest.mark.parametrize("role", ROLES)
@@ -59,3 +59,25 @@ def test_orchestrator_hitl_card() -> None:
     assert status == 200
     assert body["card"]["type"] == "AdaptiveCard"
     assert body["role"] == "orchestrator"
+
+
+@pytest.mark.parametrize("path", PORTAL_PATHS)
+def test_orchestrator_serves_swimlane_portal_as_html(path: str) -> None:
+    result = html_route("orchestrator", path)
+    assert result is not None
+    status, html = result
+    assert status == 200
+    assert html.startswith("<!DOCTYPE html>")
+    assert "Swim Lane Views" in html
+    assert 'data-tab="hitl"' in html
+
+
+def test_portal_paths_are_orchestrator_only() -> None:
+    # MCP roles do not serve the portal; non-portal paths fall through to JSON
+    assert html_route("mcp-warranty", "/portal") is None
+    assert html_route("orchestrator", "/run") is None
+
+
+def test_health_advertises_portal_on_orchestrator() -> None:
+    assert route("orchestrator", "/health")[1]["portal"] == "/portal"
+    assert "portal" not in route("mcp-warranty", "/health")[1]

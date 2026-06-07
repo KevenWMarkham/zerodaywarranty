@@ -5,7 +5,9 @@ selected by the ``ZDW_ROLE`` env var, so a single multi-stage image builds all
 three Container Apps:
 
 - ``orchestrator`` — ``GET /run`` executes the 24-step chain on the synthetic
-  dataset and returns the evidence package + audit-chain verification.
+  dataset and returns the evidence package + audit-chain verification;
+  ``GET /portal`` renders the Swim Lane Views design portal (HTML) live from a
+  fresh chain run.
 - ``mcp-warranty`` — ``GET /tools`` lists the Gold-view tools; ``GET
   /gold/summary`` returns a compact summary of the per-VIN Gold view.
 - ``mcp-ledger``  — ``GET /tools`` lists the ledger tools; ``GET /verify`` runs
@@ -60,12 +62,34 @@ def _env_config() -> dict[str, bool]:
     }
 
 
+#: Orchestrator paths that return the rendered Swim Lane Views portal (text/html).
+PORTAL_PATHS = ("/portal", "/lanes", "/swim-lanes", "/swimlanes")
+
+
+def html_route(role: str, path: str) -> tuple[int, str] | None:
+    """HTML router — returns ``(status, html)`` for portal paths, else ``None``.
+
+    The Swim Lane Views portal is rendered **live** from a fresh chain run on each
+    request, so the deployed app serves a self-documenting, always-truthful view
+    of the running solution. Non-HTML paths return ``None`` so the caller falls
+    back to the JSON :func:`route`.
+    """
+    if role == "orchestrator" and path in PORTAL_PATHS:
+        from zero_day_warranty.lanes import render_swimlane_views_html
+
+        return 200, render_swimlane_views_html()
+    return None
+
+
 def route(role: str, path: str) -> tuple[int, dict[str, Any]]:
     """Pure request router — returns ``(status_code, json_body)``."""
     base = {"service": "zero-day-warranty", "role": role, "version": __version__}
 
     if path in ("/health", "/", "/healthz"):
-        return 200, {**base, "status": "ok", "config": _env_config()}
+        body = {**base, "status": "ok", "config": _env_config()}
+        if role == "orchestrator":
+            body["portal"] = "/portal"
+        return 200, body
 
     if role == "orchestrator" and path == "/hitl-card":
         cfg = ChainConfig(teams_webhook_url=os.getenv("TEAMS_WEBHOOK_URL"))
@@ -122,12 +146,18 @@ class _Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         path = self.path.split("?", 1)[0]
         try:
+            html = html_route(self.role, path)
+            if html is not None:
+                self._write(html[0], html[1].encode("utf-8"), "text/html; charset=utf-8")
+                return
             status, body = route(self.role, path)
         except Exception as exc:  # return any error as JSON, keep serving
             status, body = 500, {"role": self.role, "error": str(exc)}
-        payload = json.dumps(body, default=str).encode("utf-8")
+        self._write(status, json.dumps(body, default=str).encode("utf-8"), "application/json")
+
+    def _write(self, status: int, payload: bytes, content_type: str) -> None:
         self.send_response(status)
-        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(payload)))
         self.end_headers()
         self.wfile.write(payload)
