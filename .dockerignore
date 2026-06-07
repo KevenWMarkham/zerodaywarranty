@@ -8,9 +8,11 @@ __pycache__
 **/__pycache__
 *.pyc
 tests
-docs/*
-!docs/design
-docs/design/**/*.md
+# Exclude the bulky doc sources but KEEP docs/design (served by the app, incl.
+# the vendored three.js). Listed explicitly — the `docs/*` + `!docs/design`
+# re-include trick is unreliable for nested files across Docker builders.
+docs/zero-day-warranty
+docs/reference
 infra
 backlog
 catalog
