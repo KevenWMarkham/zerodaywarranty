@@ -4,6 +4,16 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ## [Unreleased]
 
+### Changed
+
+- **Agent console — realistic per-step timeline** — the in-memory run seals every
+  row in the same millisecond, so the console previously showed one identical
+  timestamp on every line. It now spreads the scenario's ~12-minute wall-clock
+  across the steps (weighted toward the big joins, the statistics, RCA, and the
+  ~1m38s human HITL gate): each decision shows an increasing clock time plus the
+  duration it "took". (The audit ledger keeps the real seal times — that's the
+  audit record.)
+
 ### Added
 
 - **Agent console + audit ledger** — two operator pages generated live from a

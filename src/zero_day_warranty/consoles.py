@@ -18,9 +18,11 @@ them straight from Azure.
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime, timedelta
 from html import escape
 from typing import Any
 
+from zero_day_warranty.calculations import agent_chain_wall_clock_minutes
 from zero_day_warranty.chain import STEP_CATALOG, ChainResult, WarrantyRootCauseChain
 from zero_day_warranty.lanes import _summarize
 from zero_day_warranty.synthetic import generate
@@ -36,6 +38,62 @@ ROLE_META: dict[str, tuple[str, int, str]] = {
     "compliance": ("Compliance & HITL", 7, "#B85450"),
 }
 ORCHESTRATOR = ("Orchestrator", "Agent Framework · Foundry", "#94A3B8")
+
+#: Relative time each step takes (the in-memory run is instant, so the console
+#: spreads the scenario's ~12-min wall-clock across the steps for a realistic
+#: timeline — heaviest on the big joins, the statistics, RCA, and the human gate).
+STEP_WEIGHTS: tuple[int, ...] = (
+    3,
+    4,
+    6,
+    12,
+    6,
+    5,
+    6,
+    14,
+    12,
+    8,
+    12,
+    9,
+    7,
+    9,
+    12,
+    7,
+    16,
+    10,
+    8,
+    9,
+    6,
+    30,
+    4,
+    6,
+)
+
+
+def _fmt_dur(seconds: float) -> str:
+    s = round(seconds)
+    return f"{s // 60}m{s % 60:02d}s" if s >= 60 else f"{s}s"
+
+
+def _step_timeline(result: ChainResult, rows: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
+    """Return per-step (clock time, duration) staggered over the wall-clock."""
+    total_s = max(60.0, agent_chain_wall_clock_minutes() * 60.0)
+    wsum = sum(STEP_WEIGHTS)
+    durs = [total_s * w / wsum for w in STEP_WEIGHTS]
+    base = datetime.now(UTC)
+    if rows:
+        try:
+            base = datetime.fromisoformat(str(rows[0].get("sealed_at", "")))
+        except ValueError:
+            base = datetime.now(UTC)
+    times: list[str] = []
+    labels: list[str] = []
+    offset = 0.0
+    for d in durs:
+        times.append((base + timedelta(seconds=offset)).strftime("%H:%M:%S"))
+        labels.append(_fmt_dur(d))
+        offset += d
+    return times, labels
 
 
 def _roles_in_order() -> list[str]:
@@ -77,11 +135,11 @@ def build_console_graph(result: ChainResult) -> dict[str, Any]:
             }
         )
 
+    times, durs = _step_timeline(result, rows)
     events: list[dict[str, Any]] = []
-    for step, _key, cluster, role, title in STEP_CATALOG:
+    for idx, (step, _key, cluster, role, title) in enumerate(STEP_CATALOG):
         r = by_step.get(step)
         out = r["decision_output"] if r else {}
-        sealed_at = str(r.get("sealed_at", "")) if r else ""
         events.append(
             {
                 "n": step,
@@ -93,7 +151,8 @@ def build_console_graph(result: ChainResult) -> dict[str, Any]:
                 "summary": _summarize(out) if out else "",
                 "confidence": r.get("confidence_score") if r else None,
                 "hitl": str(r.get("hitl_status", "none")) if r else "none",
-                "time": sealed_at[11:19] if len(sealed_at) >= 19 else "",
+                "time": times[idx],
+                "dur": durs[idx],
                 "sig": (str(r.get("signature", ""))[:10] + "…") if r else "",
             }
         )
@@ -294,7 +353,7 @@ function reveal(){
     '<span><span class="ag" style="color:'+color(e.role)+'">'+e.agent_id.split(".").pop()+'</span> '+
     '<span class="meta">▸ step '+e.n+'</span> <span class="ti">'+e.title+'</span>'+hitl+
     '<div class="sm">'+(e.summary||'…')+'</div>'+
-    '<div class="meta">'+e.sig+conf+tools+'</div></span>';
+    '<div class="meta">took '+e.dur+' · '+e.sig+conf+tools+'</div></span>';
   consoleEl.appendChild(ln); consoleEl.scrollTop=consoleEl.scrollHeight;
   // agent status
   AGENTS.forEach(a=>{ cards[a.role].classList.remove('active'); });
