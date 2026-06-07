@@ -75,8 +75,10 @@ def _fmt_dur(seconds: float) -> str:
     return f"{s // 60}m{s % 60:02d}s" if s >= 60 else f"{s}s"
 
 
-def _step_timeline(result: ChainResult, rows: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
-    """Return per-step (clock time, duration) staggered over the wall-clock."""
+def _step_timeline(
+    result: ChainResult, rows: list[dict[str, Any]]
+) -> tuple[list[str], list[str], list[float]]:
+    """Return per-step (clock time, duration label, duration seconds)."""
     total_s = max(60.0, agent_chain_wall_clock_minutes() * 60.0)
     wsum = sum(STEP_WEIGHTS)
     durs = [total_s * w / wsum for w in STEP_WEIGHTS]
@@ -93,7 +95,7 @@ def _step_timeline(result: ChainResult, rows: list[dict[str, Any]]) -> tuple[lis
         times.append((base + timedelta(seconds=offset)).strftime("%H:%M:%S"))
         labels.append(_fmt_dur(d))
         offset += d
-    return times, labels
+    return times, labels, [round(d, 1) for d in durs]
 
 
 def _roles_in_order() -> list[str]:
@@ -135,7 +137,7 @@ def build_console_graph(result: ChainResult) -> dict[str, Any]:
             }
         )
 
-    times, durs = _step_timeline(result, rows)
+    times, durs, secs = _step_timeline(result, rows)
     events: list[dict[str, Any]] = []
     for idx, (step, _key, cluster, role, title) in enumerate(STEP_CATALOG):
         r = by_step.get(step)
@@ -153,6 +155,7 @@ def build_console_graph(result: ChainResult) -> dict[str, Any]:
                 "hitl": str(r.get("hitl_status", "none")) if r else "none",
                 "time": times[idx],
                 "dur": durs[idx],
+                "dur_s": secs[idx],
                 "sig": (str(r.get("signature", ""))[:10] + "…") if r else "",
             }
         )
@@ -339,8 +342,8 @@ AGENTS.forEach(a=>{
 });
 const consoleEl=document.getElementById('console');
 const bar=document.getElementById('bar'), count=document.getElementById('count');
-let idx=0, playing=true, speed=1, acc=0, last=performance.now();
-const SPEEDS=[0.5,1,2,4];
+let idx=0, playing=true, speed=1, acc=0, waitFor=0.3, last=performance.now();
+const SPEEDS=[0.5,1,2,4], PACE=0.05;  // playback seconds per real second of step
 function color(role){ const a=AGENTS.find(x=>x.role===role); return a?a.color:'#7cc4ff'; }
 function reveal(){
   if(idx>=N) return false;
@@ -373,12 +376,16 @@ const playBtn=document.getElementById('play');
 function setPlay(){ playBtn.textContent=playing?'⏸ Pause':'▶ Play'; playBtn.classList.toggle('primary',playing); }
 playBtn.onclick=()=>{ if(idx>=N){ restart(); return;} playing=!playing; setPlay(); };
 document.getElementById('step').onclick=()=>{ playing=false; setPlay(); reveal(); };
-function restart(){ idx=0; consoleEl.innerHTML=''; playing=true; setPlay();
+function restart(){ idx=0; acc=0; waitFor=0.3; consoleEl.innerHTML=''; playing=true; setPlay();
   AGENTS.forEach(a=>{ cards[a.role].className='agent'; cards[a.role].style.borderLeftColor=a.color; cards[a.role].querySelector('.st').textContent='idle'; }); }
 document.getElementById('restart').onclick=restart;
 document.getElementById('speed').onclick=e=>{ speed=SPEEDS[(SPEEDS.indexOf(speed)+1)%SPEEDS.length]; e.target.textContent=speed+'×'; };
 setPlay();
-function loop(now){ const dt=(now-last)/1000; last=now; if(playing){ acc+=dt*speed; while(acc>=0.7){ acc-=0.7; if(!reveal())break; } } requestAnimationFrame(loop); }
+function loop(now){ const dt=(now-last)/1000; last=now;
+  if(playing){ acc+=dt*speed;
+    while(idx<N && acc>=waitFor){ acc-=waitFor; const e=EVENTS[idx]; reveal();
+      waitFor=Math.max(0.3,(e.dur_s||10)*PACE); } }   // linger in proportion to step time
+  requestAnimationFrame(loop); }
 requestAnimationFrame(loop);
 </script>
 </body></html>
