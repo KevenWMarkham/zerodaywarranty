@@ -317,7 +317,7 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
   <button id="restart">↺</button>
   <input id="scrub" type="range" min="0" max="1000" value="0">
   <span class="t" id="time">0%</span>
-  <button id="speed">1×</button>
+  <button id="speed">0.5×</button>
   <button id="orbit">Free orbit</button>
 </div>
 
@@ -375,7 +375,7 @@ renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.toneMappingExposure = 1.0;
 host.appendChild(renderer.domElement);
 
 const labelRenderer = new CSS2DRenderer();
@@ -552,16 +552,16 @@ const tube = new THREE.Mesh(
 scene.add(tube);
 
 // ---- the trace orb -------------------------------------------------------
-const orb = new THREE.Mesh(new THREE.SphereGeometry(0.55, 32, 32),
-  new THREE.MeshStandardMaterial({ color:'#ffffff', emissive:'#7cc4ff', emissiveIntensity:2.4,
+const orb = new THREE.Mesh(new THREE.SphereGeometry(0.26, 24, 24),
+  new THREE.MeshStandardMaterial({ color:'#ffffff', emissive:'#8fd0ff', emissiveIntensity:1.6,
     metalness:0.2, roughness:0.2 }));
 orb.castShadow = true; scene.add(orb);
-const orbLight = new THREE.PointLight('#9bd0ff', 6, 22, 2); scene.add(orbLight);
+const orbLight = new THREE.PointLight('#9bd0ff', 3, 16, 2); scene.add(orbLight);
 
 // ---- post-processing: bloom for the glow ---------------------------------
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.9, 0.6, 0.85);
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.35, 0.25, 0.9);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 
@@ -586,7 +586,7 @@ function focusLane(id){ focusLaneId=id; userOrbit=false;
 const N = GRAPH.steps.length;
 let progress = 0;          // 0 .. N-1
 let playing = true;
-let speed = 1;             // steps per second
+let speed = 0.5;           // steps per second (default 0.5× — slower)
 const SPEEDS=[0.5,1,2,4];
 const clock = new THREE.Clock();
 
@@ -618,15 +618,15 @@ function updateNow(s){
 function emphasize(stepN){
   GRAPH.steps.forEach(s=>{
     const g=nodeMeshes[s.n]; const active = s.n===stepN; const passed = s.n<stepN;
-    const target = active?1.5:(passed?0.45:0.12);
+    const target = active?0.85:(passed?0.28:0.05);
     (g.userData.accent||[]).forEach(mt=>{ mt.emissiveIntensity += (target-mt.emissiveIntensity)*0.2; });
-    const sc = (active?1.3:1.0)*EQUIP_SCALE; g.scale.lerp(new THREE.Vector3(sc,sc,sc),0.18);
+    const sc = (active?1.28:1.0)*EQUIP_SCALE; g.scale.lerp(new THREE.Vector3(sc,sc,sc),0.18);
     g.rotation.y = active ? g.rotation.y + 0.01 : g.rotation.y * 0.96;
   });
   const cur = GRAPH.steps[stepN-1];
   for(const id in railMeshes){
     const on = cur && (cur.primaryLane===id || cur.lanes.includes(id));
-    const t = on?0.5:0.04;
+    const t = on?0.28:0.03;
     railMeshes[id].material.emissiveIntensity += (t-railMeshes[id].material.emissiveIntensity)*0.15;
   }
 }
@@ -637,9 +637,13 @@ function tick(){
   if(playing){ progress += speed*dt; if(progress>=N-1){ progress=N-1; playing=false; setPlay(); } }
   const t = N>1 ? progress/(N-1) : 0;
   const pos = curve.getPoint(t);
-  orb.position.copy(pos); orbLight.position.copy(pos).y+=1.2;
-  // gentle bob
-  orb.position.y += Math.sin(performance.now()*0.005)*0.05;
+  orb.position.copy(pos); orbLight.position.copy(pos).y+=1.0;
+  orb.position.y += Math.sin(performance.now()*0.005)*0.04;
+  // strobe — the small bright marker pulses fast to read as the active head
+  const strobe = 0.5 + 0.5*Math.sin(performance.now()*0.018);  // ~3 Hz
+  orb.material.emissiveIntensity = 1.3 + strobe*2.7;
+  orbLight.intensity = 2.2 + strobe*4.5;
+  orb.scale.setScalar(0.8 + strobe*0.3);
 
   const stepN = Math.min(N, Math.floor(progress)+1);
   if(stepN!==curStep){ curStep=stepN; updateNow(GRAPH.steps[stepN-1]); }
