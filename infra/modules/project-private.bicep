@@ -504,6 +504,76 @@ resource containerApps 'Microsoft.App/containerApps@2024-03-01' = [
   }
 ]
 
+// ---------------------------------------------------------------------------
+// One-shot migration job (runs INSIDE the VNet) to apply the medallion + audit
+// schema to the private Postgres. Manual trigger:
+//   az containerapp job start -g <RG> -n ca-zdw-migrate
+// Idempotent (the DDL uses IF NOT EXISTS / CREATE OR REPLACE).
+// ---------------------------------------------------------------------------
+resource migrateJob 'Microsoft.App/jobs@2024-03-01' = {
+  name: 'ca-zdw-migrate'
+  location: location
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${mi.id}': {}
+    }
+  }
+  properties: {
+    environmentId: cae.id
+    workloadProfileName: 'Consumption'
+    configuration: {
+      triggerType: 'Manual'
+      replicaTimeout: 600
+      replicaRetryLimit: 1
+      manualTriggerConfig: {
+        parallelism: 1
+        replicaCompletionCount: 1
+      }
+      secrets: [
+        {
+          name: 'database-url'
+          keyVaultUrl: '${kv.properties.vaultUri}secrets/database-url'
+          identity: mi.id
+        }
+      ]
+    }
+    template: {
+      containers: [
+        {
+          name: 'migrate'
+          image: 'postgres:16-alpine'
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+          env: [
+            {
+              name: 'DATABASE_URL'
+              secretRef: 'database-url'
+            }
+            {
+              name: 'SCHEMA_URL'
+              value: 'https://raw.githubusercontent.com/KevenWMarkham/zerodaywarranty/main/infra/scripts/postgres-schemas.sql'
+            }
+          ]
+          command: [
+            '/bin/sh'
+            '-c'
+          ]
+          args: [
+            'set -e; wget -qO /tmp/s.sql "$SCHEMA_URL"; psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f /tmp/s.sql; echo SCHEMA_APPLIED'
+          ]
+        }
+      ]
+    }
+  }
+  dependsOn: [
+    raKvSecrets
+    secDatabaseUrl
+  ]
+}
+
 output acrLoginServer string = acr.properties.loginServer
 output aoaiEndpoint string = aoai.properties.endpoint
 output identityPrincipalId string = mi.properties.principalId
