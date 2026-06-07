@@ -6,6 +6,15 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **Demo walk-through script** — `docs/DEMO_WALKTHROUGH.md`, a presenter's script
+  for demoing the deployed solution end to end: pre-flight (warm the
+  scale-to-zero app), the live `/run`, a tab-by-tab tour of the live `/portal`
+  Swim Lane Views, the persona portals, the HITL Adaptive Card (`/hitl-card`) and
+  the VERIFIED audit chain, the value table (~12 min vs 8–12 weeks, $4.2M
+  exposure, $2.8M / +347% recovery), and the build/extensibility act. Includes a
+  live-command cheat-sheet (against the deployed Azure endpoint), a local
+  fallback, an objections FAQ, and reset notes. Figures verified against an actual
+  chain run.
 - **Swim Lane Views served live by the orchestrator** — the orchestrator
   Container App now serves the Swim Lane Views portal as HTML at `GET /portal`
   (aliases `/lanes`, `/swim-lanes`, `/swimlanes`), rendered from a fresh chain run
