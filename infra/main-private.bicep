@@ -62,9 +62,7 @@ module project 'modules/project-private.bicep' = {
     containerAppsEnvName: containerAppsEnvName
     aoaiName: aoaiName
     aoaiChatDeployment: aoaiChatDeployment
-    aoaiChatModelVersion: aoaiChatModelVersion
     aoaiEmbedDeployment: aoaiEmbedDeployment
-    aoaiEmbedModelVersion: aoaiEmbedModelVersion
     pgAdminUser: pgAdminUser
     pgAdminPassword: pgAdminPassword
     imageTag: imageTag
@@ -78,6 +76,23 @@ module project 'modules/project-private.bicep' = {
     openaiDnsId: network.outputs.openaiDnsId
     cogDnsId: network.outputs.cogDnsId
     pgDnsId: network.outputs.pgDnsId
+  }
+}
+
+// AOAI model deployments run AFTER the account is fully provisioned (separate
+// module + dependsOn) to avoid the state-Accepted race.
+module aoaiDeployments 'modules/aoai-deployments.bicep' = {
+  name: 'zdw-aoai-deployments'
+  scope: rg
+  dependsOn: [
+    project
+  ]
+  params: {
+    aoaiName: aoaiName
+    aoaiChatDeployment: aoaiChatDeployment
+    aoaiChatModelVersion: aoaiChatModelVersion
+    aoaiEmbedDeployment: aoaiEmbedDeployment
+    aoaiEmbedModelVersion: aoaiEmbedModelVersion
   }
 }
 

@@ -13,9 +13,7 @@ param appInsightsName string
 param containerAppsEnvName string
 param aoaiName string
 param aoaiChatDeployment string
-param aoaiChatModelVersion string
 param aoaiEmbedDeployment string
-param aoaiEmbedModelVersion string
 param pgAdminUser string
 @secure()
 param pgAdminPassword string
@@ -185,40 +183,9 @@ resource peAoaiDns 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023
   }
 }
 
-resource aoaiChat 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = {
-  parent: aoai
-  name: aoaiChatDeployment
-  sku: {
-    name: 'Standard'
-    capacity: 30
-  }
-  properties: {
-    model: {
-      format: 'OpenAI'
-      name: aoaiChatDeployment
-      version: aoaiChatModelVersion
-    }
-  }
-}
-
-resource aoaiEmbed 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = {
-  parent: aoai
-  name: aoaiEmbedDeployment
-  sku: {
-    name: 'Standard'
-    capacity: 50
-  }
-  properties: {
-    model: {
-      format: 'OpenAI'
-      name: aoaiEmbedDeployment
-      version: aoaiEmbedModelVersion
-    }
-  }
-  dependsOn: [
-    aoaiChat
-  ]
-}
+// (AOAI model deployments are created by modules/aoai-deployments.bicep AFTER
+// the account is fully provisioned — see main-private.bicep — to avoid the
+// "AccountProvisioningStateInvalid … state Accepted" race.)
 
 // ---------------------------------------------------------------------------
 // Postgres flexible server — VNet injection (no public access)
