@@ -23,9 +23,20 @@ def test_graph_has_24_steps_on_valid_lanes() -> None:
     rail_ids = {lid for lid, _hex in RAIL_LANES}
     assert len(graph["steps"]) == 24
     assert [s["n"] for s in graph["steps"]] == list(range(1, 25))
+    equip_kinds = {
+        "monitor",
+        "database",
+        "magnifier",
+        "tool",
+        "camera",
+        "document",
+        "approver",
+        "shield",
+    }
     for s in graph["steps"]:
         assert s["primaryLane"] in rail_ids
         assert s["phase"] != "—"
+        assert s["equip"] in equip_kinds  # each step renders as a real equipment model
         for lane in s["lanes"]:
             assert lane in rail_ids  # governance is the floor, never a rail
     assert len(graph["path"]) == 24

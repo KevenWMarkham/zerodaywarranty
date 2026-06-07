@@ -6,6 +6,17 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **3D steps as real equipment** — the fly-through nodes are no longer plain
+  cubes; each step renders a recognizable PBR model built from primitives,
+  matched to what the step does: dashboard **monitor** (detect / notify),
+  **database** (VIN/lot/telemetry joins), **magnifier** (statistics & SPC),
+  **torque tool** (station / tool drift), **camera** (inline quality), stacked
+  **documents** (hypothesis / evidence / chargeback), an **approver** figure with
+  an approval card (HITL), and a **shield** (NHTSA / audit). Models tint to their
+  lane colour, glow + spin when the trace is on them, and stay fully
+  self-contained (no external assets). `process3d.py` `STEP_EQUIPMENT` mapping +
+  a per-step `equip` field; test asserts every step maps to a known model.
+
 - **3D → portal handoff by step** — the 3D fly-through HUD now shows an "Open
   <lane> in the portal" button that tracks the **current step's lane** as the
   trace moves, linking to `ZeroDayWarranty_SwimLane_Views.html#lane=<id>`. The

@@ -72,6 +72,35 @@ _STEP_DX = 2.4
 _LANE_DZ = 3.4
 _NODE_Y = 0.6
 
+#: Real-to-life equipment model shown for each step (built from primitives in the
+#: scene), chosen to match what the step actually does.
+STEP_EQUIPMENT: dict[int, str] = {
+    1: "monitor",  # warranty-cost dashboard raises the signal
+    2: "monitor",  # scope the cohort on the dashboard
+    3: "database",  # pull VINs
+    4: "database",  # join build records
+    5: "database",  # build-week distribution
+    6: "magnifier",  # find over-represented weeks
+    7: "tool",  # station / tool distribution
+    8: "magnifier",  # statistical interaction test
+    9: "camera",  # quality / inline inspection events
+    10: "magnifier",  # SPC anomalies
+    11: "database",  # join telemetry
+    12: "tool",  # tool calibration drift
+    13: "database",  # supplier lot codes
+    14: "magnifier",  # lot warranty rate
+    15: "magnifier",  # lot significance
+    16: "magnifier",  # rank interactions
+    17: "document",  # root-cause hypothesis
+    18: "document",  # evidence package
+    19: "document",  # chargeback exposure
+    20: "document",  # chargeback documentation
+    21: "shield",  # NHTSA EWR check
+    22: "approver",  # HITL review
+    23: "shield",  # audit-ledger write
+    24: "monitor",  # notify downstream / KPI rollup
+}
+
 
 def _x(step: int) -> float:
     return round((step - 1) * _STEP_DX - (23 * _STEP_DX) / 2, 3)
@@ -153,6 +182,7 @@ def build_process_graph(result: ChainResult) -> dict[str, Any]:
                 "lanes": _lanes_of(n),
                 "tools": list(row["tools_called"]) if row else [],
                 "sealed": row is not None,
+                "equip": STEP_EQUIPMENT.get(n, "monitor"),
                 "x": x,
                 "z": z,
             }
@@ -435,21 +465,82 @@ GRAPH.phases.forEach(p=>{
   const panel=new THREE.Mesh(new RoundedBoxGeometry(0.12,6.4,zSpan+5,4,0.05),glass);
   panel.position.set(p.x1,3.2,0); scene.add(panel); })();
 
-// ---- step nodes ----------------------------------------------------------
-const nodeGeo = new RoundedBoxGeometry(1.25,1.25,1.25,5,0.28);
+// ---- step equipment (real-to-life models built from primitives) ----------
+const NODE_Y = 0.6;
+const EQUIP_SCALE = 1.15;
 const nodeMeshes = {};
+
+const matBody = ()=> new THREE.MeshStandardMaterial({ color:'#3a4661', metalness:0.7, roughness:0.45 });
+const matMetal = ()=> new THREE.MeshStandardMaterial({ color:'#c7d2e0', metalness:0.9, roughness:0.32 });
+const matPaper = ()=> new THREE.MeshStandardMaterial({ color:'#eef2f7', metalness:0.05, roughness:0.7 });
+const matSkin = ()=> new THREE.MeshStandardMaterial({ color:'#e9c6a8', metalness:0.05, roughness:0.6 });
+const matGlass = ()=> new THREE.MeshPhysicalMaterial({ color:'#cfe7ff', metalness:0, roughness:0.08,
+  transmission:0.9, thickness:0.4, transparent:true, opacity:0.6 });
+
+function buildEquip(type, color){
+  const g = new THREE.Group();
+  const accent = [];
+  const acc = ()=>{ const m = new THREE.MeshStandardMaterial({ color:color, metalness:0.45,
+    roughness:0.3, emissive:color, emissiveIntensity:0.12 }); accent.push(m); return m; };
+  const add = (geo, mat, p, r)=>{ const m=new THREE.Mesh(geo,mat);
+    if(p) m.position.set(p[0],p[1],p[2]); if(r) m.rotation.set(r[0],r[1],r[2]);
+    m.castShadow=true; m.receiveShadow=true; g.add(m); return m; };
+  const H = Math.PI/2;
+
+  if(type==='monitor'){
+    add(new RoundedBoxGeometry(1.0,0.7,0.08,3,0.03), matBody(), [0,0.2,0]);
+    add(new THREE.PlaneGeometry(0.84,0.54), acc(), [0,0.2,0.045]);
+    add(new THREE.CylinderGeometry(0.04,0.04,0.28,12), matMetal(), [0,-0.1,0]);
+    add(new THREE.CylinderGeometry(0.24,0.24,0.05,24), matMetal(), [0,-0.26,0]);
+  } else if(type==='database'){
+    for(let i=0;i<3;i++){
+      add(new THREE.CylinderGeometry(0.34,0.34,0.16,28), i===0?acc():matBody(), [0,-0.3+i*0.3,0]);
+      add(new THREE.TorusGeometry(0.34,0.018,8,28), acc(), [0,-0.22+i*0.3,0], [H,0,0]);
+    }
+  } else if(type==='magnifier'){
+    add(new THREE.TorusGeometry(0.3,0.07,16,32), acc(), [0,0.15,0]);
+    add(new THREE.CircleGeometry(0.26,32), matGlass(), [0,0.15,0.001]);
+    add(new THREE.CylinderGeometry(0.05,0.05,0.5,12), matMetal(), [0.28,-0.18,0], [0,0,-0.7]);
+  } else if(type==='tool'){
+    add(new THREE.CylinderGeometry(0.13,0.13,0.7,20), matBody(), [0.05,0.12,0], [0,0,H]);
+    add(new THREE.CylinderGeometry(0.16,0.16,0.22,24), acc(), [0.45,0.12,0], [0,0,H]);
+    add(new THREE.CylinderGeometry(0.09,0.11,0.5,16), matBody(), [-0.18,-0.16,0]);
+    add(new THREE.BoxGeometry(0.1,0.12,0.16), acc(), [-0.03,-0.02,0]);
+  } else if(type==='camera'){
+    add(new RoundedBoxGeometry(0.5,0.42,0.5,2,0.05), matBody(), [0,0.12,0]);
+    add(new THREE.CylinderGeometry(0.17,0.2,0.28,24), matMetal(), [0,0.12,0.3], [H,0,0]);
+    add(new THREE.CylinderGeometry(0.12,0.12,0.05,24), acc(), [0,0.12,0.46], [H,0,0]);
+    add(new THREE.CylinderGeometry(0.03,0.03,0.34,8), matMetal(), [0,-0.22,0]);
+  } else if(type==='document'){
+    for(let i=0;i<3;i++) add(new RoundedBoxGeometry(0.55,0.03,0.72,2,0.01), matPaper(), [i*0.04-0.04,i*0.06-0.05,i*0.03]);
+    for(let i=0;i<3;i++) add(new THREE.BoxGeometry(0.36,0.012,0.04), acc(), [0,0.14,-0.18+i*0.15]);
+  } else if(type==='approver'){
+    add(new THREE.SphereGeometry(0.16,20,16), matSkin(), [0,0.34,0]);
+    add(new THREE.CylinderGeometry(0.18,0.26,0.5,20), acc(), [0,0.0,0]);
+    add(new RoundedBoxGeometry(0.42,0.3,0.03,2,0.01), matPaper(), [0,0.12,0.34]);
+    add(new THREE.BoxGeometry(0.14,0.02,0.02), acc(), [0,0.08,0.36]);
+  } else if(type==='shield'){
+    add(new RoundedBoxGeometry(0.6,0.55,0.12,4,0.05), acc(), [0,0.2,0]);
+    add(new THREE.ConeGeometry(0.42,0.42,4), acc(), [0,-0.2,0], [Math.PI,Math.PI/4,0]);
+    const chk = matPaper();
+    add(new THREE.BoxGeometry(0.06,0.18,0.06), chk, [-0.07,0.14,0.09], [0,0,0.6]);
+    add(new THREE.BoxGeometry(0.06,0.32,0.06), chk, [0.1,0.2,0.09], [0,0,-0.5]);
+  } else {
+    add(new RoundedBoxGeometry(0.8,0.8,0.8,4,0.12), acc());
+  }
+  g.userData.accent = accent;
+  return g;
+}
+
 GRAPH.steps.forEach(s=>{
-  const c = colorOf(s.primaryLane);
-  const mat = new THREE.MeshPhysicalMaterial({ color:c, metalness:0.5, roughness:0.25,
-    clearcoat:0.8, clearcoatRoughness:0.2, emissive:c, emissiveIntensity:0.06 });
-  const m = new THREE.Mesh(nodeGeo, mat);
-  m.position.set(s.x, _y(), s.z); m.castShadow = true; m.receiveShadow = true;
-  m.userData = s; scene.add(m); nodeMeshes[s.n] = m;
-  const num = addLabel(String(s.n), s.x, s.z===_topZ()?_y()+1.1:_y()+1.1, s.z, 'lane');
+  const g = buildEquip(s.equip, colorOf(s.primaryLane));
+  g.scale.setScalar(EQUIP_SCALE);
+  g.position.set(s.x, NODE_Y, s.z);
+  g.userData.step = s;
+  scene.add(g); nodeMeshes[s.n] = g;
+  const num = addLabel(String(s.n), s.x, NODE_Y+1.3, s.z, 'lane');
   num.element.style.fontFamily='Cascadia Mono, monospace';
 });
-function _y(){ return 0.6; }
-function _topZ(){ return Math.min(...laneZ); }
 
 // flow tube through the path (execution order)
 const curvePts = GRAPH.path.map(p=>new THREE.Vector3(p[0],p[1],p[2]));
@@ -526,10 +617,11 @@ function updateNow(s){
 
 function emphasize(stepN){
   GRAPH.steps.forEach(s=>{
-    const m=nodeMeshes[s.n]; const active = s.n===stepN; const passed = s.n<stepN;
-    const target = active?1.6:(passed?0.4:0.06);
-    m.material.emissiveIntensity += (target - m.material.emissiveIntensity)*0.2;
-    const sc = active?1.35:1.0; m.scale.lerp(new THREE.Vector3(sc,sc,sc),0.2);
+    const g=nodeMeshes[s.n]; const active = s.n===stepN; const passed = s.n<stepN;
+    const target = active?1.5:(passed?0.45:0.12);
+    (g.userData.accent||[]).forEach(mt=>{ mt.emissiveIntensity += (target-mt.emissiveIntensity)*0.2; });
+    const sc = (active?1.3:1.0)*EQUIP_SCALE; g.scale.lerp(new THREE.Vector3(sc,sc,sc),0.18);
+    g.rotation.y = active ? g.rotation.y + 0.01 : g.rotation.y * 0.96;
   });
   const cur = GRAPH.steps[stepN-1];
   for(const id in railMeshes){
