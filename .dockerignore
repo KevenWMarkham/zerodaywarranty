@@ -8,7 +8,9 @@ __pycache__
 **/__pycache__
 *.pyc
 tests
-docs
+docs/*
+!docs/design
+docs/design/**/*.md
 infra
 backlog
 catalog

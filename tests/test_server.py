@@ -80,4 +80,21 @@ def test_portal_paths_are_orchestrator_only() -> None:
 
 def test_health_advertises_portal_on_orchestrator() -> None:
     assert route("orchestrator", "/health")[1]["portal"] == "/portal"
+    assert route("orchestrator", "/health")[1]["process3d"] == "/process-3d"
     assert "portal" not in route("mcp-warranty", "/health")[1]
+
+
+def test_serves_static_design_pack_pages() -> None:
+    # the committed design pack is served by filename so portal cross-links work
+    result = html_route("orchestrator", "/ZeroDayWarranty_Persona_Portals.html")
+    assert result is not None
+    status, html = result
+    assert status == 200
+    assert "<!DOCTYPE html>" in html
+
+
+def test_design_serving_rejects_traversal_and_non_html() -> None:
+    assert html_route("orchestrator", "/../pyproject.toml") is None
+    assert html_route("orchestrator", "/etc/passwd") is None
+    assert html_route("orchestrator", "/nope.html") is None  # not in the pack
+    assert html_route("mcp-warranty", "/ZeroDayWarranty_Persona_Portals.html") is None

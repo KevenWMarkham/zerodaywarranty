@@ -24,8 +24,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from collections import Counter
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from typing import Any
 
 from zero_day_warranty import __version__
@@ -66,6 +68,37 @@ def _env_config() -> dict[str, bool]:
 PORTAL_PATHS = ("/portal", "/lanes", "/swim-lanes", "/swimlanes")
 #: Orchestrator paths that return the 3D process fly-through (text/html).
 PROCESS_3D_PATHS = ("/process-3d", "/3d")
+#: Safe design-pack filename (no slashes / traversal) — e.g. ``Foo_Bar.html``.
+_DESIGN_NAME = re.compile(r"^[A-Za-z0-9_-]+\.html$")
+
+
+def _design_dir() -> Path | None:
+    """Directory holding the static design-pack HTML, if available.
+
+    In the container the design pack is copied in and pointed at by
+    ``ZDW_DESIGN_DIR``; for a local checkout we fall back to ``docs/design``.
+    """
+    env = os.getenv("ZDW_DESIGN_DIR")
+    if env:
+        p = Path(env)
+        return p if p.is_dir() else None
+    cand = Path(__file__).resolve().parents[2] / "docs" / "design"
+    return cand if cand.is_dir() else None
+
+
+def _serve_design(name: str) -> str | None:
+    """Return the contents of a design-pack page by filename, or ``None``.
+
+    Only bare ``*.html`` names are accepted (no path separators), so the request
+    cannot escape the design directory.
+    """
+    if not _DESIGN_NAME.match(name):
+        return None
+    ddir = _design_dir()
+    if ddir is None:
+        return None
+    f = ddir / name
+    return f.read_text(encoding="utf-8") if f.is_file() else None
 
 
 def html_route(role: str, path: str) -> tuple[int, str] | None:
@@ -84,6 +117,10 @@ def html_route(role: str, path: str) -> tuple[int, str] | None:
         from zero_day_warranty.process3d import render_process_3d_html
 
         return 200, render_process_3d_html()
+    if role == "orchestrator" and path.endswith(".html"):
+        page = _serve_design(path.lstrip("/"))
+        if page is not None:
+            return 200, page
     return None
 
 

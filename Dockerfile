@@ -14,6 +14,10 @@ ENV PYTHONUNBUFFERED=1 \
 COPY pyproject.toml README.md ./
 COPY src ./src
 RUN pip install --no-cache-dir .
+# Static design pack — served by the orchestrator so the live demo is navigable
+# (the live-rendered /portal + /process-3d cross-link to these filenames).
+COPY docs/design ./docs/design
+ENV ZDW_DESIGN_DIR=/app/docs/design
 EXPOSE 8080
 # Non-root runtime.
 RUN useradd --create-home --uid 10001 appuser
