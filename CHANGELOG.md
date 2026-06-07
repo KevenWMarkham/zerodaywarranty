@@ -6,6 +6,20 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **Swim Lane Views** — per-lane drill-down companion to the (whole-picture)
+  Capability Swim Lanes. `lanes.py` builds one view per lane (Consumption &
+  Detection, Data Plane, Agent Orchestration, Accelerated Analytics,
+  Human-in-the-Loop, Downstream Action, Governance Foundation, Day-0 Prevention)
+  from a **live chain run** — each view shows the steps that lane owns, its KPIs,
+  the live decision output it sealed to the audit ledger, its phase coverage, and
+  its handoffs, with links into the matching Persona Portals. Rendered as a
+  standalone design-pack portal (`docs/design/ZeroDayWarranty_SwimLane_Views.html`,
+  shared visual system + tabs) and a diffable Markdown twin
+  (`docs/zero-day-warranty/swim-lane-views.md`). New CLI `zdw lanes [--write]`
+  regenerates both; `tests/test_lanes.py` asserts step coverage, live figures,
+  and that the committed artifacts stay in sync with the generator. Cross-linked
+  with the Capability Swim Lanes doc and folded into `SCENARIO_PLAYBOOK.md` §3c so
+  every future scenario generates them too.
 - **HITL Teams Adaptive Card (S8-2)** — `notify.py` builds the Quality-Director
   approval Adaptive Card (schema 1.5) from the chargeback evidence package
   (`build_adaptive_card`), wraps it in the Teams Incoming-Webhook envelope

@@ -22,6 +22,7 @@ from zero_day_warranty.calculations import (
     manual_rca_baseline,
 )
 from zero_day_warranty.chain import STEP_CATALOG, ChainConfig, WarrantyRootCauseChain
+from zero_day_warranty.lanes import render_swimlane_views_html, render_swimlane_views_md
 from zero_day_warranty.manifest import load_agent, load_scenario
 from zero_day_warranty.roadmap import (
     load_roadmap,
@@ -72,6 +73,7 @@ Commands
   zdw sprints     every backlog story as a checkbox
   zdw checklist   deployment validation matrix (built/deployed/tested)
   zdw scenarios   search the scenario library (--sync registers repo scenarios)
+  zdw lanes       render the per-swim-lane views (--write regenerates the design pack)
   zdw --help      argparse help
 
 Design pack: docs/design/  ·  Service: service/AXLE-WARRANTY-01/  ·  Backlog: backlog/roadmap.yaml
@@ -261,6 +263,24 @@ def cmd_scenarios(args: argparse.Namespace) -> int:
     return 0
 
 
+HTML_LANE_VIEWS = REPO_ROOT / "docs" / "design" / "ZeroDayWarranty_SwimLane_Views.html"
+MD_LANE_VIEWS = REPO_ROOT / "docs" / "zero-day-warranty" / "swim-lane-views.md"
+
+
+def cmd_lanes(args: argparse.Namespace) -> int:
+    """Render the per-swim-lane views from a live chain run."""
+    dataset = generate()
+    result = WarrantyRootCauseChain(dataset.medallion).run()
+    if args.write:
+        HTML_LANE_VIEWS.write_text(render_swimlane_views_html(result), encoding="utf-8")
+        MD_LANE_VIEWS.write_text(render_swimlane_views_md(result), encoding="utf-8")
+        print(f"[wrote] {HTML_LANE_VIEWS.relative_to(REPO_ROOT)}")
+        print(f"[wrote] {MD_LANE_VIEWS.relative_to(REPO_ROOT)}")
+        return 0
+    print(render_swimlane_views_md(result))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI entry point."""
     parser = argparse.ArgumentParser(prog="zdw", description="Zero Day Warranty CLI")
@@ -303,6 +323,14 @@ def main(argv: list[str] | None = None) -> int:
         "--sync", action="store_true", help="add missing repo scenarios to the library CSV + xlsx"
     )
     p_scn.set_defaults(func=cmd_scenarios)
+
+    p_lanes = sub.add_parser("lanes", help="render the per-swim-lane views")
+    p_lanes.add_argument(
+        "--write",
+        action="store_true",
+        help="regenerate the design-pack HTML + Markdown instead of printing",
+    )
+    p_lanes.set_defaults(func=cmd_lanes)
 
     args = parser.parse_args(argv)
     if not getattr(args, "command", None):

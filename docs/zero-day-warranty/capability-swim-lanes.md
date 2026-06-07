@@ -6,6 +6,13 @@ The polished diagrams are in
 [`../design/ZeroDayWarranty_Capability_SwimLanes.html`](../design/ZeroDayWarranty_Capability_SwimLanes.html);
 this is the text-native version. Steps in `[n]` reference the 24-step chain.
 
+> **Drill into a lane.** This document shows every lane at once. For the
+> per-lane drill-down — each lane's steps, live sealed decision output, KPIs and
+> handoffs for one investigation — see the **Swim Lane Views**:
+> [`swim-lane-views.md`](swim-lane-views.md) /
+> [`../design/ZeroDayWarranty_SwimLane_Views.html`](../design/ZeroDayWarranty_SwimLane_Views.html)
+> (generated from a live chain run with `zdw lanes --write`).
+
 ## How to read
 
 Rows = capability owners. Columns = the seven phases (Detect → Context →

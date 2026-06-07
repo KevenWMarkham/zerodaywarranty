@@ -111,9 +111,19 @@ Clone-and-adapt the Zero Day Warranty modules (they are the template):
 
 ### 3c. Design pack — `docs/design/` (HTML, shared visual system)
 Reuse the CSS/header/footer from the existing docs. Produce the set:
-Architecture · Calculations & References · Capability Swim Lanes · Persona
-Portals · Azure Deployment · Experts Panel · Roadmap. Keep the
+Architecture · Calculations & References · Capability Swim Lanes · **Swim Lane
+Views** · Persona Portals · Azure Deployment · Experts Panel · Roadmap. Keep the
 classification banner and the "synthetic / not client claims" footer.
+
+**Swim Lane Views** are the per-lane drill-down companion to the (whole-picture)
+Capability Swim Lanes: one tab per lane, each showing the *same* investigation as
+that lane experiences it — the steps it owns, its KPIs, the live decision output
+it sealed to the audit ledger, and its handoffs. Generate them from a **live
+chain run** (not hand-typed) via a small generator module (`<pkg>/lanes.py`:
+`build_lane_views` + `render_swimlane_views_html` / `render_swimlane_views_md`)
+exposed as `zdw lanes --write`, and add a test that asserts the committed HTML +
+Markdown twin match the generator output (so the views never drift from the
+chain). Cross-link Swim Lane Views ⇄ Capability Swim Lanes ⇄ Persona Portals.
 
 ### 3d. Infra — `infra/` (two deploy variants, both create their own RG)
 - **Public** (ungoverned subs): `main.bicep` + `modules/project.bicep` —

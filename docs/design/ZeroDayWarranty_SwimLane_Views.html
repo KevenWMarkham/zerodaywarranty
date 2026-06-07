@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Day Warranty · Swim Lane Views</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Aptos:wght@400;600;700&family=Cascadia+Mono&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --navy: #1A2339; --navy-soft: #2A3349;
+    --ms-blue: #0078D4; --ms-blue-dark: #005A9E;
+    --nv-green: #76B900; --nv-green-dark: #5C9300;
+    --slate: #64748B; --slate-light: #94A3B8;
+    --amber: #D97706; --green: #047857; --rust: #B85450;
+    --bg: #ffffff; --bg-soft: #FAFAF7; --border: #E5E7EB;
+    --text: #1F2937; --code-bg: #F5F5F7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Source Serif 4", Charter, Georgia, serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px; }
+  .classification { background: var(--amber); color: #fff; padding: 6px 24px; text-align: center; font-family: Aptos, sans-serif; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; }
+  header.cover { padding: 44px 56px 28px; background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%); color: #fff; border-bottom: 6px solid var(--ms-blue); }
+  header.cover .eyebrow { font-family: Aptos, sans-serif; font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ms-blue); font-weight: 700; }
+  header.cover h1 { font-family: Aptos, sans-serif; font-size: 36px; font-weight: 700; line-height: 1.12; margin: 12px 0 6px; color: #fff; }
+  header.cover .subtitle { font-family: Aptos, sans-serif; font-size: 18px; color: #cbd5e1; font-weight: 400; margin: 0 0 20px; }
+  header.cover .meta { display: flex; gap: 22px; flex-wrap: wrap; font-family: Aptos, sans-serif; font-size: 12.5px; color: #94A3B8; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.16); }
+  header.cover .meta strong { color: #cbd5e1; font-weight: 600; }
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 64px; }
+  .lead { font-size: 16px; color: var(--slate); margin: 0 0 14px; max-width: 940px; }
+  h2 { font-family: Aptos, sans-serif; color: var(--navy); font-size: 22px; margin: 0 0 6px; }
+  a { color: var(--ms-blue-dark); }
+  code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 13px; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; color: var(--navy); }
+  .tab-nav { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 2px solid var(--border); padding: 0 16px; display: flex; gap: 2px; flex-wrap: wrap; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .tab-btn { border: none; background: transparent; padding: 12px 14px; cursor: pointer; font-family: Aptos, sans-serif; font-size: 12.5px; font-weight: 600; color: var(--slate); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 7px; }
+  .tab-btn:hover { color: var(--navy); background: var(--bg-soft); }
+  .tab-btn.active { color: var(--navy); border-bottom-color: var(--ms-blue); }
+  .tab-btn .vmark { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--ms-blue); }
+  .tab-btn .vmark.nv { background: var(--nv-green-dark); }
+  .tab-btn .vmark.gov { background: #334155; }
+  .tab-btn .vmark.rust { background: var(--rust); }
+  .tab-btn .vmark.amber { background: var(--amber); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .portal { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+  .portal-top { background: linear-gradient(135deg, var(--navy), var(--navy-soft)); color: #fff; padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-bottom: 4px solid var(--ms-blue); }
+  .portal-top.nv { border-bottom-color: var(--nv-green); }
+  .portal-top.rust { border-bottom-color: var(--rust); }
+  .portal-top.amber { border-bottom-color: var(--amber); }
+  .portal-top.gov { border-bottom-color: #64748B; }
+  .portal-id { display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--ms-blue); display: flex; align-items: center; justify-content: center; font-family: Aptos, sans-serif; font-weight: 700; font-size: 15px; color: #fff; }
+  .avatar.nv { background: var(--nv-green-dark); } .avatar.rust { background: var(--rust); } .avatar.amber { background: var(--amber); } .avatar.gov { background: #64748B; }
+  .portal-id h3 { font-family: Aptos, sans-serif; margin: 0; font-size: 18px; }
+  .portal-id .role { font-family: Aptos, sans-serif; font-size: 12px; color: #cbd5e1; }
+  .portal-scope { font-family: Aptos, sans-serif; font-size: 11px; color: #94A3B8; text-align: right; max-width: 380px; }
+  .portal-body { background: var(--bg-soft); padding: 18px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 760px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  .kpi { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; border-top: 3px solid var(--ms-blue); }
+  .kpi.nv { border-top-color: var(--nv-green); } .kpi.rust { border-top-color: var(--rust); } .kpi.gov { border-top-color: #64748B; } .kpi.amber { border-top-color: var(--amber); }
+  .kpi-val { font-family: Aptos, sans-serif; font-size: 22px; font-weight: 700; color: var(--navy); line-height: 1.1; word-break: break-word; }
+  .kpi-lbl { font-family: Aptos, sans-serif; font-size: 11px; color: var(--slate); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+  .kpi-delta { font-family: "Cascadia Mono", monospace; font-size: 11px; margin-top: 6px; }
+  .kpi-delta.up { color: var(--green); } .kpi-delta.down { color: var(--rust); } .kpi-delta.flat { color: var(--slate); }
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 860px) { .panels { grid-template-columns: 1fr; } }
+  .panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .panel.span2 { grid-column: span 2; }
+  @media (max-width: 860px) { .panel.span2 { grid-column: span 1; } }
+  .panel-title { font-family: Aptos, sans-serif; font-size: 12px; font-weight: 700; color: var(--ms-blue-dark); text-transform: uppercase; letter-spacing: 0.07em; margin: 0 0 10px; display: flex; justify-content: space-between; align-items: center; }
+  .panel-title .meta { color: var(--slate-light); font-weight: 600; font-size: 10.5px; }
+  /* phase strip */
+  .phases { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  @media (max-width: 860px) { .phases { grid-template-columns: repeat(2, 1fr); } }
+  .ph { border: 1px solid var(--border); border-radius: 6px; padding: 8px 6px; background: var(--bg-soft); min-height: 64px; }
+  .ph.lit { background: #EAF3FB; border-color: #BFDDF3; }
+  .ph .ph-n { font-family: Aptos, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate); margin-bottom: 4px; }
+  .ph .ph-s { font-family: "Cascadia Mono", monospace; font-size: 11px; color: var(--ms-blue-dark); font-weight: 700; }
+  .ph .ph-x { color: var(--slate-light); font-size: 11px; }
+  /* step rows */
+  .srow { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: start; padding: 8px 0; border-bottom: 1px dotted var(--border); font-size: 13px; }
+  .srow:last-child { border-bottom: none; }
+  .snum { font-family: "Cascadia Mono", monospace; font-weight: 700; color: #fff; background: var(--ms-blue); border-radius: 5px; text-align: center; padding: 2px 0; font-size: 12px; }
+  .snum.nv { background: var(--nv-green-dark); } .snum.rust { background: var(--rust); } .snum.amber { background: var(--amber); } .snum.gov { background: #64748B; }
+  .stitle { font-family: Aptos, sans-serif; color: var(--navy); font-weight: 600; }
+  .ssum { font-size: 11.5px; color: var(--slate); }
+  .stools { font-family: "Cascadia Mono", monospace; font-size: 10.5px; color: var(--slate-light); margin-top: 2px; }
+  .badge { font-family: Aptos, sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .badge.ok { background: #DCFCE7; color: #15803D; }
+  .badge.info { background: #DBEAFE; color: var(--ms-blue-dark); }
+  .handoff { display: flex; justify-content: space-between; gap: 12px; font-family: Aptos, sans-serif; font-size: 12px; }
+  .handoff .ho { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; flex: 1; }
+  .handoff .ho .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate-light); font-weight: 700; }
+  .handoff .ho .val { color: var(--navy); font-weight: 600; }
+  .plist { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pchip { font-family: Aptos, sans-serif; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--ms-blue); color: var(--ms-blue-dark); background: #fff; text-decoration: none; }
+  .pchip:hover { background: #EAF3FB; }
+  .invariant { font-family: Aptos, sans-serif; font-size: 12px; color: var(--slate); margin-top: 4px; }
+  .invariant b { color: var(--navy); }
+  footer { margin-top: 40px; padding: 22px 32px; background: var(--bg-soft); border-top: 2px solid var(--border); font-family: Aptos, sans-serif; font-size: 12px; color: var(--slate); text-align: center; }
+  footer strong { color: var(--text); }
+  @media print {
+    .classification { background:#fff; color:#000; border-bottom:1px solid #000; }
+    header.cover { background:#fff; color:#000; border-bottom:2px solid #000; }
+    header.cover h1, header.cover .subtitle, header.cover .meta strong, header.cover .eyebrow { color:#000; }
+    .tab-nav { display:none; }
+    .tab-panel { display:block !important; }
+    .portal { page-break-inside: avoid; }
+  }
+  </style>
+</head>
+<body>
+<div class="classification">Reference document · Generated from a live chain run · Reference figures (synthetic)</div>
+<header class="cover">
+  <div class="eyebrow">Pre-Conversation Reference · Swim Lane Views</div>
+  <h1>Zero Day Warranty Agentic Scenario</h1>
+  <div class="subtitle">Swim lane views — one investigation, seen from each lane's seat</div>
+  <div class="meta">
+    <span><strong>Trace:</strong> zdw-trace-0001</span>
+    <span><strong>Suspect lot:</strong> LOT-7743</span>
+    <span><strong>Hot station / tool:</strong> STATION-07 / TOOL-TQ-07</span>
+    <span><strong>Audit rows:</strong> 24 · chain VERIFIED</span>
+    <span><strong>Companion to:</strong> <a href="ZeroDayWarranty_Capability_SwimLanes.html">Capability Swim Lanes</a> · <a href="ZeroDayWarranty_Persona_Portals.html">Persona Portals</a></span>
+  </div>
+</header><nav class="tab-nav" role="tablist" aria-label="Swim lane views"><button class="tab-btn active" data-tab="consumption"><span class="vmark"></span>Consumption &amp; Detection</button><button class="tab-btn" data-tab="dataplane"><span class="vmark"></span>Data Plane</button><button class="tab-btn" data-tab="orchestration"><span class="vmark"></span>Agent Orchestration</button><button class="tab-btn" data-tab="analytics"><span class="vmark nv"></span>Accelerated Analytics</button><button class="tab-btn" data-tab="hitl"><span class="vmark rust"></span>Human-in-the-Loop</button><button class="tab-btn" data-tab="downstream"><span class="vmark amber"></span>Downstream Action</button><button class="tab-btn" data-tab="governance"><span class="vmark gov"></span>Governance Foundation</button><button class="tab-btn" data-tab="day0"><span class="vmark nv"></span>Day-0 Prevention</button></nav><main><p class="lead" style="margin-top:16px;">The capability swim lanes show every lane at once across the seven phases; these are the drill-downs. Each tab takes the same investigation and shows it as that lane experiences it — the steps it owns, the live decision output it sealed to the audit ledger, its KPIs, and how it hands off to the next lane. Figures are generated from an actual chain run. Use the tabs to switch lanes (print shows all).</p><div class="tab-panel active" data-panel="consumption" role="tabpanel">
+  <h2>Consumption &amp; Detection · Power BI · Teams</h2>
+  <p class="lead">Where the signal is seen and the result lands — warranty-cost heatmaps raise the cluster, recovery KPIs roll up the outcome.</p>
+  <div class="portal">
+    <div class="portal-top">
+      <div class="portal-id"><div class="avatar">CD</div>
+        <div><h3>Consumption &amp; Detection</h3><div class="role">Power BI · Teams · steps 1–24</div></div></div>
+      <div class="portal-scope">Identity-scoped Power BI Direct Lake surfaces; no row leaves the Gold view.</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid"><div class="kpi"><div class="kpi-val">117</div><div class="kpi-lbl">Claims in signal</div><div class="kpi-delta up">cluster threshold breach</div></div><div class="kpi"><div class="kpi-val">117</div><div class="kpi-lbl">Cohort VINs</div><div class="kpi-delta flat">scoped from signal</div></div><div class="kpi"><div class="kpi-val">$2,822,040</div><div class="kpi-lbl">Recovery target</div><div class="kpi-delta up">to dashboards</div></div><div class="kpi"><div class="kpi-val">99%</div><div class="kpi-lbl">Evidence confidence</div><div class="kpi-delta up">rolled to KPI</div></div></div>
+      <div class="panels">
+        <div class="panel span2">
+          <div class="panel-title">Phase coverage <span class="meta">Detect → Act · this lane lit</span></div>
+          <div class="phases"><div class="ph lit"><div class="ph-n">Detect</div><div class="ph-s">[1]</div></div><div class="ph"><div class="ph-n">Context</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Analyze</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Attribute</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Hypothesis</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Decide</div><div class="ph-x">—</div></div><div class="ph lit"><div class="ph-n">Act</div><div class="ph-s">[24]</div></div></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Steps this lane owns <span class="meta">live · sealed to audit ledger</span></div>
+          <div class="srow"><span class="snum ">1</span><span><span class="stitle">Receive warranty claim cluster signal</span><div class="ssum">signal: warranty_cluster_threshold_breach · total claims: 117</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">24</span><span><span class="stitle">Notify downstream owners (CAPA, dealer advisories)</span><div class="ssum">downstream notified: CAPA, supplier_quality, dealer_advisories</div><div class="stools">teams.channel_post</div></span><span class="badge ok">sealed</span></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Lane handoff <span class="meta">where it sits in the chain</span></div>
+          <div class="handoff">
+            <div class="ho"><div class="lbl">Receives</div><div class="val">—</div></div>
+            <div class="ho"><div class="lbl">Hands to</div><div class="val">Agent Orchestration →</div></div>
+          </div>
+          <p class="invariant"><b>Invariant:</b> Identity-scoped Power BI Direct Lake surfaces; no row leaves the Gold view.</p>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Personas in this lane <span class="meta">links to persona portals</span></div>
+          <div class="plist"><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#exec">VP Quality</a><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#warranty">Warranty Analyst</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><div class="tab-panel" data-panel="dataplane" role="tabpanel">
+  <h2>Data Plane · Microsoft Fabric · medallion</h2>
+  <p class="lead">The per-VIN join. Bronze→Silver→Gold makes build, warranty, quality and telemetry answerable as one classification-aware view.</p>
+  <div class="portal">
+    <div class="portal-top">
+      <div class="portal-id"><div class="avatar">DP</div>
+        <div><h3>Data Plane</h3><div class="role">Microsoft Fabric · medallion · steps 3–19</div></div></div>
+      <div class="portal-scope">VIN-conformed, tokenized Silver; sensitivity labels propagate to Gold.</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid"><div class="kpi"><div class="kpi-val">117</div><div class="kpi-lbl">VINs joined (Gold)</div><div class="kpi-delta flat">per-VIN view</div></div><div class="kpi"><div class="kpi-val">2</div><div class="kpi-lbl">Hot build weeks</div><div class="kpi-delta up">over-represented</div></div><div class="kpi"><div class="kpi-val">23</div><div class="kpi-lbl">Supplier lots traced</div><div class="kpi-delta flat">in hot population</div></div><div class="kpi"><div class="kpi-val">$4,212,000</div><div class="kpi-lbl">Exposure composed</div><div class="kpi-delta up">step 19</div></div></div>
+      <div class="panels">
+        <div class="panel span2">
+          <div class="panel-title">Phase coverage <span class="meta">Detect → Act · this lane lit</span></div>
+          <div class="phases"><div class="ph lit"><div class="ph-n">Detect</div><div class="ph-s">[3]</div></div><div class="ph lit"><div class="ph-n">Context</div><div class="ph-s">[4]</div><div class="ph-s">[5]</div><div class="ph-s">[6]</div><div class="ph-s">[7]</div></div><div class="ph lit"><div class="ph-n">Analyze</div><div class="ph-s">[9]</div><div class="ph-s">[11]</div></div><div class="ph lit"><div class="ph-n">Attribute</div><div class="ph-s">[13]</div></div><div class="ph lit"><div class="ph-n">Hypothesis</div><div class="ph-s">[19]</div></div><div class="ph"><div class="ph-n">Decide</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Act</div><div class="ph-x">—</div></div></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Steps this lane owns <span class="meta">live · sealed to audit ledger</span></div>
+          <div class="srow"><span class="snum ">3</span><span><span class="stitle">Pull VIN list for affected cohort</span><div class="ssum">cohort size: 117</div><div class="stools">axle_warranty.pull_vins</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">4</span><span><span class="stitle">Join VIN list to build records</span><div class="ssum">joined vins: 117</div><div class="stools">fabric.gold.per_vin_view</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">5</span><span><span class="stitle">Extract build-week distribution of affected VINs</span><div class="ssum">build week claim counts: {11: 12, 12: 26, 13: 29}</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">6</span><span><span class="stitle">Identify over-represented build weeks vs. baseline</span><div class="ssum">hot weeks: 12, 13</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">7</span><span><span class="stitle">Extract station / tool / shift distribution</span><div class="ssum">station distribution: {STATION-07: 36, STATION-06: 2, STATION-09: 2} · tool distribution: {TOOL-TQ-07: 36, TOOL-TQ-06: 2, TOOL-TQ-09: 2}</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">9</span><span><span class="stitle">Join to quality event records</span><div class="ssum">quality events joined: 1200</div><div class="stools">fabric.gold.quality_events</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">11</span><span><span class="stitle">Join to assembly telemetry</span><div class="ssum">telemetry traces joined: 1200</div><div class="stools">fabric.gold.telemetry</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">13</span><span><span class="stitle">Extract supplier lot codes in hot VIN population</span><div class="ssum">lot codes in hot population: {LOT-7743: 32, LOT-1386: 1, LOT-1002: 1}</div><div class="stools">axle_warranty.get_lot_trace</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">19</span><span><span class="stitle">Compute chargeback dollar exposure per supplier lot</span><div class="ssum">attributable usd: 4212000.0 · agentic recovery usd: 2822040.0 · manual baseline usd: 631800.0</div><div class="stools">axle_warranty.chargeback_exposure</div></span><span class="badge ok">sealed</span></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Lane handoff <span class="meta">where it sits in the chain</span></div>
+          <div class="handoff">
+            <div class="ho"><div class="lbl">Receives</div><div class="val">← Consumption (cohort signal)</div></div>
+            <div class="ho"><div class="lbl">Hands to</div><div class="val">Agent Orchestration · Accelerated Analytics →</div></div>
+          </div>
+          <p class="invariant"><b>Invariant:</b> VIN-conformed, tokenized Silver; sensitivity labels propagate to Gold.</p>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Personas in this lane <span class="meta">links to persona portals</span></div>
+          <div class="plist"><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#it">IT / Data Eng</a><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#supplier">Supplier Quality</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><div class="tab-panel" data-panel="orchestration" role="tabpanel">
+  <h2>Agent Orchestration · Agent Framework · Foundry</h2>
+  <p class="lead">The 24-step orchestrator. Typed tool-calling on-behalf-of the invoking identity, sealing one audit row per step.</p>
+  <div class="portal">
+    <div class="portal-top">
+      <div class="portal-id"><div class="avatar">AO</div>
+        <div><h3>Agent Orchestration</h3><div class="role">Agent Framework · Foundry · steps 1–24</div></div></div>
+      <div class="portal-scope">Per-agent managed identity (OBO); single HITL gate at step 22.</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid"><div class="kpi"><div class="kpi-val">24</div><div class="kpi-lbl">Steps orchestrated</div><div class="kpi-delta flat">7 clusters</div></div><div class="kpi"><div class="kpi-val">15/15</div><div class="kpi-lbl">Owned steps sealed</div><div class="kpi-delta up">audit rows</div></div><div class="kpi rust"><div class="kpi-val">approved</div><div class="kpi-lbl">HITL gate</div><div class="kpi-delta flat">step 22</div></div><div class="kpi"><div class="kpi-val">99%</div><div class="kpi-lbl">Hypothesis confidence</div><div class="kpi-delta up">step 17</div></div></div>
+      <div class="panels">
+        <div class="panel span2">
+          <div class="panel-title">Phase coverage <span class="meta">Detect → Act · this lane lit</span></div>
+          <div class="phases"><div class="ph lit"><div class="ph-n">Detect</div><div class="ph-s">[1]</div><div class="ph-s">[2]</div><div class="ph-s">[3]</div></div><div class="ph lit"><div class="ph-n">Context</div><div class="ph-s">[4]</div><div class="ph-s">[5]</div><div class="ph-s">[6]</div><div class="ph-s">[7]</div></div><div class="ph"><div class="ph-n">Analyze</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Attribute</div><div class="ph-x">—</div></div><div class="ph lit"><div class="ph-n">Hypothesis</div><div class="ph-s">[17]</div><div class="ph-s">[18]</div><div class="ph-s">[19]</div><div class="ph-s">[20]</div></div><div class="ph lit"><div class="ph-n">Decide</div><div class="ph-s">[21]</div><div class="ph-s">[22]</div></div><div class="ph lit"><div class="ph-n">Act</div><div class="ph-s">[23]</div><div class="ph-s">[24]</div></div></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Steps this lane owns <span class="meta">live · sealed to audit ledger</span></div>
+          <div class="srow"><span class="snum ">1</span><span><span class="stitle">Receive warranty claim cluster signal</span><div class="ssum">signal: warranty_cluster_threshold_breach · total claims: 117</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">2</span><span><span class="stitle">Scope the claim cohort by part, failure mode, severity</span><div class="ssum">part number: PN-48820-BRK · failure modes: brake_actuator_premature_wear</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">3</span><span><span class="stitle">Pull VIN list for affected cohort</span><div class="ssum">cohort size: 117</div><div class="stools">axle_warranty.pull_vins</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">4</span><span><span class="stitle">Join VIN list to build records</span><div class="ssum">joined vins: 117</div><div class="stools">fabric.gold.per_vin_view</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">5</span><span><span class="stitle">Extract build-week distribution of affected VINs</span><div class="ssum">build week claim counts: {11: 12, 12: 26, 13: 29}</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">6</span><span><span class="stitle">Identify over-represented build weeks vs. baseline</span><div class="ssum">hot weeks: 12, 13</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">7</span><span><span class="stitle">Extract station / tool / shift distribution</span><div class="ssum">station distribution: {STATION-07: 36, STATION-06: 2, STATION-09: 2} · tool distribution: {TOOL-TQ-07: 36, TOOL-TQ-06: 2, TOOL-TQ-09: 2}</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">17</span><span><span class="stitle">Generate root-cause hypothesis with confidence intervals</span><div class="ssum">hypothesis: Supplier lot LOT-7743, installed at STATION-07 on TOOL-TQ-07 … · confidence: 0.99</div><div class="stools">nim.rca_reasoner · nemo.retriever</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">18</span><span><span class="stitle">Build evidence package: cohort, tests, raw data</span><div class="ssum">evidence package keys: confidence, hot_station, hot_tool, hot_weeks, root_cause_hypo…</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">19</span><span><span class="stitle">Compute chargeback dollar exposure per supplier lot</span><div class="ssum">attributable usd: 4212000.0 · agentic recovery usd: 2822040.0 · manual baseline usd: 631800.0</div><div class="stools">axle_warranty.chargeback_exposure</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">20</span><span><span class="stitle">Generate supplier chargeback documentation</span><div class="ssum">chargeback documentation: drafted · recovery target usd: 2822040.0</div><div class="stools">axle_warranty.generate_chargeback_doc</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">21</span><span><span class="stitle">Trigger NHTSA Early Warning Reporting check</span><div class="ssum">nhtsa ewr check: applicable</div><div class="stools">compliance.nhtsa_ewr</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">22</span><span><span class="stitle">Route to Quality Director for human review &amp; approval</span><div class="ssum">decision: approve_chargeback · approver: quality.director@toyota.example · recovery target usd: 2822040.0</div><div class="stools">teams.adaptive_card</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">23</span><span><span class="stitle">Write decision &amp; rationale to audit ledger</span><div class="ssum">ledger rows written: 23 · chain verified: True</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum ">24</span><span><span class="stitle">Notify downstream owners (CAPA, dealer advisories)</span><div class="ssum">downstream notified: CAPA, supplier_quality, dealer_advisories</div><div class="stools">teams.channel_post</div></span><span class="badge ok">sealed</span></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Lane handoff <span class="meta">where it sits in the chain</span></div>
+          <div class="handoff">
+            <div class="ho"><div class="lbl">Receives</div><div class="val">← Data Plane (Gold view)</div></div>
+            <div class="ho"><div class="lbl">Hands to</div><div class="val">Accelerated Analytics · Human-in-the-Loop →</div></div>
+          </div>
+          <p class="invariant"><b>Invariant:</b> Per-agent managed identity (OBO); single HITL gate at step 22.</p>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Personas in this lane <span class="meta">links to persona portals</span></div>
+          <div class="plist"><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#warranty">Quality Analyst</a><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#director">Quality Director</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><div class="tab-panel" data-panel="analytics" role="tabpanel">
+  <h2>Accelerated Analytics · NVIDIA · optional</h2>
+  <p class="lead">The statistical core — interaction tests, SPC/drift correlation, supplier-lot attribution graph and RCA reasoning. Runs on CPU without GPUs.</p>
+  <div class="portal">
+    <div class="portal-top nv">
+      <div class="portal-id"><div class="avatar nv">NV</div>
+        <div><h3>Accelerated Analytics</h3><div class="role">NVIDIA · optional · steps 8–18</div></div></div>
+      <div class="portal-scope">GPU acceleration is optional; the same math and audit contract hold on CPU.</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid"><div class="kpi nv"><div class="kpi-val">2.43×</div><div class="kpi-lbl">Warranty-rate ratio</div><div class="kpi-delta up">lot vs baseline</div></div><div class="kpi nv"><div class="kpi-val">1.0e-06</div><div class="kpi-lbl">Significance p</div><div class="kpi-delta up">two-proportion z</div></div><div class="kpi nv"><div class="kpi-val">304</div><div class="kpi-lbl">SPC anomalies</div><div class="kpi-delta down">at hot station</div></div><div class="kpi nv"><div class="kpi-val">8.93%</div><div class="kpi-lbl">Tool drift</div><div class="kpi-delta down">hot tool</div></div></div>
+      <div class="panels">
+        <div class="panel span2">
+          <div class="panel-title">Phase coverage <span class="meta">Detect → Act · this lane lit</span></div>
+          <div class="phases"><div class="ph"><div class="ph-n">Detect</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Context</div><div class="ph-x">—</div></div><div class="ph lit"><div class="ph-n">Analyze</div><div class="ph-s">[8]</div><div class="ph-s">[10]</div><div class="ph-s">[12]</div></div><div class="ph lit"><div class="ph-n">Attribute</div><div class="ph-s">[14]</div><div class="ph-s">[15]</div><div class="ph-s">[16]</div></div><div class="ph lit"><div class="ph-n">Hypothesis</div><div class="ph-s">[17]</div><div class="ph-s">[18]</div></div><div class="ph"><div class="ph-n">Decide</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Act</div><div class="ph-x">—</div></div></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Steps this lane owns <span class="meta">live · sealed to audit ledger</span></div>
+          <div class="srow"><span class="snum nv">8</span><span><span class="stitle">Statistical test: cohort × station × tool × shift</span><div class="ssum">hot station: STATION-07 · hot tool: TOOL-TQ-07 · station rate: 0.0619</div><div class="stools">rapids.cuml.proportion_test</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum nv">10</span><span><span class="stitle">Identify SPC anomalies preceding the hot build weeks</span><div class="ssum">spc anomalies at hot station: 304</div><div class="stools">triton.spc_anomaly</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum nv">12</span><span><span class="stitle">Correlate tool calibration drift with hot-station defects</span><div class="ssum">hot tool: TOOL-TQ-07 · avg calibration drift pct: 8.93</div><div class="stools">triton.drift_correlation</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum nv">14</span><span><span class="stitle">Compute supplier-lot warranty rate vs. baseline</span><div class="ssum">suspect lot: LOT-7743 · lot warranty rate: 0.0615 · baseline warranty rate: 0.0253</div><div class="stools">rapids.cugraph.lot_attribution</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum nv">15</span><span><span class="stitle">Statistical test: supplier-lot attribution significance</span><div class="ssum">z score: 4.891 · p value: 1e-06 · significant: True</div><div class="stools">rapids.cuml.proportion_test</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum nv">16</span><span><span class="stitle">Rank cohort × station × supplier-lot interactions</span><div class="ssum">ranked interactions: {&#x27;interaction&#x27;: &#x27;week×STATION-07×LOT-7743&#x27;, &#x27;rate_ratio&#x27;: 2.43}</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum nv">17</span><span><span class="stitle">Generate root-cause hypothesis with confidence intervals</span><div class="ssum">hypothesis: Supplier lot LOT-7743, installed at STATION-07 on TOOL-TQ-07 … · confidence: 0.99</div><div class="stools">nim.rca_reasoner · nemo.retriever</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum nv">18</span><span><span class="stitle">Build evidence package: cohort, tests, raw data</span><div class="ssum">evidence package keys: confidence, hot_station, hot_tool, hot_weeks, root_cause_hypo…</div></span><span class="badge ok">sealed</span></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Lane handoff <span class="meta">where it sits in the chain</span></div>
+          <div class="handoff">
+            <div class="ho"><div class="lbl">Receives</div><div class="val">← Agent Orchestration (cohort)</div></div>
+            <div class="ho"><div class="lbl">Hands to</div><div class="val">Agent Orchestration (evidence) →</div></div>
+          </div>
+          <p class="invariant"><b>Invariant:</b> GPU acceleration is optional; the same math and audit contract hold on CPU.</p>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Personas in this lane <span class="meta">links to persona portals</span></div>
+          <div class="plist"><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#mfg">Mfg Engineering</a><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#supplier">Supplier Quality</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><div class="tab-panel" data-panel="hitl" role="tabpanel">
+  <h2>Human-in-the-Loop · Quality Director · Teams</h2>
+  <p class="lead">The single human gate. The evidence package arrives as a Teams Adaptive Card; approve / amend / deny — the decision is sealed.</p>
+  <div class="portal">
+    <div class="portal-top rust">
+      <div class="portal-id"><div class="avatar rust">HL</div>
+        <div><h3>Human-in-the-Loop</h3><div class="role">Quality Director · Teams · steps 22–22</div></div></div>
+      <div class="portal-scope">Exactly one approval gate; the decision and approver are sealed at step 22.</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid"><div class="kpi rust"><div class="kpi-val">approve chargeback</div><div class="kpi-lbl">Decision</div><div class="kpi-delta up">step 22</div></div><div class="kpi rust"><div class="kpi-val">$2,822,040</div><div class="kpi-lbl">Recovery approved</div><div class="kpi-delta up">chargeback</div></div><div class="kpi rust"><div class="kpi-val">99%</div><div class="kpi-lbl">Evidence confidence</div><div class="kpi-delta up">p &lt; 0.05</div></div><div class="kpi rust"><div class="kpi-val">generated</div><div class="kpi-lbl">Adaptive Card</div><div class="kpi-delta flat">Teams</div></div></div>
+      <div class="panels">
+        <div class="panel span2">
+          <div class="panel-title">Phase coverage <span class="meta">Detect → Act · this lane lit</span></div>
+          <div class="phases"><div class="ph"><div class="ph-n">Detect</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Context</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Analyze</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Attribute</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Hypothesis</div><div class="ph-x">—</div></div><div class="ph lit"><div class="ph-n">Decide</div><div class="ph-s">[22]</div></div><div class="ph"><div class="ph-n">Act</div><div class="ph-x">—</div></div></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Steps this lane owns <span class="meta">live · sealed to audit ledger</span></div>
+          <div class="srow"><span class="snum rust">22</span><span><span class="stitle">Route to Quality Director for human review &amp; approval</span><div class="ssum">decision: approve_chargeback · approver: quality.director@toyota.example · recovery target usd: 2822040.0</div><div class="stools">teams.adaptive_card</div></span><span class="badge ok">sealed</span></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Lane handoff <span class="meta">where it sits in the chain</span></div>
+          <div class="handoff">
+            <div class="ho"><div class="lbl">Receives</div><div class="val">← Agent Orchestration (evidence package)</div></div>
+            <div class="ho"><div class="lbl">Hands to</div><div class="val">Downstream Action →</div></div>
+          </div>
+          <p class="invariant"><b>Invariant:</b> Exactly one approval gate; the decision and approver are sealed at step 22.</p>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Personas in this lane <span class="meta">links to persona portals</span></div>
+          <div class="plist"><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#director">Quality Director</a><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#exec">VP Quality</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><div class="tab-panel" data-panel="downstream" role="tabpanel">
+  <h2>Downstream Action · CAPA · Supplier · Dealer · NHTSA</h2>
+  <p class="lead">Turning the approved decision into action — NHTSA EWR check, supplier chargeback docs, CAPA / SCAR / dealer advisories.</p>
+  <div class="portal">
+    <div class="portal-top amber">
+      <div class="portal-id"><div class="avatar amber">DA</div>
+        <div><h3>Downstream Action</h3><div class="role">CAPA · Supplier · Dealer · NHTSA · steps 20–24</div></div></div>
+      <div class="portal-scope">Every dispatched action references the trace; downstream effects are logged.</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid"><div class="kpi amber"><div class="kpi-val">applicable</div><div class="kpi-lbl">NHTSA EWR</div><div class="kpi-delta flat">49 CFR 579</div></div><div class="kpi amber"><div class="kpi-val">$2,822,040</div><div class="kpi-lbl">Recovery target</div><div class="kpi-delta up">supplier</div></div><div class="kpi amber"><div class="kpi-val">3</div><div class="kpi-lbl">Downstream owners</div><div class="kpi-delta flat">notified</div></div><div class="kpi amber"><div class="kpi-val">drafted</div><div class="kpi-lbl">Chargeback docs</div><div class="kpi-delta flat">step 20</div></div></div>
+      <div class="panels">
+        <div class="panel span2">
+          <div class="panel-title">Phase coverage <span class="meta">Detect → Act · this lane lit</span></div>
+          <div class="phases"><div class="ph"><div class="ph-n">Detect</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Context</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Analyze</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Attribute</div><div class="ph-x">—</div></div><div class="ph lit"><div class="ph-n">Hypothesis</div><div class="ph-s">[20]</div></div><div class="ph lit"><div class="ph-n">Decide</div><div class="ph-s">[21]</div></div><div class="ph lit"><div class="ph-n">Act</div><div class="ph-s">[24]</div></div></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Steps this lane owns <span class="meta">live · sealed to audit ledger</span></div>
+          <div class="srow"><span class="snum amber">20</span><span><span class="stitle">Generate supplier chargeback documentation</span><div class="ssum">chargeback documentation: drafted · recovery target usd: 2822040.0</div><div class="stools">axle_warranty.generate_chargeback_doc</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum amber">21</span><span><span class="stitle">Trigger NHTSA Early Warning Reporting check</span><div class="ssum">nhtsa ewr check: applicable</div><div class="stools">compliance.nhtsa_ewr</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum amber">24</span><span><span class="stitle">Notify downstream owners (CAPA, dealer advisories)</span><div class="ssum">downstream notified: CAPA, supplier_quality, dealer_advisories</div><div class="stools">teams.channel_post</div></span><span class="badge ok">sealed</span></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Lane handoff <span class="meta">where it sits in the chain</span></div>
+          <div class="handoff">
+            <div class="ho"><div class="lbl">Receives</div><div class="val">← Human-in-the-Loop (approval)</div></div>
+            <div class="ho"><div class="lbl">Hands to</div><div class="val">Consumption (KPI rollup) →</div></div>
+          </div>
+          <p class="invariant"><b>Invariant:</b> Every dispatched action references the trace; downstream effects are logged.</p>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Personas in this lane <span class="meta">links to persona portals</span></div>
+          <div class="plist"><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#compliance">Compliance</a><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#plant">Plant Ops</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><div class="tab-panel" data-panel="governance" role="tabpanel">
+  <h2>Governance Foundation · Entra · Purview · Audit ledger · Defender</h2>
+  <p class="lead">Cross-cutting under every phase — identity, DLP/DSPM, the 14-field hash-chained audit row per step, and OT security.</p>
+  <div class="portal">
+    <div class="portal-top gov">
+      <div class="portal-id"><div class="avatar gov">GV</div>
+        <div><h3>Governance Foundation</h3><div class="role">Entra · Purview · Audit ledger · Defender · steps 1–24</div></div></div>
+      <div class="portal-scope">Tamper-evident hash chain; one sealed 14-field row per step; verifiable.</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid"><div class="kpi gov"><div class="kpi-val">24</div><div class="kpi-lbl">Audit rows sealed</div><div class="kpi-delta flat">14-field</div></div><div class="kpi gov"><div class="kpi-val">VERIFIED</div><div class="kpi-lbl">Hash chain</div><div class="kpi-delta up">tamper-evident</div></div><div class="kpi gov"><div class="kpi-val">1 / step</div><div class="kpi-lbl">Coverage</div><div class="kpi-delta flat">every decision</div></div><div class="kpi gov"><div class="kpi-val">2</div><div class="kpi-lbl">Sensitivity labels</div><div class="kpi-delta flat">propagated</div></div></div>
+      <div class="panels">
+        <div class="panel span2">
+          <div class="panel-title">Phase coverage <span class="meta">Detect → Act · this lane lit</span></div>
+          <div class="phases"><div class="ph lit"><div class="ph-n">Detect</div><div class="ph-s">[1]</div><div class="ph-s">[2]</div><div class="ph-s">[3]</div></div><div class="ph lit"><div class="ph-n">Context</div><div class="ph-s">[4]</div><div class="ph-s">[5]</div><div class="ph-s">[6]</div><div class="ph-s">[7]</div></div><div class="ph lit"><div class="ph-n">Analyze</div><div class="ph-s">[8]</div><div class="ph-s">[9]</div><div class="ph-s">[10]</div><div class="ph-s">[11]</div><div class="ph-s">[12]</div></div><div class="ph lit"><div class="ph-n">Attribute</div><div class="ph-s">[13]</div><div class="ph-s">[14]</div><div class="ph-s">[15]</div><div class="ph-s">[16]</div></div><div class="ph lit"><div class="ph-n">Hypothesis</div><div class="ph-s">[17]</div><div class="ph-s">[18]</div><div class="ph-s">[19]</div><div class="ph-s">[20]</div></div><div class="ph lit"><div class="ph-n">Decide</div><div class="ph-s">[21]</div><div class="ph-s">[22]</div></div><div class="ph lit"><div class="ph-n">Act</div><div class="ph-s">[23]</div><div class="ph-s">[24]</div></div></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Steps this lane owns <span class="meta">live · sealed to audit ledger</span></div>
+          <div class="srow"><span class="snum gov">1</span><span><span class="stitle">Receive warranty claim cluster signal</span><div class="ssum">signal: warranty_cluster_threshold_breach · total claims: 117</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">2</span><span><span class="stitle">Scope the claim cohort by part, failure mode, severity</span><div class="ssum">part number: PN-48820-BRK · failure modes: brake_actuator_premature_wear</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">3</span><span><span class="stitle">Pull VIN list for affected cohort</span><div class="ssum">cohort size: 117</div><div class="stools">axle_warranty.pull_vins</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">4</span><span><span class="stitle">Join VIN list to build records</span><div class="ssum">joined vins: 117</div><div class="stools">fabric.gold.per_vin_view</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">5</span><span><span class="stitle">Extract build-week distribution of affected VINs</span><div class="ssum">build week claim counts: {11: 12, 12: 26, 13: 29}</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">6</span><span><span class="stitle">Identify over-represented build weeks vs. baseline</span><div class="ssum">hot weeks: 12, 13</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">7</span><span><span class="stitle">Extract station / tool / shift distribution</span><div class="ssum">station distribution: {STATION-07: 36, STATION-06: 2, STATION-09: 2} · tool distribution: {TOOL-TQ-07: 36, TOOL-TQ-06: 2, TOOL-TQ-09: 2}</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">8</span><span><span class="stitle">Statistical test: cohort × station × tool × shift</span><div class="ssum">hot station: STATION-07 · hot tool: TOOL-TQ-07 · station rate: 0.0619</div><div class="stools">rapids.cuml.proportion_test</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">9</span><span><span class="stitle">Join to quality event records</span><div class="ssum">quality events joined: 1200</div><div class="stools">fabric.gold.quality_events</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">10</span><span><span class="stitle">Identify SPC anomalies preceding the hot build weeks</span><div class="ssum">spc anomalies at hot station: 304</div><div class="stools">triton.spc_anomaly</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">11</span><span><span class="stitle">Join to assembly telemetry</span><div class="ssum">telemetry traces joined: 1200</div><div class="stools">fabric.gold.telemetry</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">12</span><span><span class="stitle">Correlate tool calibration drift with hot-station defects</span><div class="ssum">hot tool: TOOL-TQ-07 · avg calibration drift pct: 8.93</div><div class="stools">triton.drift_correlation</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">13</span><span><span class="stitle">Extract supplier lot codes in hot VIN population</span><div class="ssum">lot codes in hot population: {LOT-7743: 32, LOT-1386: 1, LOT-1002: 1}</div><div class="stools">axle_warranty.get_lot_trace</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">14</span><span><span class="stitle">Compute supplier-lot warranty rate vs. baseline</span><div class="ssum">suspect lot: LOT-7743 · lot warranty rate: 0.0615 · baseline warranty rate: 0.0253</div><div class="stools">rapids.cugraph.lot_attribution</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">15</span><span><span class="stitle">Statistical test: supplier-lot attribution significance</span><div class="ssum">z score: 4.891 · p value: 1e-06 · significant: True</div><div class="stools">rapids.cuml.proportion_test</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">16</span><span><span class="stitle">Rank cohort × station × supplier-lot interactions</span><div class="ssum">ranked interactions: {&#x27;interaction&#x27;: &#x27;week×STATION-07×LOT-7743&#x27;, &#x27;rate_ratio&#x27;: 2.43}</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">17</span><span><span class="stitle">Generate root-cause hypothesis with confidence intervals</span><div class="ssum">hypothesis: Supplier lot LOT-7743, installed at STATION-07 on TOOL-TQ-07 … · confidence: 0.99</div><div class="stools">nim.rca_reasoner · nemo.retriever</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">18</span><span><span class="stitle">Build evidence package: cohort, tests, raw data</span><div class="ssum">evidence package keys: confidence, hot_station, hot_tool, hot_weeks, root_cause_hypo…</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">19</span><span><span class="stitle">Compute chargeback dollar exposure per supplier lot</span><div class="ssum">attributable usd: 4212000.0 · agentic recovery usd: 2822040.0 · manual baseline usd: 631800.0</div><div class="stools">axle_warranty.chargeback_exposure</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">20</span><span><span class="stitle">Generate supplier chargeback documentation</span><div class="ssum">chargeback documentation: drafted · recovery target usd: 2822040.0</div><div class="stools">axle_warranty.generate_chargeback_doc</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">21</span><span><span class="stitle">Trigger NHTSA Early Warning Reporting check</span><div class="ssum">nhtsa ewr check: applicable</div><div class="stools">compliance.nhtsa_ewr</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">22</span><span><span class="stitle">Route to Quality Director for human review &amp; approval</span><div class="ssum">decision: approve_chargeback · approver: quality.director@toyota.example · recovery target usd: 2822040.0</div><div class="stools">teams.adaptive_card</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">23</span><span><span class="stitle">Write decision &amp; rationale to audit ledger</span><div class="ssum">ledger rows written: 23 · chain verified: True</div></span><span class="badge ok">sealed</span></div><div class="srow"><span class="snum gov">24</span><span><span class="stitle">Notify downstream owners (CAPA, dealer advisories)</span><div class="ssum">downstream notified: CAPA, supplier_quality, dealer_advisories</div><div class="stools">teams.channel_post</div></span><span class="badge ok">sealed</span></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Lane handoff <span class="meta">where it sits in the chain</span></div>
+          <div class="handoff">
+            <div class="ho"><div class="lbl">Receives</div><div class="val">underlies every lane</div></div>
+            <div class="ho"><div class="lbl">Hands to</div><div class="val">regulator-replayable record</div></div>
+          </div>
+          <p class="invariant"><b>Invariant:</b> Tamper-evident hash chain; one sealed 14-field row per step; verifiable.</p>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Personas in this lane <span class="meta">links to persona portals</span></div>
+          <div class="plist"><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#compliance">Compliance</a><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#it">IT / Security</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><div class="tab-panel" data-panel="day0" role="tabpanel">
+  <h2>Day-0 Prevention · NVIDIA Metropolis · edge</h2>
+  <p class="lead">Catch the defect at the station so it never becomes a claim — inline vision, edge inference, jidoka stop, per-VIN inspection record.</p>
+  <div class="portal">
+    <div class="portal-top nv">
+      <div class="portal-id"><div class="avatar nv">D0</div>
+        <div><h3>Day-0 Prevention</h3><div class="role">NVIDIA Metropolis · edge · steps 9–9</div></div></div>
+      <div class="portal-scope">Every unit inspected (no sampling); per-VIN evidence persisted to Bronze.</div>
+    </div>
+    <div class="portal-body">
+      <div class="kpi-grid"><div class="kpi nv"><div class="kpi-val">100%</div><div class="kpi-lbl">Units inspected</div><div class="kpi-delta up">no sampling</div></div><div class="kpi nv"><div class="kpi-val">1200</div><div class="kpi-lbl">Inspection records</div><div class="kpi-delta flat">→ Bronze</div></div><div class="kpi nv"><div class="kpi-val">~5 ms</div><div class="kpi-lbl">Edge inference</div><div class="kpi-delta up">per unit</div></div><div class="kpi nv"><div class="kpi-val">jidoka</div><div class="kpi-lbl">On FAIL</div><div class="kpi-delta flat">line stop</div></div></div>
+      <div class="panels">
+        <div class="panel span2">
+          <div class="panel-title">Phase coverage <span class="meta">Detect → Act · this lane lit</span></div>
+          <div class="phases"><div class="ph"><div class="ph-n">Detect</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Context</div><div class="ph-x">—</div></div><div class="ph lit"><div class="ph-n">Analyze</div><div class="ph-s">[9]</div></div><div class="ph"><div class="ph-n">Attribute</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Hypothesis</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Decide</div><div class="ph-x">—</div></div><div class="ph"><div class="ph-n">Act</div><div class="ph-x">—</div></div></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Steps this lane owns <span class="meta">live · sealed to audit ledger</span></div>
+          <div class="srow"><span class="snum nv">9</span><span><span class="stitle">Join to quality event records</span><div class="ssum">quality events joined: 1200</div><div class="stools">fabric.gold.quality_events</div></span><span class="badge ok">sealed</span></div>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Lane handoff <span class="meta">where it sits in the chain</span></div>
+          <div class="handoff">
+            <div class="ho"><div class="lbl">Receives</div><div class="val">continuous · at the build station</div></div>
+            <div class="ho"><div class="lbl">Hands to</div><div class="val">Data Plane (inspection record) →</div></div>
+          </div>
+          <p class="invariant"><b>Invariant:</b> Every unit inspected (no sampling); per-VIN evidence persisted to Bronze.</p>
+        </div>
+        <div class="panel span2">
+          <div class="panel-title">Personas in this lane <span class="meta">links to persona portals</span></div>
+          <div class="plist"><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#operator">Line Operator</a><a class="pchip" href="ZeroDayWarranty_Persona_Portals.html#warranty">Quality / Agent</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></main><footer><strong>Zero Day Warranty</strong> · Swim Lane Views · generated by <code>zdw lanes --write</code> from a live 24-step chain run · synthetic reference figures.</footer><script>
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = btn.getAttribute('data-tab');
+      document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.querySelector('.tab-panel[data-panel="' + id + '"]').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
