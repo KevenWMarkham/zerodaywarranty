@@ -12,7 +12,7 @@ gate, and the tamper-evident audit trail.
 | **Status** | Discovery · all figures synthetic (reference scenario, not client data) |
 
 > **Live portal:**
-> `https://ca-zdw-orchestrator.blackcliff-acab3c4d.eastus2.azurecontainerapps.io/portal`
+> `https://ca-zdw-orchestrator.<env>.eastus2.azurecontainerapps.io/portal`
 >
 > The app scales to zero — **warm it 30s before you start** (open the link or
 > `curl` `/health`) so the first click isn't a cold start.
@@ -23,7 +23,7 @@ gate, and the tamper-evident audit trail.
 
 ```bash
 # the deployed orchestrator
-export ZDW_URL="https://ca-zdw-orchestrator.blackcliff-acab3c4d.eastus2.azurecontainerapps.io"
+export ZDW_URL="https://ca-zdw-orchestrator.<env>.eastus2.azurecontainerapps.io"
 
 # 1) warm the app + confirm the live build (look for "portal":"/portal")
 curl -s "$ZDW_URL/health" | python -m json.tool
@@ -195,7 +195,7 @@ row and the chain breaks. *"That's what makes this regulator-replayable."*
 ## Appendix A — Live command cheat-sheet
 
 ```bash
-export ZDW_URL="https://ca-zdw-orchestrator.blackcliff-acab3c4d.eastus2.azurecontainerapps.io"
+export ZDW_URL="https://ca-zdw-orchestrator.<env>.eastus2.azurecontainerapps.io"
 
 curl -s "$ZDW_URL/health"     | python -m json.tool   # config + portal marker
 curl -s "$ZDW_URL/run"        | python -m json.tool   # full 24-step run

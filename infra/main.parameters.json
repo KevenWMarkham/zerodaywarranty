@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
-  "_comment": "Zero Day Warranty · self-contained Azure deployment. Subscription Global_RnD_Agentic_MERCH (3c8215d1-350c-4b83-bb7f-b5d26b4280f6), tenant 2da40318-46be-402c-ba75-cfb1f656567d. All resources are created in Agentic-Automotives; nothing is shared. Pass pgAdminPassword at the CLI; do not store secrets here.",
+  "_comment": "Zero Day Warranty · self-contained Azure deployment. Subscription <subscription-name> (<subscription-id>), tenant <tenant-id>. All resources are created in Agentic-Automotives; nothing is shared. Pass pgAdminPassword at the CLI; do not store secrets here.",
   "parameters": {
     "location": { "value": "eastus2" },
     "resourceGroupName": { "value": "Agentic-Automotives" },

@@ -562,7 +562,7 @@ resource migrateJob 'Microsoft.App/jobs@2024-03-01' = {
             }
             {
               name: 'SCHEMA_URL'
-              value: 'https://raw.githubusercontent.com/KevenWMarkham/zerodaywarranty/main/infra/scripts/postgres-schemas.sql'
+              value: 'https://raw.githubusercontent.com/<github-owner>/zerodaywarranty/main/infra/scripts/postgres-schemas.sql'
             }
           ]
           command: [

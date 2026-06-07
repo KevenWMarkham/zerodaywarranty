@@ -18,9 +18,9 @@
 set -euo pipefail
 
 # --- configuration (override via env) --------------------------------------
-SUBSCRIPTION_ID="${SUBSCRIPTION_ID:-3c8215d1-350c-4b83-bb7f-b5d26b4280f6}"
-TENANT_ID="${TENANT_ID:-2da40318-46be-402c-ba75-cfb1f656567d}"
-GH_REPO="${GH_REPO:-KevenWMarkham/zerodaywarranty}"
+SUBSCRIPTION_ID="${SUBSCRIPTION_ID:-<subscription-id>}"
+TENANT_ID="${TENANT_ID:-<tenant-id>}"
+GH_REPO="${GH_REPO:-<github-owner>/zerodaywarranty}"
 APP_NAME="${APP_NAME:-zdw-deployer}"
 ENVIRONMENT="${ENVIRONMENT:-production}"
 ROLE="${ROLE:-Owner}"   # Owner: needed because the deployment creates role assignments

@@ -1,7 +1,7 @@
 # Zero Day Warranty — Azure Deployment
 
 **Self-contained** in a single resource group, **`Agentic-Automotives`**
-(eastus2), in the **Global_RnD_Agentic_MERCH** subscription. Every resource is
+(eastus2), in the **<subscription-name>** subscription. Every resource is
 project-owned and created fresh — **no shared dependencies**. Reference IaC in
 [`../../infra/`](../../infra/); design-as-code, **not yet applied**.
 
@@ -9,8 +9,8 @@ project-owned and created fresh — **no shared dependencies**. Reference IaC in
 
 | Setting | Value |
 |---|---|
-| Subscription | `Global_RnD_Agentic_MERCH` · `3c8215d1-350c-4b83-bb7f-b5d26b4280f6` |
-| Tenant | `2da40318-46be-402c-ba75-cfb1f656567d` |
+| Subscription | `<subscription-name>` · `<subscription-id>` |
+| Tenant | `<tenant-id>` |
 | Resource group (create) | `Agentic-Automotives` · `eastus2` |
 | Sharing | none — all resources created in this RG |
 
@@ -79,8 +79,8 @@ as Key Vault references via the managed identity.
 
 ```bash
 # 1. Auth + select subscription
-az login --tenant 2da40318-46be-402c-ba75-cfb1f656567d
-az account set -s 3c8215d1-350c-4b83-bb7f-b5d26b4280f6
+az login --tenant <tenant-id>
+az account set -s <subscription-id>
 
 # 2. Deploy everything (RG + ACR + AOAI + Postgres + CAE + KV + identity + apps + RBAC)
 az deployment sub create -l eastus2 -f infra/main.bicep \

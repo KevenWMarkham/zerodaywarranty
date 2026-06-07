@@ -15,7 +15,7 @@ cluster, and produces a supplier **chargeback evidence package** — collapsing 
 > from public industry benchmarks. They are not Toyota claims.
 
 This solution follows the conventions of the
-[APEX](https://github.com/KevenWMarkham/apex) delivery accelerator (medallion
+[APEX](https://github.com/<org>/apex) delivery accelerator (medallion
 data plane, 14-field hash-chained audit ledger, YAML scenario/agent manifests,
 seven-cluster agent chain).
 

@@ -95,7 +95,7 @@
 
 <section class="summary">
   <div style="font-family:Aptos,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ms-blue-dark);font-weight:700;margin-bottom:8px;">Executive summary · the one paragraph</div>
-  <p style="font-size:16.5px;margin:0;">The Zero Day Warranty solution deploys <strong>self-contained</strong> into a single new resource group, <strong>Agentic-Automotives</strong> (eastus2), in the <strong>Global_RnD_Agentic_MERCH</strong> subscription. <em>Every</em> resource is project-owned and created fresh — its own Container Registry, Azure OpenAI account, Postgres flexible server, Container Apps environment, Key Vault, managed identity, and observability — with <strong>no shared dependencies</strong> on any other resource group. The agent runs on a project <code>gpt-4.1-mini</code> deployment, the medallion lands in Postgres schemas <code>zdw_bronze / zdw_silver / zdw_gold</code>, and the hash-chained audit ledger is an append-only table signed by a key in the project Key Vault. This document is the deployment design; the matching reference Bicep lives under <code>infra/</code>.</p>
+  <p style="font-size:16.5px;margin:0;">The Zero Day Warranty solution deploys <strong>self-contained</strong> into a single new resource group, <strong>Agentic-Automotives</strong> (eastus2), in the <strong>&lt;subscription-name&gt;</strong> subscription. <em>Every</em> resource is project-owned and created fresh — its own Container Registry, Azure OpenAI account, Postgres flexible server, Container Apps environment, Key Vault, managed identity, and observability — with <strong>no shared dependencies</strong> on any other resource group. The agent runs on a project <code>gpt-4.1-mini</code> deployment, the medallion lands in Postgres schemas <code>zdw_bronze / zdw_silver / zdw_gold</code>, and the hash-chained audit ledger is an append-only table signed by a key in the project Key Vault. This document is the deployment design; the matching reference Bicep lives under <code>infra/</code>.</p>
 </section>
 
 <section>
@@ -103,9 +103,9 @@
   <p class="lead">One subscription, one new resource group, everything inside it. Region <code>eastus2</code>.</p>
   <div class="tbl-wrap"><table>
     <tr><th style="width:30%">Setting</th><th>Value</th></tr>
-    <tr><td>Subscription name</td><td class="mono">Global_RnD_Agentic_MERCH</td></tr>
-    <tr><td>Subscription ID</td><td class="mono">3c8215d1-350c-4b83-bb7f-b5d26b4280f6</td></tr>
-    <tr><td>Tenant ID</td><td class="mono">2da40318-46be-402c-ba75-cfb1f656567d</td></tr>
+    <tr><td>Subscription name</td><td class="mono">&lt;subscription-name&gt;</td></tr>
+    <tr><td>Subscription ID</td><td class="mono">&lt;subscription-id&gt;</td></tr>
+    <tr><td>Tenant ID</td><td class="mono">&lt;tenant-id&gt;</td></tr>
     <tr><td>Resource group <span class="pill new">create</span></td><td class="mono">Agentic-Automotives  ·  eastus2</td></tr>
     <tr><td>Sharing</td><td><strong>None.</strong> No dependency on <code>rg-iot-visionkit</code> or any other RG — all resources are created in this RG.</td></tr>
     <tr><td>Deployment substrate</td><td>dev / RnD (APEX-M) — public endpoints + RBAC; private endpoints noted as hardening (see Experts Panel)</td></tr>
@@ -138,7 +138,7 @@
         .lab { font-family:'Cascadia Mono',monospace; font-size: 9px; fill:#64748B; }
       </style>
 
-      <text x="20" y="20" class="cap">Subscription · Global_RnD_Agentic_MERCH · Tenant 2da40318…</text>
+      <text x="20" y="20" class="cap">Subscription · &lt;subscription-name&gt; · Tenant &lt;tenant-id&gt;</text>
 
       <!-- single RG box -->
       <rect x="20" y="34" width="900" height="582" rx="10" fill="none" stroke="#0078D4" stroke-width="2.5" stroke-dasharray="6 4"/>
@@ -314,7 +314,7 @@
   <h2><span class="num">08</span>Deploy sequence</h2>
   <p class="lead">The reference Bicep is subscription-scoped: one pass creates the RG and every project resource. Images and schema are operator steps around it.</p>
   <div class="steps">
-    <div class="step"><span class="n">1</span><div>Authenticate &amp; select subscription.<span class="cmd">az login --tenant 2da40318-46be-402c-ba75-cfb1f656567d &amp;&amp; az account set -s 3c8215d1-350c-4b83-bb7f-b5d26b4280f6</span></div></div>
+    <div class="step"><span class="n">1</span><div>Authenticate &amp; select subscription.<span class="cmd">az login --tenant &lt;tenant-id&gt; &amp;&amp; az account set -s &lt;subscription-id&gt;</span></div></div>
     <div class="step"><span class="n">2</span><div>Deploy the project (creates RG + ACR + AOAI + Postgres + Container Apps env + KV + identity + apps + RBAC).<span class="cmd">az deployment sub create -l eastus2 -f infra/main.bicep -p infra/main.parameters.json -p pgAdminPassword='&lt;strong-secret&gt;'</span></div></div>
     <div class="step"><span class="n">3</span><div>Build &amp; push images to the project ACR.<span class="cmd">az acr login -n &lt;acrName from output&gt; ; docker push &lt;acr&gt;.azurecr.io/zdw/orchestrator:0.1.0  (+ mcp-warranty, mcp-ledger)</span></div></div>
     <div class="step"><span class="n">4</span><div>Create the medallion schemas + append-only audit table.<span class="cmd">psql "$(az keyvault secret show --vault-name kv-zero-day-warranty -n database-url --query value -o tsv)" -f infra/scripts/postgres-schemas.sql</span></div></div>

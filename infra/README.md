@@ -2,7 +2,7 @@
 
 Design-as-code for deploying the Zero Day Warranty solution **self-contained**
 into the **`Agentic-Automotives`** resource group in the
-**Global_RnD_Agentic_MERCH** subscription. Every resource is project-owned and
+**<subscription-name>** subscription. Every resource is project-owned and
 created fresh — **nothing is shared** with another resource group.
 
 > **Status: design only — not yet applied.** These templates encode the
@@ -14,8 +14,8 @@ created fresh — **nothing is shared** with another resource group.
 
 | Setting | Value |
 |---|---|
-| Subscription | `Global_RnD_Agentic_MERCH` · `3c8215d1-350c-4b83-bb7f-b5d26b4280f6` |
-| Tenant | `2da40318-46be-402c-ba75-cfb1f656567d` |
+| Subscription | `<subscription-name>` · `<subscription-id>` |
+| Tenant | `<tenant-id>` |
 | Resource group (create) | `Agentic-Automotives` · `eastus2` |
 | Sharing | none — all resources created in this RG |
 
@@ -56,8 +56,8 @@ No AOAI key is stored (account has local auth disabled).
 
 ```bash
 # 1. Auth + select subscription
-az login --tenant 2da40318-46be-402c-ba75-cfb1f656567d
-az account set -s 3c8215d1-350c-4b83-bb7f-b5d26b4280f6
+az login --tenant <tenant-id>
+az account set -s <subscription-id>
 
 # 2. Deploy everything (RG + ACR + AOAI + Postgres + CAE + KV + identity + apps + RBAC)
 az deployment sub create -l eastus2 \
