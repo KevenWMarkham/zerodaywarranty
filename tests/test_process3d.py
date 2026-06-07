@@ -67,8 +67,9 @@ def test_html_is_self_contained_three_js() -> None:
     embedded = json.loads(raw)
     assert embedded["meta"]["suspect_lot"] == result.suspect_lot
     assert len(embedded["steps"]) == 24
-    # cross-link back to the flat portal
+    # cross-link back to the flat portal, with per-step lane deep-linking
     assert "ZeroDayWarranty_SwimLane_Views.html" in html
+    assert "ZeroDayWarranty_SwimLane_Views.html#lane=" in html
 
 
 def test_committed_html_in_sync_with_generator() -> None:

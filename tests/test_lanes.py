@@ -78,6 +78,9 @@ def test_html_has_every_lane_tab_and_live_figures() -> None:
     # cross-links to the companion design-pack artifacts
     assert "ZeroDayWarranty_Persona_Portals.html#" in html
     assert "ZeroDayWarranty_Capability_SwimLanes.html" in html
+    # deep-linkable tabs: ...#lane=<id> (e.g. from the 3D view) opens that tab
+    assert "hashchange" in html
+    assert "activateTab" in html
 
 
 def test_markdown_twin_renders() -> None:

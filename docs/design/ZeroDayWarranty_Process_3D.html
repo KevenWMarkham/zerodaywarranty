@@ -31,6 +31,9 @@
   .now .st{font-size:14px;color:#fff;font-weight:600;margin:3px 0;}
   .now .sm{font-size:11px;color:var(--slate);font-family:"Cascadia Mono",monospace;line-height:1.5;min-height:30px;}
   .now .seal{font-size:10px;color:#34d399;margin-top:4px;}
+  .now .toportal{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;
+    color:#fff;text-decoration:none;background:var(--ms);padding:7px 12px;border-radius:8px;}
+  .now .toportal:hover{background:#0a63ad;}
   /* controls */
   #ctl{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:20;
     display:flex;align-items:center;gap:10px;background:rgba(13,18,34,0.86);
@@ -76,6 +79,7 @@
     <div class="st" id="n-title">—</div>
     <div class="sm" id="n-sum">—</div>
     <div class="seal" id="n-seal"></div>
+    <a class="toportal" id="n-portal" href="ZeroDayWarranty_SwimLane_Views.html">Open this lane in the portal ›</a>
   </div>
 </div>
 
@@ -316,6 +320,11 @@ function updateNow(s){
   document.getElementById('n-title').textContent=s.title;
   document.getElementById('n-sum').textContent=s.summary||'…';
   document.getElementById('n-seal').textContent=s.sealed?'● sealed to audit ledger':'';
+  // hand off to the flat portal at this step's lane (live with the trace)
+  const lane = GRAPH.lanes.find(l=>l.id===s.primaryLane);
+  const a = document.getElementById('n-portal');
+  a.href = 'ZeroDayWarranty_SwimLane_Views.html#lane=' + s.primaryLane;
+  a.textContent = 'Open ' + (lane?lane.name:'this lane') + ' in the portal ›';
 }
 
 function emphasize(stepN){

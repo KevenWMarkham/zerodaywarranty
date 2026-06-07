@@ -6,6 +6,13 @@ All notable changes to the Zero Day Warranty solution are documented here.
 
 ### Added
 
+- **3D → portal handoff by step** — the 3D fly-through HUD now shows an "Open
+  <lane> in the portal" button that tracks the **current step's lane** as the
+  trace moves, linking to `ZeroDayWarranty_SwimLane_Views.html#lane=<id>`. The
+  Swim Lane Views portal honours that hash (and `#<id>`) on load and on
+  `hashchange`, activating the matching tab — so you can jump from any point in
+  the fly-through straight to that lane's flat view.
+
 - **Fully Azure-served demo (no CDN)** — three.js + its add-ons are now vendored
   into `docs/design/vendor/three@0.160.0/` and the 3D page's import map points at
   those local paths, so nothing is fetched from a public CDN at view time. The
