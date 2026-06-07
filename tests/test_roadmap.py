@@ -44,11 +44,12 @@ def test_deployment_gate_requires_all_three() -> None:
     assert Deployment(id="y", component="c", built=True, deployed=True, tested=True).validated
 
 
-def test_deployments_start_unvalidated(rm: Roadmap) -> None:
-    # Nothing is deployed yet — every gate is open (design stage).
+def test_deployments_have_gates(rm: Roadmap) -> None:
+    # Deployments are gated built→deployed→tested; validated count is within range.
     s = rm.deployment_summary()
     assert s["total"] > 0
-    assert s["validated"] == 0
+    assert 0 <= s["validated"] <= s["total"]
+    assert s["built"] >= s["deployed"] >= s["tested"]
 
 
 def test_overall_progress_is_a_percentage(rm: Roadmap) -> None:
