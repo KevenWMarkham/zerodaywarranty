@@ -95,14 +95,14 @@ sprints:
   - id: S6
     name: Provision platform resources
     phase: P3
-    status: todo
+    status: done
     goal: ACR, Azure OpenAI, Postgres, Container Apps environment.
     stories:
       - {id: S6-1, title: ACR + AOAI (+deployments) + Postgres + CAE in Bicep, status: done, acceptance: infra/modules/project.bicep}
       - {id: S6-2, title: Confirm AOAI quota in eastus2, status: done, acceptance: quota check}
     deployments:
       - {id: D-acr,  component: Container Registry acrzdwagentic, built: true, deployed: true, tested: true}
-      - {id: D-aoai, component: Azure OpenAI aoai-zdw-agentic + deployments, built: true, deployed: false, tested: false}
+      - {id: D-aoai, component: Azure OpenAI aoai-zdw-agentic + deployments, built: true, deployed: true, tested: true}
       - {id: D-pg,   component: Postgres pg-zdw-agentic + db zdw, built: true, deployed: true, tested: false}
       - {id: D-cae,  component: Container Apps env cae-zdw-agentic, built: true, deployed: true, tested: true}
 
