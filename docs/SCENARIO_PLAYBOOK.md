@@ -358,7 +358,7 @@ app without the database. Then flip the `built/deployed/tested` flags in
 | `az acr import` → `Conflict: tag already exists` | image already imported (idempotent) | benign — the image is present, continue |
 | `az acr repository list` hangs at `Username:` / 403 | data-plane call blocked on a private ACR from a public shell | skip it; trust the import result, or list from inside the VNet |
 | `psql` to the private Postgres times out from Cloud Shell | VNet-injected PG has no public endpoint | apply `postgres-schemas.sql` from inside the VNet (a Container Apps job / jumpbox); the synthetic `/run` smoke test doesn't need the DB |
-| deploy `Failed` but the app's `/run` works | only AOAI hit the `state Accepted` race | re-run the deployment once (idempotent) to flip it to `Succeeded` |
+| deploy `Failed` but the app's `/run` works | AOAI model deployments raced the account's async PUT (`state Accepted`) | durable fix: put model deployments in a **separate module** that `dependsOn` the account (see `modules/aoai-deployments.bicep`); otherwise just re-run (idempotent) |
 | container app revision won't start (private) | app reads KV secrets at startup; VNet→KV private link not resolving | verify KV private endpoint + DNS, or make those secrets optional for a synthetic-only smoke test |
 | `gh` device-code never arrives | it's terminal-based, not a phone push | type the `XXXX-XXXX` from the terminal, or use `GH_TOKEN` |
 
