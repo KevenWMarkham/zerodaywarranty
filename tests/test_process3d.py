@@ -56,8 +56,11 @@ def test_html_is_self_contained_three_js() -> None:
     assert "UnrealBloomPass" in html  # the bloom glow
     assert "RoundedBoxGeometry" in html  # real-to-life beveled geometry
     # three.js is vendored (served from Azure), not a public CDN
-    assert "vendor/three@" in html
     assert "cdn.jsdelivr" not in html
+    # import-map addresses must be valid relative refs (./), not bare specifiers,
+    # or the browser resolves them to null ("blocked by a null value").
+    assert '"./vendor/three@' in html
+    assert '"three/addons/": "./vendor/three@' in html
     # the embedded graph parses and carries the live suspect lot
     raw = html.split('<script id="graph" type="application/json">', 1)[1]
     raw = raw.split("</script>", 1)[0]
