@@ -103,7 +103,7 @@ sprints:
     deployments:
       - {id: D-acr,  component: Container Registry acrzdwagentic, built: true, deployed: true, tested: true}
       - {id: D-aoai, component: Azure OpenAI aoai-zdw-agentic + deployments, built: true, deployed: true, tested: true}
-      - {id: D-pg,   component: Postgres pg-zdw-agentic + db zdw, built: true, deployed: true, tested: false}
+      - {id: D-pg,   component: Postgres pg-zdw-agentic + db zdw, built: true, deployed: true, tested: true}
       - {id: D-cae,  component: Container Apps env cae-zdw-agentic, built: true, deployed: true, tested: true}
 
   - id: S7
@@ -119,7 +119,7 @@ sprints:
     deployments:
       - {id: D-img,  component: "Container images (orchestrator, mcp-warranty, mcp-ledger)", built: true, deployed: true, tested: true}
       - {id: D-apps, component: Container Apps (ca-zdw-*), built: true, deployed: true, tested: true}
-      - {id: D-sql,  component: Medallion schemas + audit ledger, built: false, deployed: false, tested: false}
+      - {id: D-sql,  component: Medallion schemas + audit ledger, built: true, deployed: true, tested: true}
 
   - id: S8
     name: End-to-end validation
