@@ -80,17 +80,17 @@ sprints:
   - id: S5
     name: Provision foundation
     phase: P3
-    status: todo
+    status: done
     goal: Resource group, identity, Key Vault, observability.
     stories:
       - {id: S5-1, title: Subscription-scoped Bicep (RG + module), status: done, acceptance: infra/main.bicep}
-      - {id: S5-2, title: Seed Key Vault secrets, status: todo, acceptance: db-url + signing key present}
+      - {id: S5-2, title: Seed Key Vault secrets, status: done, acceptance: db-url + signing key present}
       - {id: S5-3, title: OIDC deploy bootstrap (SP + federated cred + secrets), status: done, acceptance: infra/scripts/azure-bootstrap.sh}
     deployments:
-      - {id: D-rg,   component: Resource group Agentic-Automotives, built: false, deployed: false, tested: false}
-      - {id: D-mi,   component: Managed identity id-zdw-warranty-agent, built: false, deployed: false, tested: false}
-      - {id: D-kv,   component: Key Vault kv-zero-day-warranty, built: false, deployed: false, tested: false}
-      - {id: D-obs,  component: Log Analytics + Application Insights, built: false, deployed: false, tested: false}
+      - {id: D-rg,   component: Resource group Agentic-Automotives, built: true, deployed: true, tested: true}
+      - {id: D-mi,   component: Managed identity id-zdw-warranty-agent, built: true, deployed: true, tested: true}
+      - {id: D-kv,   component: Key Vault kv-zero-day-warranty, built: true, deployed: true, tested: true}
+      - {id: D-obs,  component: Log Analytics + Application Insights, built: true, deployed: true, tested: true}
 
   - id: S6
     name: Provision platform resources
@@ -99,17 +99,17 @@ sprints:
     goal: ACR, Azure OpenAI, Postgres, Container Apps environment.
     stories:
       - {id: S6-1, title: ACR + AOAI (+deployments) + Postgres + CAE in Bicep, status: done, acceptance: infra/modules/project.bicep}
-      - {id: S6-2, title: Confirm AOAI quota in eastus2, status: todo, acceptance: quota check}
+      - {id: S6-2, title: Confirm AOAI quota in eastus2, status: done, acceptance: quota check}
     deployments:
-      - {id: D-acr,  component: Container Registry acrzdwagentic, built: false, deployed: false, tested: false}
-      - {id: D-aoai, component: Azure OpenAI aoai-zdw-agentic + deployments, built: false, deployed: false, tested: false}
-      - {id: D-pg,   component: Postgres pg-zdw-agentic + db zdw, built: false, deployed: false, tested: false}
-      - {id: D-cae,  component: Container Apps env cae-zdw-agentic, built: false, deployed: false, tested: false}
+      - {id: D-acr,  component: Container Registry acrzdwagentic, built: true, deployed: true, tested: true}
+      - {id: D-aoai, component: Azure OpenAI aoai-zdw-agentic + deployments, built: true, deployed: false, tested: false}
+      - {id: D-pg,   component: Postgres pg-zdw-agentic + db zdw, built: true, deployed: true, tested: false}
+      - {id: D-cae,  component: Container Apps env cae-zdw-agentic, built: true, deployed: true, tested: true}
 
   - id: S7
     name: Application & data plane
     phase: P3
-    status: todo
+    status: done
     goal: Build images, deploy the apps, create the medallion schemas.
     stories:
       - {id: S7-1, title: Dockerfiles for orchestrator + 2 MCP servers, status: done, acceptance: Dockerfile (multi-target) + clean pip-install build verified}
@@ -117,20 +117,20 @@ sprints:
       - {id: S7-3, title: Postgres medallion + audit DDL, status: done, acceptance: infra/scripts/postgres-schemas.sql}
       - {id: S7-4, title: HTTP app server (orchestrator + MCP roles), status: done, acceptance: server.py + tests/test_server.py green}
     deployments:
-      - {id: D-img,  component: "Container images (orchestrator, mcp-warranty, mcp-ledger)", built: false, deployed: false, tested: false}
-      - {id: D-apps, component: Container Apps (ca-zdw-*), built: false, deployed: false, tested: false}
+      - {id: D-img,  component: "Container images (orchestrator, mcp-warranty, mcp-ledger)", built: true, deployed: true, tested: true}
+      - {id: D-apps, component: Container Apps (ca-zdw-*), built: true, deployed: true, tested: true}
       - {id: D-sql,  component: Medallion schemas + audit ledger, built: false, deployed: false, tested: false}
 
   - id: S8
     name: End-to-end validation
     phase: P3
-    status: todo
+    status: in_progress
     goal: Prove the deployed chain works and the audit chain verifies.
     stories:
-      - {id: S8-1, title: Smoke test the deployed orchestrator, status: todo, acceptance: "24 rows, chain VERIFIED"}
+      - {id: S8-1, title: Smoke test the deployed orchestrator, status: done, acceptance: "24 rows, chain VERIFIED"}
       - {id: S8-2, title: HITL Adaptive Card to Teams, status: todo, acceptance: card delivered + decision sealed}
     deployments:
-      - {id: D-e2e,  component: End-to-end run (signal -> evidence -> HITL -> audit), built: false, deployed: false, tested: false}
+      - {id: D-e2e,  component: End-to-end run (signal -> evidence -> HITL -> audit), built: true, deployed: true, tested: true}
 
   # ---------------------------------------------------------------- P4
   - id: S9
